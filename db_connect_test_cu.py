@@ -82,56 +82,56 @@ def read_db_table(member_name = None, appliance_name = None, start = None, end =
     return(table)
 
 def data_load(member_name, appliance_name, months = None):
-    #months = months or None
-    #encoding = 'euc-kr'
-    #df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
-    #                  encoding=encoding)  # 24일 이전 데이터 x
-    #if months != 1:
-    #    df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
-    #                      encoding=encoding)  # 2일부터...
-    #    df1 = pd.concat([df1, df2], ignore_index=True)
-    #df1 = df1.loc[df1.energy != '\\N', :].copy()
-    #df1.columns.values[-1] = 'appliance_status'  # excel에 컬럼값 입력 안됨
+    months = months or None
+    encoding = 'euc-kr'
+    df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
+                     encoding=encoding)  # 24일 이전 데이터 x
+    if months != 1:
+       df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
+                         encoding=encoding)  # 2일부터...
+       df1 = pd.concat([df1, df2], ignore_index=True)
+    df1 = df1.loc[df1.energy != '\\N', :].copy()
+    df1.columns.values[-1] = 'appliance_status'  # excel에 컬럼값 입력 안됨
 
-    aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_service_db',
-                                                charset='utf8')
-
-    cursor = aihems_service_db_connect.cursor()
-    query = f"""
-                SELECT AD.gateway_id, AD.device_address
-                FROM ah_device AS AD,
-                    (SELECT AM.member_id AS member_id, AG.gateway_id AS gateway_id
-                    FROM
-                    ah_gateway_assign AS AG
-                    JOIN
-                    ah_member AS AM
-                    ON AG.member_id=AM.member_id
-                    WHERE AM.member_name='{member_name}') AS T1
-                WHERE 1=1
-                    AND T1.gateway_id=AD.gateway_id
-                    AND AD.device_name='{appliance_name}'
-            """
-    cursor.execute(query)
-    result = cursor.fetchone()
-    aihems_service_db_connect.close()
-    gateway_id=result[0]
-    device_address=result[1]
-
-    aihems_api_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
-                                                charset='utf8')
-
-    df1 = pd.DataFrame()
-
-    sql = f"""
-                SELECT gateway_id, device_address, collected_date, collected_time, quality, onoff, energy,energy_diff, appliance_state
-                FROM AH_USE_LOG_BYMINUTE_LABLED
-                WHERE 1=1
-                AND gateway_id = '{gateway_id}'
-                AND device_address = '{device_address}'
-         """
-    df1 = df1.append(pd.read_sql(sql, aihems_api_db_connect), ignore_index=True)
+    # aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+    #                                             port=3306, user='aihems', passwd='#cslee1234', db='aihems_service_db',
+    #                                             charset='utf8')
+    #
+    # cursor = aihems_service_db_connect.cursor()
+    # query = f"""
+    #             SELECT AD.gateway_id, AD.device_address
+    #             FROM ah_device AS AD,
+    #                 (SELECT AM.member_id AS member_id, AG.gateway_id AS gateway_id
+    #                 FROM
+    #                 ah_gateway_assign AS AG
+    #                 JOIN
+    #                 ah_member AS AM
+    #                 ON AG.member_id=AM.member_id
+    #                 WHERE AM.member_name='{member_name}') AS T1
+    #             WHERE 1=1
+    #                 AND T1.gateway_id=AD.gateway_id
+    #                 AND AD.device_name='{appliance_name}'
+    #         """
+    # cursor.execute(query)
+    # result = cursor.fetchone()
+    # aihems_service_db_connect.close()
+    # gateway_id=result[0]
+    # device_address=result[1]
+    # gateway_id = gateway_id.split("-")[0]+gateway_id.split("-")[2]
+    # aihems_api_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+    #                                             port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
+    #                                             charset='utf8')
+    #
+    # df1 = pd.DataFrame()
+    #
+    # sql = f"""
+    #             SELECT gateway_id, device_address, collected_date, collected_time, quality, onoff, energy,energy_diff, appliance_status
+    #             FROM AH_USE_LOG_BYMINUTE_LABLED
+    #             WHERE 1=1
+    #             AND gateway_id = '{gateway_id}'
+    #             AND device_address = '{device_address}'
+    #      """
+    # df1 = df1.append(pd.read_sql(sql, aihems_api_db_connect), ignore_index=True)
     return(df1)
 
 def set_data(df, source = None):
@@ -146,6 +146,7 @@ def set_data(df, source = None):
 
     df1.loc[:, 'collected_time'] = [str(x).rjust(4, '0') for x in df1.collected_time]
     df1.loc[:, 'collected_time'] = [x[:2] + ':' + x[2:] for x in df1.collected_time]
+    # df1.loc[:, 'collected_time'] = [x[:2] + x[2:] for x in df1.collected_time]
     df1.loc[:, 'collected_date'] = [str(x) for x in df1.collected_date]
     df1.loc[:, 'date_time'] = df1.loc[:, 'collected_date'] + ' ' + df1.loc[:, 'collected_time']
     df1.loc[:, 'date_time'] = pd.to_datetime(df1.loc[:, 'date_time'])
@@ -203,7 +204,7 @@ def make_prediction_model(member_name = None, appliance_name = None, save = None
     save = save or None
 
     df = data_load(member_name = member_name, appliance_name = appliance_name)
-    df = set_data(df, source = 'excel')
+    df = set_data(df, source='excel')
     X, Y = split_x_y(df)
 
     model = RandomForestClassifier()
@@ -263,36 +264,35 @@ def transform_data(df):
                   ]]
     return(df)
 
- member_name = input('사용자 이름: ')
- appliance_name = input('가전기기 이름: ')
- # start = input('시작일: ')
- #end = input('종료일: ')
+member_name = input('사용자 이름: ')
+appliance_name = input('가전기기 이름: ')
+# start = input('시작일: ')
+#end = input('종료일: ')
+# df = data_load(member_name=member_name,appliance_name=appliance_name)
+# print(df)
+start = time.time()
+gs, X, Y = make_prediction_model(member_name=member_name, appliance_name=appliance_name)
+end = time.time()
+print('걸리시간: ', round(end-start, 3), 's', sep = "")
+print('정확도: ', round(gs.best_score_, 3) , sep = "")
+#
+# model_fitted = gs
+# model_loaded = load('./')
+#
+# model_fitted.predict()
+df4 = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
+df1 = set_data(df4)
+X, Y = split_x_y(df1)
 
- start = time.time()
- gs, X, Y = make_prediction_model(member_name=member_name, appliance_name=appliance_name)
- end = time.time()
- print('걸리시간: ', round(end-start, 3), 's', sep = "")
- print('정확도: ', round(gs.best_score_, 3) , sep = "")
- #
- # model_fitted = gs
- # model_loaded = load('./')
- #
- # model_fitted.predict()
+Y = gs.predict(X)
 
- df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
+df1.appliance_status = Y
+gateway_id = df1.gateway_id[0]
+df1.gateway_id = gateway_id[:6] + gateway_id[-4:]
 
- df1 = set_data(df)
- X, Y = split_x_y(df1)
+df2 = transform_data(df1)
 
- Y = gs.predict(X)
-
- df1.appliance_status = Y
- gateway_id = df1.gateway_id[0]
- df1.gateway_id = gateway_id[:6] + gateway_id[-4:]
-
- df2 = transform_data(df1)
-
-# # write_db(df2)
+# write_db(df2)
 
 #df = data_load(member_name='박재훈', appliance_name='TV')
 #df = set_data(df, source='excel')
