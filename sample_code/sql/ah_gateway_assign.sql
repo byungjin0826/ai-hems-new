@@ -1,0 +1,2 @@
+SELECT member_id, gateway_id
+FROM ah_gateway_assign
