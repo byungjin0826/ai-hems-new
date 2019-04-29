@@ -13,7 +13,6 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 
 # sklearn package
-
 def read_db_table(member_name = None, appliance_name = None, start = None, end = None):
     start = pd.to_datetime(start) or pd.to_datetime('2019-01')
     end = pd.to_datetime(end) or pd.to_datetime('2019-03')
@@ -126,7 +125,7 @@ def data_load(member_name, appliance_name, months = None):
     df1 = pd.DataFrame()
 
     sql = f"""
-                SELECT device_address, collected_date, CONVERT(REPLACE(collected_time,':',''), SIGNED INTEGER) AS collected_time, quality, onoff, energy,energy_diff, appliance_status
+                SELECT device_address, collected_date, CONVERT(REPLACE(collected_time,':',''), SIGNED INTEGER) AS collected_time, quality, onoff, (energy/1000) AS energy, (energy_diff/1000) AS energy_diff, appliance_status
                 FROM AH_USE_LOG_BYMINUTE_LABLED
                 WHERE 1=1
                 AND gateway_id = '{gateway_id}'
@@ -294,10 +293,10 @@ print('정확도: ', round(gs.best_score_, 3) , sep = "")
 #
 # model_fitted.predict()
 df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
-# df5 = data_load(member_name=member_name, appliance_name=appliance_name)
+df5 = data_load(member_name=member_name, appliance_name=appliance_name)
 df1 = set_data(df, source='predict')
-# df4 = set_data(df, source='predict')
-# X1, Y1 = split_x_y(df1)
+df4 = set_data(df, source='predict')
+X1, Y1 = split_x_y(df1)
 X, Y = split_x_y(df1)
 
 Y = gs.predict(X)
