@@ -145,7 +145,7 @@ def set_data(df, source = None):
 
     if source == 'excel':
         df1 = df.loc[df.energy != '\\N', :].copy()  # db에서 load 할 때는 na로 들어옴.
-    elif source == 'predict':
+    elif source == 'predict' or source == 'dbwrite':
         df1 = df.dropna()
         df1.loc[:, 'appliance_status'] = 0
     else:
@@ -303,12 +303,12 @@ df1 = set_data(df, source='predict')
 X, Y = split_x_y(df1)
 
 Y = gs.predict(X)
-df2 = set_data(df1, source='dbwrite')
+df2 = set_data(df, source='dbwrite')
 df2.appliance_status = Y
 gateway_id = df2.gateway_id[0]
 df2.gateway_id = gateway_id[:6] + gateway_id[-4:]
 
-df3 = transform_data(df2)
+df3 = transform_data(df2) # todo:대기전력도 appliance_status가 1로 표시되는것 수정
 
 # write_db(df2)
 
