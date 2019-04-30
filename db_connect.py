@@ -1,16 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
 # member_name = input('사용자 이름: ')
 # appliance_name = input('가전기기 이름: ')
 # # start = input('시작일: ')
