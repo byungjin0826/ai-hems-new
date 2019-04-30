@@ -13,7 +13,6 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 
 # sklearn package
-
 def read_db_table(member_name = None, appliance_name = None, start = None, end = None):
     start = pd.to_datetime(start) or pd.to_datetime('2019-01')
     end = pd.to_datetime(end) or pd.to_datetime('2019-03')
@@ -99,7 +98,7 @@ def data_load(member_name, appliance_name, months = None):
 
     cursor = aihems_service_db_connect.cursor()
     query = f"""
-                SELECT AD.gateway_id, AD.device_address
+                SELECT AD.gateway_id, AD.device_address, T1.member_id
                 FROM ah_device AS AD,
                     (SELECT AM.member_id AS member_id, AG.gateway_id AS gateway_id
                     FROM
@@ -117,6 +116,7 @@ def data_load(member_name, appliance_name, months = None):
     aihems_service_db_connect.close()
     gateway_id=result[0]
     device_address=result[1]
+    member_id = result[2]
     gateway_id = gateway_id.split("-")[0]+gateway_id.split("-")[2]
     aihems_api_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
                                                 port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
@@ -125,14 +125,20 @@ def data_load(member_name, appliance_name, months = None):
     df1 = pd.DataFrame()
 
     sql = f"""
-                SELECT gateway_id, device_address, collected_date, collected_time, quality, onoff, energy,energy_diff, appliance_status
+                SELECT device_address, collected_date, CONVERT(REPLACE(collected_time,':',''), SIGNED INTEGER) AS collected_time, quality, onoff, (energy/1000) AS energy, (energy_diff/1000) AS energy_diff, appliance_status
                 FROM AH_USE_LOG_BYMINUTE_LABLED
                 WHERE 1=1
                 AND gateway_id = '{gateway_id}'
                 AND device_address = '{device_address}'
          """
     df1 = df1.append(pd.read_sql(sql, aihems_api_db_connect), ignore_index=True)
-    return(df1)
+    data = {'member_name' : [member_name],
+            'member_id' : [member_id],
+            'gateway_id' : [result[0]],
+            'device_address' : [device_address]}
+    df6 = pd.DataFrame(data)
+    df7 = pd.merge(df6, df1, on = 'device_address', how='right')
+    return(df7)
 
 def set_data(df, source = None):
     source = source or None
@@ -147,7 +153,8 @@ def set_data(df, source = None):
         # df1.loc[:, 'appliance_status'] = 0
 
     df1.loc[:, 'collected_time'] = [str(x).rjust(4, '0') for x in df1.collected_time]
-    # df1.loc[:, 'collected_time'] = [x[:2] + ':' + x[2:] for x in df1.collected_time]
+    if source == 'predict':
+        df1.loc[:, 'collected_time'] = [x[:2] + ':' + x[2:] for x in df1.collected_time]
     # df1.loc[:, 'collected_time'] = [x[:2] + x[2:] for x in df1.collected_time]
     df1.loc[:, 'collected_date'] = [str(x) for x in df1.collected_date]
     df1.loc[:, 'date_time'] = df1.loc[:, 'collected_date'] + ' ' + df1.loc[:, 'collected_time']
@@ -183,8 +190,9 @@ def set_data(df, source = None):
     df1.loc[:, 'end_point'] = 1
     df1.loc[:, 'quality'] = 100
     df1.loc[:, 'create_date'] = pd.datetime.today()
-    gateway_id = df1.gateway_id[0]
-    df1.gateway_id = gateway_id[:6] + gateway_id[-4:]
+    df1.loc[:, 'gateway_id'] = df1.gateway_id[0]
+    # gateway_id = df1.gateway_id[0]
+    # df1.gateway_id = gateway_id[:6] + gateway_id[-4:]
 
     return (df1)
 
@@ -285,7 +293,10 @@ print('정확도: ', round(gs.best_score_, 3) , sep = "")
 #
 # model_fitted.predict()
 df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
+df5 = data_load(member_name=member_name, appliance_name=appliance_name)
 df1 = set_data(df, source='predict')
+df4 = set_data(df, source='predict')
+X1, Y1 = split_x_y(df1)
 X, Y = split_x_y(df1)
 
 Y = gs.predict(X)
