@@ -23,7 +23,7 @@ def progressive_level(cumulative_energy):
         progressive_level = 3
     elif cumulative_energy > 200:
         progressive_level = 2
-    progressive_level = 1
+    progressive_level = 1  ####else가 들어가야 하는 것이 아닌지...?(누진구간)
     return(progressive_level)
 
 def transform(df):
