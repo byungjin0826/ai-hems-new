@@ -3,13 +3,13 @@ import numpy as np
 import sklearn as sk
 import pandas as pd
 from sqlalchemy import create_engine
-import joblib
-import sklearn as sk
 from joblib import dump, load
+
 
 def get_table_from_db(sql):
     """
     작성된 SQL 문으로 데이터 불러오기
+    :return:
     :param sql: sql문
     :return: python DataFrame
     """
@@ -17,10 +17,11 @@ def get_table_from_db(sql):
                                                 port=3306, user='aihems', passwd='#cslee1234', db='aihems_service_db',
                                                 charset='utf8')
     df = pd.read_sql(sql, aihems_service_db_connect)
-    return(df)
+    return (df)
+
 
 # X 값을 변환하여 사용
-def window_stack(X, stepsize=10, lag = 2): # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록, 2. Lag 부분 추가
+def window_stack(X, stepsize=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록, 2. Lag 부분 추가
     """
     상태 판별 예측을 위한 입력 데이터 변환
     :param X: 분 단위 전력 사용량
@@ -29,16 +30,19 @@ def window_stack(X, stepsize=10, lag = 2): # todo: 1. X가 여러개의 컬럼�
     :return:
     """
     X = [0] * (stepsize - 1) + X
-    X_transformed = [X[i-stepsize:i] for i in range(len(X)+1) if i > stepsize-1]
-    return (X_transformed) #
+    X_transformed = [X[i - stepsize:i] for i in range(len(X) + 1) if i > stepsize - 1]
+    return (X_transformed)  #
 
-def data_load(): # todo: Excel에서 데이터 불러오기, DB에 저장 완료 시 필요없음
+
+def data_load():  # todo: Excel에서 데이터 불러오기, DB에 저장 완료 시 필요없음
     return 0
 
-def set_data(): # todo: 기존 함수 복사해서 붙여넣기
+
+def set_data():  # todo: 기존 함수 복사해서 붙여넣기
     return 0
 
-def split_x_y(df, x_col = [''], y_col = ['']): # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록
+
+def split_x_y(df, x_col=[''], y_col=['']):  # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록
     """
     DataFrame에서 X와 Y를 분리
     :param df: python DataFrame
@@ -48,15 +52,16 @@ def split_x_y(df, x_col = [''], y_col = ['']): # todo: X와 Y 분리하기, 컬�
     """
     X = df.loc[:, x_col].values
     Y = df.loc[:, y_col].values
-    return(X, Y)
+    return (X, Y)
 
-def make_prediction_model(member_name = None, appliance_name = None, save = None): # todo: params를 저장되 있는 값으로 불러오기
+
+def make_prediction_model(member_name=None, appliance_name=None, save=None):  # todo: params를 저장되 있는 값으로 불러오기
     member_name = member_name or '박재훈'
     appliance_name = appliance_name or 'TV'
     save = save or None
 
-    df = data_load(member_name = member_name, appliance_name = appliance_name)
-    df = set_data(df, source = 'excel')
+    df = data_load(member_name=member_name, appliance_name=appliance_name)
+    df = set_data(df, source='excel')
     X, Y = split_x_y(df)
 
     model = sk.ensemble.RandomForestClassifier()
@@ -76,19 +81,20 @@ def make_prediction_model(member_name = None, appliance_name = None, save = None
     }
 
     gs = sk.model_selection.GridSearchCV(
-                                            estimator=model,
-                                            param_grid=params,
-                                            cv=5,
-                                            scoring='f1',
-                                            n_jobs=-1
+        estimator=model,
+        param_grid=params,
+        cv=5,
+        scoring='f1',
+        n_jobs=-1
     )
     gs.fit(X, Y)
 
     if save == True:
         dump(gs, './filename.joblib')
-    return(gs)
+    return (gs)
 
-def write_db(df, table_name = 'AH_USE_LOG_BYMINUTE_LABLED'):
+
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
@@ -100,14 +106,15 @@ def write_db(df, table_name = 'AH_USE_LOG_BYMINUTE_LABLED'):
     addr = 'aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com'
     port = "3306"
     db_name = 'aihems_api_db'
-    engine = create_engine("mysql+mysqldb://"+user+":" + passwd +"@"+addr+":"+port+"/"+db_name,
+    engine = create_engine("mysql+mysqldb://" + user + ":" + passwd + "@" + addr + ":" + port + "/" + db_name,
                            encoding='utf-8')
     # conn = engine.connect()
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
-    return(0)
+    return (0)
+
 
 cols_dic = {
-    'ah_appliance':[
+    'ah_appliance': [
         'appliance_no'
         , 'appliance_type'
         , 'appliance_name'
@@ -121,7 +128,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_appliance_connect':[
+    'ah_appliance_connect': [
         'appliance_no'
         , 'gateway_id'
         , 'device_address'
@@ -129,7 +136,7 @@ cols_dic = {
         , 'flag_delete'
         , 'create_date'
     ],
-    'ah_appliance_energy_history':[
+    'ah_appliance_energy_history': [
         'appliance_no'
         , 'create_date'
         , 'wait_energy'
@@ -139,7 +146,7 @@ cols_dic = {
         , 'use_minute'
         , 'use_power'
     ],
-    'ah_appliance_history':[
+    'ah_appliance_history': [
         'appliance_no'
         , 'create_date'
         , 'end_date'
@@ -149,7 +156,7 @@ cols_dic = {
         , 'appliance_type'
         , 'appliance_name'
     ],
-    'ah_appliance_remocon_config':[
+    'ah_appliance_remocon_config': [
         'appliance_no'
         , 'device_address'
         , 'end_point'
@@ -158,7 +165,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_appliance_type':[
+    'ah_appliance_type': [
         'appliance_type'
         , 'appliance_type_name'
         , 'appliance_type_descript'
@@ -166,7 +173,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_device':[
+    'ah_device': [
         'device_address'
         , 'end_point'
         , 'device_type'
@@ -178,14 +185,14 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_device_install':[
+    'ah_device_install': [
         'gateway_id'
         , 'device_address'
         , 'end_point'
         , 'flag_delete'
         , 'create_date'
     ],
-    'ah_gateway':[
+    'ah_gateway': [
         'gateway_id'
         , 'gateway_name'
         , 'gateway_xmpp_id'
@@ -194,13 +201,13 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_gateway_install':[
+    'ah_gateway_install': [
         'house_no'
         , 'gateway_id'
         , 'flag_delete'
         , 'create_date'
     ],
-    'ah_house':[
+    'ah_house': [
         'house_no'
         , 'house_name'
         , 'house_address'
@@ -213,13 +220,13 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_house_member':[
+    'ah_house_member': [
         'house_no'
         , 'user_no'
         , 'flag_delete'
         , 'create_date'
     ],
-    'ah_usage_daily_predict':[
+    'ah_usage_daily_predict': [
         'house_no'
         , 'collected_date'
         , 'use_energy'
@@ -228,7 +235,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_usage_monthly':[
+    'ah_usage_monthly': [
         'house_no'
         , 'year'
         , 'month'
@@ -237,7 +244,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_usage_monthly_byappliance':[
+    'ah_usage_monthly_byappliance': [
         'house_no'
         , 'appliance_no'
         , 'year'
@@ -246,7 +253,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_usage_monthly_bydevice':[
+    'ah_usage_monthly_bydevice': [
         'house_no'
         , 'device_address'
         , 'end_point'
@@ -256,7 +263,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_user':[
+    'ah_user': [
         'user_no'
         , 'user_name'
         , 'email'
@@ -266,7 +273,7 @@ cols_dic = {
         , 'create_date'
         , 'modify_date'
     ],
-    'ah_use_log_byminute':[
+    'ah_use_log_byminute': [
         'gateway_id'
         , 'device_address'
         , 'end_point'
@@ -279,7 +286,7 @@ cols_dic = {
         , 'appliance_status'
         , 'create_date'
     ],
-    'ah_use_log_byminute_labled':[
+    'ah_use_log_byminute_labled': [
         'gateway_id'
         , 'device_address'
         , 'end_point'
@@ -295,35 +302,35 @@ cols_dic = {
 }
 
 classifications = {
-    'random forest':[
+    'random forest': [
         sk.ensemble.RandomForestClassifier(),
         {
-            'n_estimator':[10]
-            , 'criterion':['gini']
-            , 'max_depth':[None]
-            , 'min_samples_split':[2]
-            , 'min_samples_leaf':[1]
-            , 'min_weight_fraction_leaf':[0.]
-            , 'max_features':["auto"]
-            , 'max_leaf_nodes':[None]
-            , 'min_impurity_decrease':[0.]
-            , 'min_impurity_split':[1e-7]
-            , 'bootstrap':[True]
-            , 'oob_score':[False]
-            , 'n_jobs':[None]
-            , 'random_state':[None]
-            , 'vervbse':[0]
-            , 'warm_start':[False]
-            , 'class_weight':[None]
+            'n_estimator': [10]
+            , 'criterion': ['gini']
+            , 'max_depth': [None]
+            , 'min_samples_split': [2]
+            , 'min_samples_leaf': [1]
+            , 'min_weight_fraction_leaf': [0.]
+            , 'max_features': ["auto"]
+            , 'max_leaf_nodes': [None]
+            , 'min_impurity_decrease': [0.]
+            , 'min_impurity_split': [1e-7]
+            , 'bootstrap': [True]
+            , 'oob_score': [False]
+            , 'n_jobs': [None]
+            , 'random_state': [None]
+            , 'vervbse': [0]
+            , 'warm_start': [False]
+            , 'class_weight': [None]
         }
     ],
-    'linear regression':[
+    'linear regression': [
         sk.linear_model.LinearRegression(),
         {
-            'fit_intercept':[True]
-            , 'normalize':[False]
-            , 'copy_X':[True]
-            , 'n_jobs':[None]
+            'fit_intercept': [True]
+            , 'normalize': [False]
+            , 'copy_X': [True]
+            , 'n_jobs': [None]
         }
     ],
     # 'polynomial regression':[
@@ -332,33 +339,33 @@ classifications = {
     # 'stepwise regression':[
     #
     # ],
-    'ridge regression':[
+    'ridge regression': [
         sk.linear_model.Ridge(),
         {
-            'alpha':[]
-            , 'fit_intercept':[]
-            , 'normalize':[False]
-            , 'copy_X':[True]
-            , 'max_iter':[]
-            , 'tol':[]
-            , 'solver':['auto']
-            , 'random_state':[None]
+            'alpha': []
+            , 'fit_intercept': []
+            , 'normalize': [False]
+            , 'copy_X': [True]
+            , 'max_iter': []
+            , 'tol': []
+            , 'solver': ['auto']
+            , 'random_state': [None]
         }
     ],
-    'lasso regression':[
+    'lasso regression': [
         sk.linear_model.Lasso(),
         {
-            'alpha':[]
-            , 'fit_intercept':[True]
-            , 'normalize':[False]
-            , 'precompute':[False]
-            , 'copy_X':[True]
-            , 'max_iter':[]
-            , 'tol':[]
-            , 'warm_start':[]
-            , 'positive':[]
-            , 'random_state':[None]
-            , 'selection':['cyclic']
+            'alpha': []
+            , 'fit_intercept': [True]
+            , 'normalize': [False]
+            , 'precompute': [False]
+            , 'copy_X': [True]
+            , 'max_iter': []
+            , 'tol': []
+            , 'warm_start': []
+            , 'positive': []
+            , 'random_state': [None]
+            , 'selection': ['cyclic']
         }
     ],
     # 'elastic net regression':[
