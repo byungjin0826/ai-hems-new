@@ -5,12 +5,14 @@ import pandas as pd
 def data_load(member_name, appliance_name, months = None):
     months = months or None
     encoding = 'euc-kr'
-    df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
-                      encoding=encoding)  # 24일 이전 데이터 x
-    if months != 1:
-        df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
-                          encoding=encoding)  # 2일부터...
-        df1 = pd.concat([df1, df2], ignore_index=True)
+    # df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
+    #                   encoding=encoding)  # 24일 이전 데이터 x
+    # if months != 1:
+    #     df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
+    #                       encoding=encoding)  # 2일부터...
+    #     df1 = pd.concat([df1, df2], ignore_index=True)
+    df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ').csv',
+                      encoding=encoding) #실증세대
     df1 = df1.loc[df1.energy != '\\N', :].copy()
     df1.columns.values[-1] = 'appliance_status'  # excel에 컬럼값 입력 안됨
     return(df1)
