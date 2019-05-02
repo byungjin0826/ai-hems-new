@@ -125,7 +125,7 @@ def data_load(member_name, appliance_name, months = None):
     df1 = pd.DataFrame()
 
     sql = f"""
-                SELECT device_address, collected_date, CONVERT(REPLACE(collected_time,':',''), SIGNED INTEGER) AS collected_time, quality, onoff, (energy/1000) AS energy, (energy_diff/1000) AS energy_diff, appliance_status
+                SELECT device_address, collected_date, CONVERT(REPLACE(collected_time,':',''), SIGNED INTEGER) AS collected_time, quality, onoff, energy, energy_diff, appliance_status
                 FROM AH_USE_LOG_BYMINUTE_LABLED
                 WHERE 1=1
                 AND gateway_id = '{gateway_id}'
@@ -145,7 +145,7 @@ def set_data(df, source = None):
 
     if source == 'excel':
         df1 = df.loc[df.energy != '\\N', :].copy()  # db에서 load 할 때는 na로 들어옴.
-    elif source == 'predict':
+    elif source == 'predict' or source == 'dbwrite':
         df1 = df.dropna()
         df1.loc[:, 'appliance_status'] = 0
     else:
@@ -153,7 +153,7 @@ def set_data(df, source = None):
         # df1.loc[:, 'appliance_status'] = 0
 
     df1.loc[:, 'collected_time'] = [str(x).rjust(4, '0') for x in df1.collected_time]
-    if source == 'predict':
+    if source == 'predict' or source == 'dbwrite':
         df1.loc[:, 'collected_time'] = [x[:2] + ':' + x[2:] for x in df1.collected_time]
     # df1.loc[:, 'collected_time'] = [x[:2] + x[2:] for x in df1.collected_time]
     df1.loc[:, 'collected_date'] = [str(x) for x in df1.collected_date]
@@ -179,8 +179,10 @@ def set_data(df, source = None):
     df1.minute= [[x] for x in df1.minute]
 
     df1.loc[:, 'dayofyear'] = [int(x.dayofyear) for x in df1.date_time]
-
-    df1.loc[:, 'energy'] = [round(float(x)*1000) for x in df1.energy]
+    if source == 'dbwrite':
+        df1.loc[:, 'energy'] = [float(x) for x in df1.energy]
+    else:
+        df1.loc[:, 'energy'] = [round(float(x)*1000) for x in df1.energy]
     df1.loc[:, 'energy_lagged'] = df1.energy.shift(+1)
     df1.loc[:, 'energy_diff'] = df1.energy - df1.energy_lagged
     df1.iloc[-1, 8] = 0
@@ -282,6 +284,7 @@ appliance_name = input('가전기기 이름: ')
 #end = input('종료일: ')
 # df = data_load(member_name=member_name,appliance_name=appliance_name)
 # print(df)
+df = data_load(member_name=member_name,appliance_name=appliance_name)
 start = time.time()
 gs, X, Y = make_prediction_model(member_name=member_name, appliance_name=appliance_name)
 end = time.time()
@@ -292,20 +295,21 @@ print('정확도: ', round(gs.best_score_, 3) , sep = "")
 # model_loaded = load('./')
 #
 # model_fitted.predict()
-df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
-df5 = data_load(member_name=member_name, appliance_name=appliance_name)
+# df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04') #다원플러그
+df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-04', end = '2019-05') #이젝스플러그(실증세대)
+# df5 = data_load(member_name=member_name, appliance_name=appliance_name)
 df1 = set_data(df, source='predict')
-df4 = set_data(df, source='predict')
-X1, Y1 = split_x_y(df1)
+# df4 = set_data(df, source='predict')
+# X1, Y1 = split_x_y(df1)
 X, Y = split_x_y(df1)
 
 Y = gs.predict(X)
+df2 = set_data(df, source='dbwrite')
+df2.appliance_status = Y
+gateway_id = df2.gateway_id[0]
+df2.gateway_id = gateway_id[:6] + gateway_id[-4:]
 
-df1.appliance_status = Y
-gateway_id = df1.gateway_id[0]
-df1.gateway_id = gateway_id[:6] + gateway_id[-4:]
-
-df2 = transform_data(df1)
+df3 = transform_data(df2) # todo:대기전력도 appliance_status가 1로 표시되는것 수정
 
 # write_db(df2)
 
