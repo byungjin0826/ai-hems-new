@@ -153,7 +153,7 @@ def set_data(df, source = None):
         # df1.loc[:, 'appliance_status'] = 0
 
     df1.loc[:, 'collected_time'] = [str(x).rjust(4, '0') for x in df1.collected_time]
-    if source == 'predict':
+    if source == 'predict' or source == 'dbwrite':
         df1.loc[:, 'collected_time'] = [x[:2] + ':' + x[2:] for x in df1.collected_time]
     # df1.loc[:, 'collected_time'] = [x[:2] + x[2:] for x in df1.collected_time]
     df1.loc[:, 'collected_date'] = [str(x) for x in df1.collected_date]
