@@ -295,7 +295,8 @@ print('정확도: ', round(gs.best_score_, 3) , sep = "")
 # model_loaded = load('./')
 #
 # model_fitted.predict()
-df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04')
+# df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-03', end = '2019-04') #다원플러그
+df = read_db_table(member_name= member_name, appliance_name = appliance_name,  start = '2019-04', end = '2019-05') #이젝스플러그(실증세대)
 # df5 = data_load(member_name=member_name, appliance_name=appliance_name)
 df1 = set_data(df, source='predict')
 # df4 = set_data(df, source='predict')
