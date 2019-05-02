@@ -18,8 +18,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 
-
-
 def set_data(df):
     df1 = df.loc[df.energy != '\\N', :].copy()
     # df1 = df1.loc[(df1.collected_time>800) & (df1.collected_time<900), :] ###

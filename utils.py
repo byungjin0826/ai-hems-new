@@ -1,98 +1,126 @@
 import pymysql
 import numpy as np
 import sklearn as sk
+import sklearn.ensemble
+import sklearn.linear_model
 import pandas as pd
 from sqlalchemy import create_engine
 from joblib import dump, load
+import time
 
 
-def get_table_from_db(sql):
+def datetime_transform(df):
+    datetime = df.collected_date + ' ' + df.collected_time
+    df.loc[:, 'datetime'] = pd.to_datetime(datetime, format= '%Y%m%d')
+    df_datetime_indexing = df.set_index(['datetime', 'name'])
+    return df_datetime_indexing
+
+
+def progressive_level(cumulative_energy):
+    if cumulative_energy >= 400:
+        progressive_level = 3
+    elif cumulative_energy > 200:
+        progressive_level = 2
+    progressive_level = 1
+    return(progressive_level)
+
+
+def get_table_from_db(sql, db = 'aihems_service_db'):
     """
     작성된 SQL 문으로 데이터 불러오기
     :return:
-    :param sql: sql문
+    :param sql: sql 문
     :return: python DataFrame
     """
+    db = db or 'aihems_service_db'
+
     aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_service_db',
+                                                port=3306, user='aihems', passwd='#cslee1234', db=db,
                                                 charset='utf8')
     df = pd.read_sql(sql, aihems_service_db_connect)
     return df
 
 
 # X 값을 변환하여 사용
-def window_stack(x, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록, 2. Lag 부분 추가
+def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록, 2. Lag 부분 추가
     """
     상태 판별 예측을 위한 입력 데이터 변환
     :param x: 분 단위 전력 사용량
     :param step_size: Sliding window 의 사이즈
-    :param lag: 숫자만큼 지연 
+    :param lag: 숫자만큼 지연
     :return:
     """
     x = [0] * (step_size - 1) + x
-    x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1) if i > step_size - 1]
-    return x_transformed  #
+    x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1 - lag) if i > step_size - 1]
+    y_transformed = y[:-lag]
+    return x_transformed, y_transformed  #
 
 
-def data_load():  # todo: Excel에서 데이터 불러오기, DB에 저장 완료 시 필요없음
-    return 0
+# def data_load():  # todo: Excel 에서 데이터 불러오기, DB에 저장 완료 시 필요없음
+#     return 0
 
 
-def set_data():  # todo: 기존 함수 복사해서 붙여넣기
-    return 0
+def set_data(df):  # todo: 기존 함수 복사해서 붙여넣기
+    df_added = df
+    return df_added
 
-
-def split_x_y(df, x_col=['elec'], y_col=['status']):  # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록, 명칭 다시 수정
+def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):  # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록, 명칭 다시 수정
     """
-    DataFrame에서 X와 Y를 분리
+    학습에 사용할 DataFrame 에서 X와 Y를 분리
     :param df: python DataFrame
-    :param x_col:
-    :param y_col:
+    :param x_col: 학습에 사용할 x 변수 선택, 기본값: 전력데이터만 사용
+    :param y_col: 가전기기 상태
     :return:
     """
-    X = df.loc[:, x_col].values
-    Y = df.loc[:, y_col].values
-    return (X, Y)
+    x_col = x_col or ''
+    y_col = y_col or ''
+
+    x = df.loc[:, x_col].values
+    if len(x_col) == 1:
+        x=x.reshape(-1, 1)
+
+    y = df.loc[:, y_col].values
+    return x, y
 
 
-def make_prediction_model(member_name=None, appliance_name=None, save=None):  # todo: params를 저장되 있는 값으로 불러오기
+def make_prediction_model(member_name=None, appliance_name=None, save=None, model_name = None):  # todo: params 를 저장되 있는 값으로 불러오기
+    """
+    DB에 입력되어있는 데이터를 토대로 예측 모델 생성 및 저장
+    Table은
+    :param member_name: 이름, 기본값: 박재훈
+    :param appliance_name: 가전기기명, 기본값: TV
+    :param save: 저장여부 선택, 기본값: False
+    :param model_name: 모델 선택, 모두 영문 소문자로 기입, 기본값: decision tree
+    :return: fitting 이 완료된 GridSearchCV 객체
+    """
     member_name = member_name or '박재훈'
-    appliance_name = appliance_name or 'TV'
-    save = save or None
+    appliance_name = appliance_name or '박재훈'
+    model_name = model_name or 'random forest'
+    table_name = ''
 
-    df = data_load(member_name=member_name, appliance_name=appliance_name)
-    df = set_data(df, source='excel')
-    X, Y = split_x_y(df)
+    sql = f"""
+    SELECT *
+    FROM Table
+    WHERE 1=1
+    AND gateway_id = {member_name}
+    AND device_address = {appliance_name}
+    """
 
-    model = sk.ensemble.RandomForestClassifier()
-    params = {
-        'n_estimators': [10],
-        # 'n_estimators': [int(x) for x in np.linspace(start = 200, stop = 2000, num = 11)],
-        'max_depth': [None],  # default None
-        # 'max_depth': [int(x) for x in np.linspace(10, 110, num = 11)],
-        'min_samples_split': [2],  # default 2
-        # 'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1],  # default 1
-        # 'min_samples_leaf': [1, 2, 4],  # default 1
-        'max_features': ['auto'],
-        # 'max_features': ['sqrt', 'auto'],
-        'bootstrap': [True],
-        # 'bootstrap': [True, False]
-    }
+    df = get_table_from_db(sql)
 
-    gs = sk.model_selection.GridSearchCV(
-        estimator=model,
-        param_grid=params,
-        cv=5,
-        scoring='f1',
-        n_jobs=-1
-    )
-    gs.fit(X, Y)
+    x, y = split_x_y(df)
+    start = time.time()
 
-    if save == True:
-        dump(gs, './filename.joblib')
-    return (gs)
+    gs = sk.model_selection.GridSearchCV()
+    gs.fit(x, y)
+    end = time.time()
+    print('학습 소요시간: ', round(end-start, 3), sep = '')
 
+    if save:
+        dump('./'+member_name+'_'+appliance_name+'.joblib')
+        print('저장되었습니다.')
+
+    return gs
 
 def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
     """
@@ -110,178 +138,198 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
                            encoding='utf-8')
     # conn = engine.connect()
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
-    return (0)
+    return 0
 
 
-cols_dic = dict(ah_appliance=[
-    'appliance_no'
-    , 'appliance_type'
-    , 'appliance_name'
-    , 'maker'
-    , 'model_no'
-    , 'purchase_date'
-    , 'wait_power'
-    , 'use_power'
-    , 'flag_use_remocon'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_appliance_connect=[
-    'appliance_no'
-    , 'gateway_id'
-    , 'device_address'
-    , 'end_point'
-    , 'flag_delete'
-    , 'create_date'
-], ah_appliance_energy_history=[
-    'appliance_no'
-    , 'create_date'
-    , 'wait_energy'
-    , 'wait_minute'
-    , 'wait_power'
-    , 'use_energy'
-    , 'use_minute'
-    , 'use_power'
-], ah_appliance_history=[
-    'appliance_no'
-    , 'create_date'
-    , 'end_date'
-    , 'gateway_id'
-    , 'device_address'
-    , 'end_point'
-    , 'appliance_type'
-    , 'appliance_name'
-], ah_appliance_remocon_config=[
-    'appliance_no'
-    , 'device_address'
-    , 'end_point'
-    , 'maker'
-    , 'codeset'
-    , 'create_date'
-    , 'modify_date'
-], ah_appliance_type=[
-    'appliance_type'
-    , 'appliance_type_name'
-    , 'appliance_type_descript'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_device=[
-    'device_address'
-    , 'end_point'
-    , 'device_type'
-    , 'device_name'
-    , 'control_reason'
-    , 'flag_use_ai'
-    , 'flag_use_metering'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_device_install=[
-    'gateway_id'
-    , 'device_address'
-    , 'end_point'
-    , 'flag_delete'
-    , 'create_date'
-], ah_gateway=[
-    'gateway_id'
-    , 'gateway_name'
-    , 'gateway_xmpp_id'
-    , 'gateway_mqtt_id'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_gateway_install=[
-    'house_no'
-    , 'gateway_id'
-    , 'flag_delete'
-    , 'create_date'
-], ah_house=[
-    'house_no'
-    , 'house_name'
-    , 'house_address'
-    , 'house_detail_address'
-    , 'meter_day'
-    , 'contract_type'
-    , 'ai_control_mode'
-    , 'flag_active_dr'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_house_member=[
-    'house_no'
-    , 'user_no'
-    , 'flag_delete'
-    , 'create_date'
-], ah_usage_daily_predict=[
-    'house_no'
-    , 'collected_date'
-    , 'use_energy'
-    , 'predict_use_energy'
-    , 'progressive_level'
-    , 'create_date'
-    , 'modify_date'
-], ah_usage_monthly=[
-    'house_no'
-    , 'year'
-    , 'month'
-    , 'use_energy'
-    , 'predict_use_energy'
-    , 'create_date'
-    , 'modify_date'
-], ah_usage_monthly_byappliance=[
-    'house_no'
-    , 'appliance_no'
-    , 'year'
-    , 'month'
-    , 'use_energy'
-    , 'create_date'
-    , 'modify_date'
-], ah_usage_monthly_bydevice=[
-    'house_no'
-    , 'device_address'
-    , 'end_point'
-    , 'year'
-    , 'month'
-    , 'use_energy'
-    , 'create_date'
-    , 'modify_date'
-], ah_user=[
-    'user_no'
-    , 'user_name'
-    , 'email'
-    , 'login_id'
-    , 'login_password'
-    , 'flag_delete'
-    , 'create_date'
-    , 'modify_date'
-], ah_use_log_byminute=[
-    'gateway_id'
-    , 'device_address'
-    , 'end_point'
-    , 'collected_date'
-    , 'collected_time'
-    , 'quality'
-    , 'onoff'
-    , 'energy'
-    , 'energy_diff'
-    , 'appliance_status'
-    , 'create_date'
-], ah_use_log_byminute_labled=[
-    'gateway_id'
-    , 'device_address'
-    , 'end_point'
-    , 'collected_date'
-    , 'collected_time'
-    , 'quality'
-    , 'onoff'
-    , 'energy'
-    , 'energy_diff'
-    , 'appliance_status'
-    , 'create_date'
-])
+cols_dic = {
+    'ah_appliance': [
+        'appliance_no'
+        , 'appliance_type'
+        , 'appliance_name'
+        , 'maker'
+        , 'model_no'
+        , 'purchase_date'
+        , 'wait_power'
+        , 'use_power'
+        , 'flag_use_remocon'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_appliance_connect': [
+        'appliance_no'
+        , 'gateway_id'
+        , 'device_address'
+        , 'end_point'
+        , 'flag_delete'
+        , 'create_date'
+    ],
+    'ah_appliance_energy_history': [
+        'appliance_no'
+        , 'create_date'
+        , 'wait_energy'
+        , 'wait_minute'
+        , 'wait_power'
+        , 'use_energy'
+        , 'use_minute'
+        , 'use_power'
+    ],
+    'ah_appliance_history': [
+        'appliance_no'
+        , 'create_date'
+        , 'end_date'
+        , 'gateway_id'
+        , 'device_address'
+        , 'end_point'
+        , 'appliance_type'
+        , 'appliance_name'
+    ],
+    'ah_appliance_remocon_config': [
+        'appliance_no'
+        , 'device_address'
+        , 'end_point'
+        , 'maker'
+        , 'codeset'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_appliance_type': [
+        'appliance_type'
+        , 'appliance_type_name'
+        , 'appliance_type_descript'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_device': [
+        'device_address'
+        , 'end_point'
+        , 'device_type'
+        , 'device_name'
+        , 'control_reason'
+        , 'flag_use_ai'
+        , 'flag_use_metering'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_device_install': [
+        'gateway_id'
+        , 'device_address'
+        , 'end_point'
+        , 'flag_delete'
+        , 'create_date'
+    ],
+    'ah_gateway': [
+        'gateway_id'
+        , 'gateway_name'
+        , 'gateway_xmpp_id'
+        , 'gateway_mqtt_id'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_gateway_install': [
+        'house_no'
+        , 'gateway_id'
+        , 'flag_delete'
+        , 'create_date'
+    ],
+    'ah_house': [
+        'house_no'
+        , 'house_name'
+        , 'house_address'
+        , 'house_detail_address'
+        , 'meter_day'
+        , 'contract_type'
+        , 'ai_control_mode'
+        , 'flag_active_dr'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_house_member': [
+        'house_no'
+        , 'user_no'
+        , 'flag_delete'
+        , 'create_date'
+    ],
+    'ah_usage_daily_predict': [
+        'house_no'
+        , 'collected_date'
+        , 'use_energy'
+        , 'predict_use_energy'
+        , 'progressive_level'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_usage_monthly': [
+        'house_no'
+        , 'year'
+        , 'month'
+        , 'use_energy'
+        , 'predict_use_energy'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_usage_monthly_byappliance': [
+        'house_no'
+        , 'appliance_no'
+        , 'year'
+        , 'month'
+        , 'use_energy'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_usage_monthly_bydevice': [
+        'house_no'
+        , 'device_address'
+        , 'end_point'
+        , 'year'
+        , 'month'
+        , 'use_energy'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_user': [
+        'user_no'
+        , 'user_name'
+        , 'email'
+        , 'login_id'
+        , 'login_password'
+        , 'flag_delete'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_use_log_byminute': [
+        'gateway_id'
+        , 'device_address'
+        , 'end_point'
+        , 'collected_date'
+        , 'collected_time'
+        , 'quality'
+        , 'onoff'
+        , 'energy'
+        , 'energy_diff'
+        , 'appliance_status'
+        , 'create_date'
+    ],
+    'ah_use_log_byminute_labled': [
+        'gateway_id'
+        , 'device_address'
+        , 'end_point'
+        , 'collected_date'
+        , 'collected_time'
+        , 'quality'
+        , 'onoff'
+        , 'energy'
+        , 'energy_diff'
+        , 'appliance_status'
+        , 'create_date'
+    ]
+}
 
-classifications = {
+regressions = {
     'random forest': [
         sk.ensemble.RandomForestClassifier(),
         {
@@ -353,4 +401,7 @@ classifications = {
     # ]
 }
 
-regressions = {''}
+
+classifications = {
+    ''
+}
