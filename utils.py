@@ -7,7 +7,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from joblib import dump, load
 import time
-
+import sklearn.metrics
 
 def datetime_transform(df):
     datetime = df.collected_date + ' ' + df.collected_time
@@ -56,13 +56,26 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     return x_transformed, y_transformed  #
 
 
-# def data_load():  # todo: Excel 에서 데이터 불러오기, DB에 저장 완료 시 필요없음
-#     return 0
+def set_data_type(df):  # todo: 기존 함수 복사해서 붙여넣기
+    data_type_list = {
+        'energy':float
+        , 'collected_date':int
+        , 'month':int
+        , 'dayinmonth':int
+        # , 'day'
+    }
 
+    if df.columns in 'collected_date':
+        df.loc[:, ]
+    df_data_type_setted = 1
+    return df_data_type_setted
 
-def set_data(df):  # todo: 기존 함수 복사해서 붙여넣기
-    df_added = df
-    return df_added
+def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으로 변환
+    collected_date = pd.to_datetime(collected_date)
+    collected_date_transformed = {
+        'month_x':collected_date.month
+    }
+    return collected_date_transformed
 
 def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):  # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록, 명칭 다시 수정
     """
