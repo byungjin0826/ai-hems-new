@@ -29,7 +29,8 @@ model, params = select_classification_model('random forest')
 gs = sk.model_selection.GridSearchCV(estimator=model,
                                      param_grid=params,
                                      cv=5,
-                                     scoring='accuracy')
+                                     scoring='accuracy',
+                                     n_jobs=-1)
 
 gs.fit(x, y)
 

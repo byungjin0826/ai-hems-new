@@ -29,8 +29,12 @@ df = get_table_from_db(sql, db='aihems_service_db')
 
 x, y = split_x_y(df, x_col='collected_date', y_col='energy')
 
-gs = sk.model_selection.GridSearchCV(estimator=regressions['linear regression'][0],
-                                     param_grid=regressions['linear regression'][1])
+model, params = select_regression_model('linear regression')
+
+gs = sk.model_selection.GridSearchCV(estimator=model,
+                                     param_grid=params,
+                                     cv=5,
+                                     n_jobs=-1)
 
 gs.fit(x, y)
 

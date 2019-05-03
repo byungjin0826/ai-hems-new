@@ -172,7 +172,7 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
     df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
     df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H%M')
+    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
@@ -458,7 +458,7 @@ def select_regression_model(model_name):
     params = regressions[model_name][1]
     return model, params
 
-def select_classification_model(model_name):
+def select_classification_model(model_name): # todo: 다른 모델들 파라미터 정리 필요
     classifications = {
         'logistic regression': [
             sk.linear_model.LogisticRegression(),
@@ -482,7 +482,7 @@ def select_classification_model(model_name):
         'random forest': [
             sk.ensemble.RandomForestClassifier(),
             {
-                'n_estimators': [3000]
+                'n_estimators': [100]
                 , 'criterion': ['gini']
                 , 'max_depth': [None]
                 , 'min_samples_split': [2]
