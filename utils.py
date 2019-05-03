@@ -491,7 +491,7 @@ def select_classification_model(model_name):
                 , 'max_features': ['auto']
                 , 'max_leaf_nodes': [None]
                 , 'min_impurity_decrease': [0.]
-                # , 'min_impurity_split': [1e-7]
+                # , 'min_impurity_split': [0]
                 , 'bootstrap': [True]
                 , 'oob_score': [False]
                 , 'n_jobs': [None]

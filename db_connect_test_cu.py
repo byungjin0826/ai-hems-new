@@ -311,7 +311,7 @@ df2.appliance_status = Y
 gateway_id = df2.gateway_id[0]
 df2.gateway_id = gateway_id[:6] + gateway_id[-4:]
 
-df3 = transform_data(df2) # todo:대기전력도 appliance_status가 1로 표시되는것 수정
+df3 = transform_data(df2)
 
 # write_db(df2)
 

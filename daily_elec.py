@@ -50,9 +50,9 @@ testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
 # create and fit the LSTM network
 model = Sequential()
-model.add(LSTM(4, input_shape=(1, look_back))) # todo: look back 변경
+model.add(LSTM(4, input_shape=(1, look_back)))
 model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='rmsprop') # todo: loss 함수, optimizer
+model.compile(loss='mean_squared_error', optimizer='rmsprop')
 model.fit(trainX, trainY, epochs=100, batch_size=1, verbose=2)
 
 # make predictions

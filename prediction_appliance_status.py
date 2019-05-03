@@ -20,7 +20,7 @@ sql += device_address_condition
 
 df = get_table_from_db(sql, db='aihems_api_db')
 
-x, y = split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
+x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
 x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
 
