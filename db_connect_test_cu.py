@@ -10,6 +10,7 @@ from joblib import load, dump
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from utils import *
 
 
 # sklearn package
@@ -198,18 +199,18 @@ def set_data(df, source = None):
 
     return (df1)
 
-def window_stack(X, stepsize=10):
-    X = [0] * (stepsize - 1) + X
-    X_transformed = [X[i-stepsize:i] for i in range(len(X)+1) if i > stepsize-1]
-    return (X_transformed)
-
-def split_x_y(df):
-    X = [x for x in df.energy_diff]
-    X_transformed = window_stack(X, stepsize=10)
-    # X_transformed = X_transformed.reshape()
-    Y = np.array([np.array([x]) for x in df.loc[:, 'appliance_status']])
-    Y = Y.ravel()
-    return(X_transformed, Y)
+# def window_stack(X, stepsize=10):
+#     X = [0] * (stepsize - 1) + X
+#     X_transformed = [X[i-stepsize:i] for i in range(len(X)+1) if i > stepsize-1]
+#     return (X_transformed)
+#
+# def split_x_y(df):
+#     X = [x for x in df.energy_diff]
+#     X_transformed = window_stack(X, stepsize=10)
+#     # X_transformed = X_transformed.reshape()
+#     Y = np.array([np.array([x]) for x in df.loc[:, 'appliance_status']])
+#     Y = Y.ravel()
+#     return(X_transformed, Y)
 
 def make_prediction_model(member_name = None, appliance_name = None, save = None):
     member_name = member_name or '박재훈'
@@ -220,6 +221,7 @@ def make_prediction_model(member_name = None, appliance_name = None, save = None
     # df = set_data(df, source='excel')
     df = set_data(df, source=None)
     X, Y = split_x_y(df)
+    X, Y = sliding_window_transform(X,Y,lag=3)
 
     model = RandomForestClassifier()
     params = {
@@ -302,7 +304,7 @@ df1 = set_data(df, source='predict')
 # df4 = set_data(df, source='predict')
 # X1, Y1 = split_x_y(df1)
 X, Y = split_x_y(df1)
-
+X, Y = sliding_window_transform(X,Y,lag=3)
 Y = gs.predict(X)
 df2 = set_data(df, source='dbwrite')
 df2.appliance_status = Y
