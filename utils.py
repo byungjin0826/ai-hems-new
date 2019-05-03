@@ -15,19 +15,18 @@ def excel_to_db(names):
         df = pd.read_csv(f'./sample_data/csv/aihems/{name}.csv', encoding='euc-kr')
         df.columns.values[-1] = 'appliance_status'
         df.energy_diff = df.energy - df.energy.shift(1)
+        df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
         df.loc[:, 'end_point'] = 1
         df.loc[:, 'quality'] = 100
-        df = df.loc[:, cols_dic['ah_use_log_byminute'][:-1]]
+        df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
         return df
 
-    # names = ['안채TV(안채)', '안채방1전기장판(안채)', '안채방2전기장판(안채)', '안채보일러1(안채)',
-    #          '안채보일러2(안채)', '안채세탁기(안채)', '안채전자렌지(안채)']
 
     for name in names:
         df = load_data(name)
-        write_db(df, table_name='ah_use_log_byminute_labled')
+        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED')
         print(name)
-    return 0
+    return df
 
 def datetime_transform(df):
     datetime = df.collected_date + ' ' + df.collected_time
@@ -70,6 +69,8 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     :param lag: 숫자만큼 지연
     :return:
     """
+    x = [x for x in x]
+    y = [x for x in y]
     x = [0] * (step_size - 1) + x
     x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1 - lag) if i > step_size - 1]
     y_transformed = y[:-lag]
@@ -175,6 +176,8 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
 
 
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
+    df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
+    df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
     df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
@@ -186,9 +189,15 @@ def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df.loc[:, 'collected_time'] = [x for x in df.time]
     return df
 
-def get_appliance_energy_history(ah_use_log_byminute_labled):
+def get_appliance_energy_history(ah_use_log_byminute_labled): # todo: 작성 중
     ah_appliance_energy_history = ah_use_log_byminute_labled.groupby('appliance_status').sum()
+
+    ah_appliance_energy_history = ah_appliance_energy_history.loc[:, cols_dic['ah_appliance_energy_history']]
     return ah_appliance_energy_history
+
+def get_appliance_usage_history(ah_use_log_byminute_labled):
+    ah_use_log_byminute_labled
+    return 0
 
 cols_dic = {
     'ah_appliance': [
@@ -450,7 +459,56 @@ regressions = {
     # ]
 }
 
+def select_classification_model(model_name):
+    classifications = {
+        'logistic regression': [
+            sk.linear_model.LogisticRegression(),
+            {
+                ''
+            }
+        ],
+        'naive bayes': [
 
-classifications = {
-    ''
-}
+        ],
+        'stochastic gradient descent': [
+
+        ],
+        'k-nearest neighbours': [
+
+        ],
+        'decision tree': [
+            sk.tree.DecisionTreeClassifier(),
+            {}
+        ],
+        'random forest': [
+            sk.ensemble.RandomForestClassifier(),
+            {
+                'n_estimators': [3000]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ['auto']
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                , 'min_impurity_split': [1e-7]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'verbose': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'support vector machine': [
+            sk.svm.SVC(),
+            {
+
+            }
+        ]
+    }
+    model = classifications[model_name][0]
+    params = classifications[model_name][1]
+    return model, params
