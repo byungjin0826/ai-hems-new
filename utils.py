@@ -9,6 +9,26 @@ from joblib import dump, load
 import time
 import sklearn.metrics
 
+
+def excel_to_db(names):
+    def load_data(name):
+        df = pd.read_csv(f'./sample_data/csv/aihems/{name}.csv', encoding='euc-kr')
+        df.columns.values[-1] = 'appliance_status'
+        df.energy_diff = df.energy - df.energy.shift(1)
+        df.loc[:, 'end_point'] = 1
+        df.loc[:, 'quality'] = 100
+        df = df.loc[:, cols_dic['ah_use_log_byminute'][:-1]]
+        return df
+
+    # names = ['안채TV(안채)', '안채방1전기장판(안채)', '안채방2전기장판(안채)', '안채보일러1(안채)',
+    #          '안채보일러2(안채)', '안채세탁기(안채)', '안채전자렌지(안채)']
+
+    for name in names:
+        df = load_data(name)
+        write_db(df, table_name='ah_use_log_byminute_labled')
+        print(name)
+    return 0
+
 def datetime_transform(df):
     datetime = df.collected_date + ' ' + df.collected_time
     df.loc[:, 'datetime'] = pd.to_datetime(datetime, format= '%Y%m%d')
@@ -153,6 +173,22 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
     return 0
 
+
+def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
+    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H%M')
+    df_time_indexing = df.set_index('time', drop=True)
+    return df_time_indexing
+
+
+def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
+    df = df_time_indexing.reset_index()
+    df.loc[:, 'collected_date'] = [x for x in df.time]
+    df.loc[:, 'collected_time'] = [x for x in df.time]
+    return df
+
+def get_appliance_energy_history(ah_use_log_byminute_labled):
+    ah_appliance_energy_history = ah_use_log_byminute_labled.groupby('appliance_status').sum()
+    return ah_appliance_energy_history
 
 cols_dic = {
     'ah_appliance': [
