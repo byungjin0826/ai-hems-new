@@ -21,18 +21,11 @@ def excel_to_db(names):
         df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
         return df
 
-
     for name in names:
         df = load_data(name)
         write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED')
         print(name)
     return df
-
-def datetime_transform(df):
-    datetime = df.collected_date + ' ' + df.collected_time
-    df.loc[:, 'datetime'] = pd.to_datetime(datetime, format= '%Y%m%d')
-    df_datetime_indexing = df.set_index(['datetime', 'name'])
-    return df_datetime_indexing
 
 
 def progressive_level(cumulative_energy):
@@ -57,11 +50,12 @@ def get_table_from_db(sql, db = 'aihems_service_db'):
                                                 port=3306, user='aihems', passwd='#cslee1234', db=db,
                                                 charset='utf8')
     df = pd.read_sql(sql, aihems_service_db_connect)
+    df = df.rename(str.lower, axis='columns')
     return df
 
 
 # X 값을 변환하여 사용
-def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록, 2. Lag 부분 추가
+def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
     """
     상태 판별 예측을 위한 입력 데이터 변환
     :param x: 분 단위 전력 사용량
@@ -98,7 +92,7 @@ def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으�
     }
     return collected_date_transformed
 
-def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):  # todo: X와 Y 분리하기, 컬럼이 다수일 때도 가능하도록, 명칭 다시 수정
+def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
     """
     학습에 사용할 DataFrame 에서 X와 Y를 분리
     :param df: python DataFrame
@@ -117,7 +111,7 @@ def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):  # todo: X와 Y
     return x, y
 
 
-def make_prediction_model(member_name=None, appliance_name=None, save=None, model_name = None):  # todo: params 를 저장되 있는 값으로 불러오기
+def make_prediction_model(member_name=None, appliance_name=None, save=None, model_name = None):
     """
     DB에 입력되어있는 데이터를 토대로 예측 모델 생성 및 저장
     Table은
@@ -189,15 +183,16 @@ def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df.loc[:, 'collected_time'] = [x for x in df.time]
     return df
 
-def get_appliance_energy_history(ah_use_log_byminute_labled): # todo: 작성 중
-    ah_appliance_energy_history = ah_use_log_byminute_labled.groupby('appliance_status').sum()
-
-    ah_appliance_energy_history = ah_appliance_energy_history.loc[:, cols_dic['ah_appliance_energy_history']]
+def get_appliance_energy_history(df): # todo: 작성 중
+    df = df.groupby('appliance_status').sum()
+    ah_appliance_energy_history = df.loc[:, cols_dic['ah_appliance_energy_history']]
     return ah_appliance_energy_history
 
-def get_appliance_usage_history(ah_use_log_byminute_labled):
-    ah_use_log_byminute_labled
-    return 0
+
+def get_appliance_usage_history(df):
+    df.loc[:, 'appliance_status_lagged'] = df.appliance_status.shift(1)
+    appliance_usage_history = df.loc[df.appliance_status != df.appliance_status_lagged, :]
+    return appliance_usage_history
 
 cols_dic = {
     'ah_appliance': [
@@ -387,77 +382,81 @@ cols_dic = {
     ]
 }
 
-regressions = {
-    'random forest': [
-        sk.ensemble.RandomForestClassifier(),
-        {
-            'n_estimator': [10]
-            , 'criterion': ['gini']
-            , 'max_depth': [None]
-            , 'min_samples_split': [2]
-            , 'min_samples_leaf': [1]
-            , 'min_weight_fraction_leaf': [0.]
-            , 'max_features': ["auto"]
-            , 'max_leaf_nodes': [None]
-            , 'min_impurity_decrease': [0.]
-            , 'min_impurity_split': [1e-7]
-            , 'bootstrap': [True]
-            , 'oob_score': [False]
-            , 'n_jobs': [None]
-            , 'random_state': [None]
-            , 'vervbse': [0]
-            , 'warm_start': [False]
-            , 'class_weight': [None]
-        }
-    ],
-    'linear regression': [
-        sk.linear_model.LinearRegression(),
-        {
-            'fit_intercept': [True]
-            , 'normalize': [False]
-            , 'copy_X': [True]
-            , 'n_jobs': [None]
-        }
-    ],
-    # 'polynomial regression':[
-    #
-    # ],
-    # 'stepwise regression':[
-    #
-    # ],
-    'ridge regression': [
-        sk.linear_model.Ridge(),
-        {
-            'alpha': []
-            , 'fit_intercept': []
-            , 'normalize': [False]
-            , 'copy_X': [True]
-            , 'max_iter': []
-            , 'tol': []
-            , 'solver': ['auto']
-            , 'random_state': [None]
-        }
-    ],
-    'lasso regression': [
-        sk.linear_model.Lasso(),
-        {
-            'alpha': []
-            , 'fit_intercept': [True]
-            , 'normalize': [False]
-            , 'precompute': [False]
-            , 'copy_X': [True]
-            , 'max_iter': []
-            , 'tol': []
-            , 'warm_start': []
-            , 'positive': []
-            , 'random_state': [None]
-            , 'selection': ['cyclic']
-        }
-    ],
-    # 'elastic net regression':[
-    #
-    # ]
-}
+def select_regression_model(model_name):
+    regressions = {
+        'random forest': [
+            sk.ensemble.RandomForestClassifier(),
+            {
+                'n_estimator': [10]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ["auto"]
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                , 'min_impurity_split': [1e-7]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'vervbse': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'linear regression': [
+            sk.linear_model.LinearRegression(),
+            {
+                'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'copy_X': [True]
+                , 'n_jobs': [None]
+            }
+        ],
+        # 'polynomial regression':[
+        #
+        # ],
+        # 'stepwise regression':[
+        #
+        # ],
+        'ridge regression': [
+            sk.linear_model.Ridge(),
+            {
+                'alpha': []
+                , 'fit_intercept': []
+                , 'normalize': [False]
+                , 'copy_X': [True]
+                , 'max_iter': []
+                , 'tol': []
+                , 'solver': ['auto']
+                , 'random_state': [None]
+            }
+        ],
+        'lasso regression': [
+            sk.linear_model.Lasso(),
+            {
+                'alpha': []
+                , 'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'precompute': [False]
+                , 'copy_X': [True]
+                , 'max_iter': []
+                , 'tol': []
+                , 'warm_start': []
+                , 'positive': []
+                , 'random_state': [None]
+                , 'selection': ['cyclic']
+            }
+        ],
+        # 'elastic net regression':[
+        #
+        # ]
+    }
+    model = regressions[model_name][0]
+    params = regressions[model_name][1]
+    return model, params
 
 def select_classification_model(model_name):
     classifications = {
@@ -492,7 +491,7 @@ def select_classification_model(model_name):
                 , 'max_features': ['auto']
                 , 'max_leaf_nodes': [None]
                 , 'min_impurity_decrease': [0.]
-                , 'min_impurity_split': [1e-7]
+                # , 'min_impurity_split': [1e-7]
                 , 'bootstrap': [True]
                 , 'oob_score': [False]
                 , 'n_jobs': [None]
@@ -512,3 +511,4 @@ def select_classification_model(model_name):
     model = classifications[model_name][0]
     params = classifications[model_name][1]
     return model, params
+
