@@ -1,8 +1,15 @@
 from utils import *
 
 # 일단 모델을 로컬에 저장
+member_name = input('member name : ')
+appliance_name = input('appliance name : ')
+# device_address = input('device_address:')
 
-device_address = input('device_address:')
+device_address = search_device_address(member_name, appliance_name)
+
+print(device_address)
+
+
 lag = 10
 
 sql = """
@@ -40,4 +47,4 @@ df = df.iloc[:-lag]
 
 df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
 
-dump(gs, './sample_data/joblib/test.joblib') # 저장
+# dump(gs, './sample_data/joblib/test.joblib') # 저장

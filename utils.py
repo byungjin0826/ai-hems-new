@@ -512,3 +512,30 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+
+def search_device_address(member_name, appliance_name):
+    member_name = member_name or '박재훈'
+    appliance_name = appliance_name or 'TV'
+    sql = f"""
+    SELECT AD.DEVICE_ID
+    FROM	
+    	(SELECT AG.GATEWAY_ID AS GATEWAY_ID, AG.GATEWAY_NAME AS GATEWAY_NAME, ADI.DEVICE_ID AS DEVICE_ID
+    	FROM 
+    		AH_GATEWAY AS AG
+    		JOIN AH_DEVICE_INSTALL AS ADI
+    		ON AG.GATEWAY_ID = ADI.GATEWAY_ID
+    	WHERE AG.GATEWAY_NAME = '{member_name}') T1
+    	JOIN AH_DEVICE AS AD
+    	ON T1.DEVICE_ID = AD.DEVICE_ID
+    WHERE AD.DEVICE_NAME = '{appliance_name}'
+    """
+    aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
+                                                charset='utf8')
+
+    cursor = aihems_service_db_connect.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    device_address = result[0]
+
+    return device_address
