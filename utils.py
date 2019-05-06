@@ -10,6 +10,62 @@ import time
 import sklearn.metrics
 
 
+def get_gateway_id(name):
+    sql = f"""
+    SELECT gateway_id
+    FROM AH_GATEWAY
+    WHERE gateway_name = '{name}'
+    """
+    gateway_id = get_table_from_db(sql)
+    return gateway_id.values.item()
+
+def get_appliance_no(device_id):
+    sql = f"""
+    SELECT appliance_no
+    FROM AH_APPLIANCE_CONNECT
+    WHERE 1=1
+    AND device_id = '{device_id}'
+    """
+    appliance_no = get_table_from_db(sql)
+    return appliance_no.values.item()
+
+def get_device_list(gateway_id):
+    sql = f"""
+    SELECT AH_DEVICE_INSTALL.device_id, device_name, device_type
+    FROM AH_DEVICE_INSTALL
+    LEFT JOIN AH_DEVICE
+    ON AH_DEVICE_INSTALL.device_id = AH_DEVICE.device_id
+    WHERE 1=1
+    AND gateway_id = '{gateway_id}'
+    """
+    device_list = get_table_from_db(sql)
+    return device_list
+
+def get_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABLED
+    WHERE 1=1
+    AND device_id = '{device_id[:-1]}'
+    """
+    df = get_table_from_db(sql)
+    wait_energy = df.loc[df.appliance_status == 0, 'energy_diff'].sum()
+    wait_minute = df.loc[df.appliance_status == 0, 'energy_diff'].count()
+    use_energy = df.loc[df.appliance_status == 1, 'energy_diff'].sum()
+    use_minute = df.loc[df.appliance_status == 1, 'energy_diff'].count()
+    appliance_no = get_appliance_no(device_id)
+    energy_history = {'appliance_no':[appliance_no],
+                      'wait_energy':[wait_energy],
+                      'wait_minute':[wait_minute],
+                      'use_energy':[use_energy],
+                      'use_minute':[use_minute]}
+    energy_history_table = pd.DataFrame(energy_history)
+    return energy_history_table
+
+def select_device(device_list):
+    print(device_list)
+    return 0
+
 def excel_to_db(names):
     def load_data(name):
         df = pd.read_csv(f'./sample_data/csv/aihems/{name}.csv', encoding='euc-kr')
@@ -36,15 +92,30 @@ def progressive_level(cumulative_energy):
     progressive_level = 1
     return(progressive_level)
 
+def get_ah_use_log_byminute(device_id): # todo:수정 중
+    sql = f"""
+    SELECT *
+    FROM 
+    """
+    df = get_table_from_db(sql)
+    return df
 
-def get_table_from_db(sql, db = 'aihems_service_db'):
+def get_number_of_times_using_appliance(gateway_id, dayofweek, hour): # todo: 수정 중
+    df = pd.DataFrame(columns=['device_name', 'number_of_times'])
+    return df
+
+def get_cbl(gateway_id, dayofweek, hour): #todo: 수정 중
+    num = 0
+    return num
+
+def get_table_from_db(sql, db = 'aihems_api_db'):
     """
     작성된 SQL 문으로 데이터 불러오기
     :return:
     :param sql: sql 문
     :return: python DataFrame
     """
-    db = db or 'aihems_service_db'
+    db = db or 'aihems_api_db'
 
     aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
                                                 port=3306, user='aihems', passwd='#cslee1234', db=db,
@@ -110,6 +181,9 @@ def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
     y = df.loc[:, y_col].values
     return x, y
 
+def get_weekly_schedule(gateway_id): # todo: 수정 중
+
+    return 0
 
 def make_prediction_model(member_name=None, appliance_name=None, save=None, model_name = None):
     """
@@ -169,10 +243,10 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
     return 0
 
 
-def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
+def binding_time(df, format='%Y%m%d %H:%M'): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
     df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
     df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
+    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format=format) # 그 ':'가 있는 테이블과 없는 테이블이 있어 오류 발생
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
@@ -182,11 +256,6 @@ def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df.loc[:, 'collected_date'] = [x for x in df.time]
     df.loc[:, 'collected_time'] = [x for x in df.time]
     return df
-
-def get_appliance_energy_history(df): # todo: 작성 중
-    df = df.groupby('appliance_status').sum()
-    ah_appliance_energy_history = df.loc[:, cols_dic['ah_appliance_energy_history']]
-    return ah_appliance_energy_history
 
 
 def get_appliance_usage_history(df):
@@ -466,11 +535,36 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
                 ''
             }
         ],
-        'naive bayes': [
-
-        ],
+        # 'naive bayes': [
+        #     sk.naive_bayes.GaussianNB(),
+        #     {
+        #         'var_smoothing':[1e-9]
+        #     }
+        # ],
         'stochastic gradient descent': [
-
+            sk.linear_model.SGDClassifier(),
+            {
+                'loss':['hinge']
+                , 'penalty':['l2']
+                , 'alpha':[0.0001]
+                , 'fit_intercept':[True]
+                , 'max_iter':[1000]
+                , 'tol':[1e-3]
+                , 'shuffle':[True]
+                # , 'verbose':[]
+                # , 'epsilon':[]
+                , 'n_jobs':[None]
+                , 'random_state':[None]
+                # , 'learning_rate':[]
+                , 'power_t':[0.5]
+                , 'early_stopping':[False]
+                , 'validation_fraction':[0.1]
+                , 'n_iter_no_change':[5]
+                # , 'class_weight':[]
+                # , 'warm_start':[]
+                # , 'average':[]
+                , 'n_iter':[None]
+            }
         ],
         'k-nearest neighbours': [
 
@@ -482,7 +576,7 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
         'random forest': [
             sk.ensemble.RandomForestClassifier(),
             {
-                'n_estimators': [100]
+                'n_estimators': [10]
                 , 'criterion': ['gini']
                 , 'max_depth': [None]
                 , 'min_samples_split': [2]
@@ -504,7 +598,20 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
         'support vector machine': [
             sk.svm.SVC(),
             {
-
+                'C':[1.0]
+                , 'kernel':['rbf']
+                # , 'degree':[3]
+                , 'gamma':['auto']
+                , 'coef0':[0.0]
+                , 'shrinking':[True]
+                , 'probability':[False]
+                , 'tol':[1e-3]
+                , 'cache_size':[]
+                , 'class_weight':[]
+                , 'verbose':[False]
+                , 'max_iter':[-1]
+                , 'decision_function_shape':['ovr']
+                , 'random_state':[None]
             }
         ]
     }
@@ -512,3 +619,33 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+def prediction_appliance_status(device_address, lag, save = False):
+    sql = """
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABLED
+    WHERE 1=1
+    """
+
+    # gateway_id = ""
+    device_address_condition = f"AND device_address = '{device_address}'"
+    # gateway_id_condition = f"AND gateway_id = {gateway_id}"
+    sql += device_address_condition
+    # sql += gateway_id_conditon
+    df = get_table_from_db(sql, db='aihems_api_db')
+    x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+    x, y = sliding_window_transform(x, y, lag=lag, step_size=30)
+    model, params = select_classification_model('random forest')
+    gs = sk.model_selection.GridSearchCV(estimator=model,
+                                         param_grid=params,
+                                         cv=5,
+                                         scoring='accuracy',
+                                         n_jobs=-1)
+    gs.fit(x, y)
+    print(round(gs.best_score_ * 100, 2), '%', sep='')
+    df = df.iloc[:-lag]
+    df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
+
+    if save:
+        dump(gs, f'./sample_data/joblib/{device_address}.joblib')
+
+    return gs
