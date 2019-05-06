@@ -47,4 +47,4 @@ df = df.iloc[:-lag]
 
 df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
 
-# dump(gs, './sample_data/joblib/test.joblib') # 저장
+# dump(gs, './sample_data/joblib/'+device_address+'.joblib') # 저장
