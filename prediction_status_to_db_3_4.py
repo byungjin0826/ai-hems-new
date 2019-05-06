@@ -24,12 +24,15 @@ device_address_condition = f"AND device_address = '{device_address}'"
 sql += device_address_condition
 # sql += gateway_id_conditon
 
-df = get_table_from_db(sql, db='aihems_service_db')
+df = labeling_db_to_db(sql, db='aihems_service_db')
 
 x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
 x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
 
-Y = gs.predict(x)
+df.appliance_status = gs.predict(x)
+
+write_db(df)
+
 
 
