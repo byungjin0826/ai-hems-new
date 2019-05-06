@@ -9,6 +9,15 @@ from joblib import dump, load
 import time
 import sklearn.metrics
 
+def labeling_db_to_db(sql,db='aihems_service_db'):
+    df = get_table_from_db(sql, db)
+    df.columns.values[-1] = 'appliance_status'
+    df.energy_diff = df.energy - df.energy.shift(1)
+    df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
+    df.loc[:,'end_point'] = 1
+    df.loc[:,'quality'] = 100
+    df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
+    return df
 
 def excel_to_db(names):
     def load_data(name):
