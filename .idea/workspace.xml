@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/prediction_status_to_db.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_appliance_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_appliance_status.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_status_to_db_3_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_status_to_db_3_4.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
@@ -23,7 +19,7 @@
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="435">
-              <caret line="26" column="67" lean-forward="true" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+              <caret line="26" column="67" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -34,8 +30,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
+            <state relative-caret-position="437">
+              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
             </state>
           </provider>
         </entry>
@@ -44,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/prediction_status_to_db_3_4.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="456">
-              <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
+              <caret line="51" selection-start-line="51" selection-end-line="51" />
             </state>
           </provider>
         </entry>
@@ -79,8 +75,6 @@
       <find>read_db</find>
       <find>ravel</find>
       <find>select_</find>
-      <find>load</find>
-      <find>get_</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -90,17 +84,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/db_connect_test.py" />
-        <option value="$PROJECT_DIR$/db_connect_test_cu.py" />
-        <option value="$PROJECT_DIR$/prediction_status_to_db.py" />
-        <option value="$PROJECT_DIR$/prediction_appliance_status.py" />
         <option value="$PROJECT_DIR$/utils.py" />
-        <option value="$PROJECT_DIR$/prediction_status_to_db_3_4.py" />
+        <option value="$PROJECT_DIR$/db_connect_test_cu.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-7" />
-    <option name="width" value="1579" />
+    <option name="width" value="1194" />
     <option name="height" value="1047" />
   </component>
   <component name="ProjectLevelVcsManager">
@@ -174,14 +165,7 @@
       <option name="project" value="LOCAL" />
       <updated>1556862181370</updated>
     </task>
-    <task id="LOCAL-00004" summary="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
-      <created>1556868907536</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1556868907536</updated>
-    </task>
-    <option name="localTasksCounter" value="5" />
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -197,8 +181,8 @@
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49862108" weight="0.3253796" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49862108" weight="0.3263965" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="5" visible="true" weight="0.32968238" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.49862108" visible="true" weight="0.32968238" />
+      <window_info anchor="bottom" id="Terminal" order="5" weight="0.32858709" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
@@ -285,19 +269,42 @@
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="init" />
     <MESSAGE value="수정" />
-    <MESSAGE value="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <option name="LAST_COMMIT_MESSAGE" value="수정" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
+    <entry file="file://$PROJECT_DIR$/daily_elec.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="46" column="15" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/find_status.py" />
     <entry file="file://$PROJECT_DIR$/test.txt" />
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/indexing.py" />
     <entry file="file://$PROJECT_DIR$/../untitled/db_connect_test.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_schedule.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="43" column="73" selection-start-line="43" selection-start-column="73" selection-end-line="43" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sample_data/csv/household_power_consumption.txt" />
     <entry file="file://$PROJECT_DIR$/db_connect.py" />
     <entry file="file://$PROJECT_DIR$/multioutput_gridsearch.py" />
     <entry file="file://$PROJECT_DIR$/oneclassSVM.py" />
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="24" column="62" selection-start-line="24" selection-start-column="62" selection-end-line="24" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/db_connect_test.py" />
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor" />
@@ -305,77 +312,27 @@
     <entry file="file://$PROJECT_DIR$/laundary.py" />
     <entry file="file://$PROJECT_DIR$/excel_input.py" />
     <entry file="file://$PROJECT_DIR$/db_connect_test_cu.py" />
-    <entry file="file://$PROJECT_DIR$/prediction_schedule1.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_status_to_db.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_schedule.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_elec.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="46" column="15" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/querys.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/test_bed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
+        <state relative-caret-position="551">
           <caret line="29" column="60" selection-start-line="29" selection-start-column="60" selection-end-line="29" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/schedule_onoff.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1145">
-          <caret line="18" column="38" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/internals/construction.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="518" selection-start-line="518" selection-end-line="518" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="435">
-          <caret line="26" column="67" lean-forward="true" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+          <caret line="26" column="67" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_status_to_db_3_4.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
+        <state relative-caret-position="437">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
         </state>
       </provider>
     </entry>
