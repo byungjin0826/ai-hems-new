@@ -4,7 +4,7 @@ gateway_id = get_gateway_id('박재훈')
 
 device_list = get_device_list(gateway_id)
 
-schedule = get_weekly_schedule(device_list.device_id[4])
+schedule = calc_weekly_schedule(device_list.device_id[4])
 # print(device_list)
 #
 # device_ids = device_list.loc[device_list.device_type == 'socket', 'device_id']

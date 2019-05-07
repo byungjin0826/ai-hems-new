@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from joblib import dump, load
 import time
 import sklearn.metrics
+import sklearn.metrics
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -21,7 +22,7 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
     df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
     df.loc[:,'end_point'] = 1
     df.loc[:,'quality'] = 100
-    df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
+    df = df.loc[:, cols_dic['ah_use_log_byminute_labeled'][:-1]]
     df.loc[:, 'create_date'] = pd.datetime.today()
     gateway_id = df.gateway_id[0]
     df.gateway_id = gateway_id[:6] + gateway_id[-4:]
@@ -81,7 +82,7 @@ def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_B
         sql += f"""AND gateway_id = '{gateway_id}'\n"""
 
     if device_id != None:
-        if table_name == 'AH_USE_LOG_BYMINUTE_LABLED':
+        if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
             device_id = device_id[:-1]
         sql += f"""AND device_id = '{device_id}'\n"""
 
@@ -110,10 +111,47 @@ def get_house_no(house_name):
     house_no = get_table_from_db(sql)
     return house_no.values.item()
 
+def search_device_address(member_name, appliance_name):
+    member_name = member_name or '박재훈'
+    appliance_name = appliance_name or 'TV'
+    sql = f"""
+    SELECT AD.DEVICE_ID
+    FROM	
+    	(SELECT AG.GATEWAY_ID AS GATEWAY_ID, AG.GATEWAY_NAME AS GATEWAY_NAME, ADI.DEVICE_ID AS DEVICE_ID
+    	FROM 
+    		AH_GATEWAY AS AG
+    		JOIN AH_DEVICE_INSTALL AS ADI
+    		ON AG.GATEWAY_ID = ADI.GATEWAY_ID
+    	WHERE AG.GATEWAY_NAME = '{member_name}') T1
+    	JOIN AH_DEVICE AS AD
+    	ON T1.DEVICE_ID = AD.DEVICE_ID
+    WHERE AD.DEVICE_NAME = '{appliance_name}'
+    """
+    aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
+                                                charset='utf8')
+
+    cursor = aihems_service_db_connect.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    device_address = result[0]
+
+    return device_address
+
+def calc_payment_month(date_time, meter_day):
+    print(date_time)
+    month = date_time.month - 1
+    if date_time.day > meter_day:
+        month += 1
+
+    if month == 0:
+        month = 12
+    return(month)
+
 def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
     sql = f"""
     SELECT *
-    FROM AH_USE_LOG_BYMINUTE_LABLED
+    FROM AH_USE_LOG_BYMINUTE_LABELED
     WHERE 1=1
     AND device_id = '{device_id[:-1]}'
     """
@@ -132,7 +170,7 @@ def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또
     return energy_history_table
 
 def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 미터가 있는 경우 meter 데이터를 활용
-    df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABLED')   # table 향후 변경 필요
+    df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABELED')   # table 향후 변경 필요
     df = binding_time(df)
     house_name = get_house_name(gateway_id)
     house_no = get_house_no(house_name)
@@ -148,6 +186,12 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
+def calc_weekly_schedule(device_id): # todo: 수정 중
+    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+    df = binding_time(df)
+    schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
+    return schedule
+
 def calc_cbl(house_no, year, month, day, hour):
     sql = f"""
     SELECT *
@@ -161,16 +205,11 @@ def calc_cbl(house_no, year, month, day, hour):
     return cbl
 
 def calc_number_of_times(device_id):
+
     return 0
 
 def check_meter(device_list): # todo: 미터가 있는지 학인
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
-
-def get_weekly_schedule(device_id): # todo: 수정 중
-    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABLED')
-    df = binding_time(df)
-    schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
-    return schedule
 
 def excel_to_db(names):
     def load_data(name):
@@ -180,12 +219,12 @@ def excel_to_db(names):
         df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
         df.loc[:, 'end_point'] = 1
         df.loc[:, 'quality'] = 100
-        df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
+        df = df.loc[:, cols_dic['ah_use_log_byminute_labeled'][:-1]]
         return df
 
     for name in names:
         df = load_data(name)
-        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED')
+        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED')
         print(name)
     return df
 
@@ -228,6 +267,24 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     y_transformed = y[:-lag]
     return x_transformed, y_transformed  #
 
+def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
+    """
+    학습에 사용할 DataFrame 에서 X와 Y를 분리
+    :param df: python DataFrame
+    :param x_col: 학습에 사용할 x 변수 선택, 기본값: 전력데이터만 사용
+    :param y_col: 가전기기 상태
+    :return:
+    """
+    x_col = x_col or ''
+    y_col = y_col or ''
+
+    x = df.loc[:, x_col].values
+    if len(x_col) == 1:
+        x=x.reshape(-1, 1)
+
+    y = df.loc[:, y_col].values
+    return x, y
+
 def set_data_type(df):  # 현재 사용안함
     data_type_list = {
         'energy':float
@@ -249,32 +306,17 @@ def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으�
     }
     return collected_date_transformed
 
-def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
-    """
-    학습에 사용할 DataFrame 에서 X와 Y를 분리
-    :param df: python DataFrame
-    :param x_col: 학습에 사용할 x 변수 선택, 기본값: 전력데이터만 사용
-    :param y_col: 가전기기 상태
-    :return:
-    """
-    x_col = x_col or ''
-    y_col = y_col or ''
-
-    x = df.loc[:, x_col].values
-    if len(x_col) == 1:
-        x=x.reshape(-1, 1)
-
-    y = df.loc[:, y_col].values
-    return x, y
-
-def get_model_usage_daily_predict(gateway_id):
-    df = get_raw_data()
-    x, y = split_x_y(df)
-    estimator, params = select_regression_model()
+def make_usage_daily_predict_model(gateway_id):
+    df = get_raw_data(device_id=gateway_id)
+    x, y = split_x_y(df) # x_col, y_col 입력
+    estimator, params = select_regression_model('linear regression')
     model = sk.model_selection.GridSearchCV(estimator=estimator,
                                             param_grid=params,
                                             cv = 5,
-                                            n_jobs=-1)
+                                            n_jobs=-1,
+                                            scoring='r2')
+    model.fit(x, y)
+    accuracy = sk.metrics.r2_score(y, model.predict(x))
     print(accuracy)
     return model
 
@@ -317,7 +359,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
-def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
@@ -349,6 +391,174 @@ def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df.loc[:, 'collected_date'] = [x for x in df.date]
     df.loc[:, 'collected_time'] = [x for x in df.time]
     return df
+
+def select_regression_model(model_name):
+    regressions = {
+        'random forest': [
+            sk.ensemble.RandomForestClassifier(),
+            {
+                'n_estimator': [10]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ["auto"]
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                , 'min_impurity_split': [1e-7]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'vervbse': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'linear regression': [
+            sk.linear_model.LinearRegression(),
+            {
+                'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'copy_X': [True]
+                , 'n_jobs': [None]
+            }
+        ],
+        # 'polynomial regression':[
+        #
+        # ],
+        # 'stepwise regression':[
+        #
+        # ],
+        'ridge regression': [
+            sk.linear_model.Ridge(),
+            {
+                'alpha': []
+                , 'fit_intercept': []
+                , 'normalize': [False]
+                , 'copy_X': [True]
+                , 'max_iter': []
+                , 'tol': []
+                , 'solver': ['auto']
+                , 'random_state': [None]
+            }
+        ],
+        'lasso regression': [
+            sk.linear_model.Lasso(),
+            {
+                'alpha': []
+                , 'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'precompute': [False]
+                , 'copy_X': [True]
+                , 'max_iter': []
+                , 'tol': []
+                , 'warm_start': []
+                , 'positive': []
+                , 'random_state': [None]
+                , 'selection': ['cyclic']
+            }
+        ],
+        # 'elastic net regression':[
+        #
+        # ]
+    }
+    model = regressions[model_name][0]
+    params = regressions[model_name][1]
+    return model, params
+
+def select_classification_model(model_name): # todo: 다른 모델들 파라미터 정리 필요
+    classifications = {
+        'logistic regression': [
+            sk.linear_model.LogisticRegression(),
+            {
+                ''
+            }
+        ],
+        # 'naive bayes': [
+        #     sk.naive_bayes.GaussianNB(),
+        #     {
+        #         'var_smoothing':[1e-9]
+        #     }
+        # ],
+        'stochastic gradient descent': [
+            sk.linear_model.SGDClassifier(),
+            {
+                'loss':['hinge']
+                , 'penalty':['l2']
+                , 'alpha':[0.0001]
+                , 'fit_intercept':[True]
+                , 'max_iter':[1000]
+                , 'tol':[1e-3]
+                , 'shuffle':[True]
+                # , 'verbose':[]
+                # , 'epsilon':[]
+                , 'n_jobs':[None]
+                , 'random_state':[None]
+                # , 'learning_rate':[]
+                , 'power_t':[0.5]
+                , 'early_stopping':[False]
+                , 'validation_fraction':[0.1]
+                , 'n_iter_no_change':[5]
+                # , 'class_weight':[]
+                # , 'warm_start':[]
+                # , 'average':[]
+                , 'n_iter':[None]
+            }
+        ],
+        'k-nearest neighbours': [
+
+        ],
+        'decision tree': [
+            sk.tree.DecisionTreeClassifier(),
+            {}
+        ],
+        'random forest': [
+            sk.ensemble.RandomForestClassifier(),
+            {
+                'n_estimators': [10]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ['auto']
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                # , 'min_impurity_split': [0]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'verbose': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'support vector machine': [
+            sk.svm.SVC(),
+            {
+                'C':[1.0]
+                , 'kernel':['rbf']
+                # , 'degree':[3]
+                , 'gamma':['auto']
+                , 'coef0':[0.0]
+                , 'shrinking':[True]
+                , 'probability':[False]
+                , 'tol':[1e-3]
+                , 'cache_size':[]
+                , 'class_weight':[]
+                , 'verbose':[False]
+                , 'max_iter':[-1]
+                , 'decision_function_shape':['ovr']
+                , 'random_state':[None]
+            }
+        ]
+    }
+    model = classifications[model_name][0]
+    params = classifications[model_name][1]
+    return model, params
 
 cols_dic = {
     'ah_appliance': [
@@ -533,7 +743,7 @@ cols_dic = {
         , 'appliance_status'
         , 'create_date'
     ],
-    'ah_use_log_byminute_labled': [
+    'ah_use_log_byminute_labeled': [
         'gateway_id'
         , 'device_address'
         , 'end_point'
@@ -548,202 +758,9 @@ cols_dic = {
     ]
 }
 
-def select_regression_model(model_name):
-    regressions = {
-        'random forest': [
-            sk.ensemble.RandomForestClassifier(),
-            {
-                'n_estimator': [10]
-                , 'criterion': ['gini']
-                , 'max_depth': [None]
-                , 'min_samples_split': [2]
-                , 'min_samples_leaf': [1]
-                , 'min_weight_fraction_leaf': [0.]
-                , 'max_features': ["auto"]
-                , 'max_leaf_nodes': [None]
-                , 'min_impurity_decrease': [0.]
-                , 'min_impurity_split': [1e-7]
-                , 'bootstrap': [True]
-                , 'oob_score': [False]
-                , 'n_jobs': [None]
-                , 'random_state': [None]
-                , 'vervbse': [0]
-                , 'warm_start': [False]
-                , 'class_weight': [None]
-            }
-        ],
-        'linear regression': [
-            sk.linear_model.LinearRegression(),
-            {
-                'fit_intercept': [True]
-                , 'normalize': [False]
-                , 'copy_X': [True]
-                , 'n_jobs': [None]
-            }
-        ],
-        # 'polynomial regression':[
-        #
-        # ],
-        # 'stepwise regression':[
-        #
-        # ],
-        'ridge regression': [
-            sk.linear_model.Ridge(),
-            {
-                'alpha': []
-                , 'fit_intercept': []
-                , 'normalize': [False]
-                , 'copy_X': [True]
-                , 'max_iter': []
-                , 'tol': []
-                , 'solver': ['auto']
-                , 'random_state': [None]
-            }
-        ],
-        'lasso regression': [
-            sk.linear_model.Lasso(),
-            {
-                'alpha': []
-                , 'fit_intercept': [True]
-                , 'normalize': [False]
-                , 'precompute': [False]
-                , 'copy_X': [True]
-                , 'max_iter': []
-                , 'tol': []
-                , 'warm_start': []
-                , 'positive': []
-                , 'random_state': [None]
-                , 'selection': ['cyclic']
-            }
-        ],
-        # 'elastic net regression':[
-        #
-        # ]
-    }
-    model = regressions[model_name][0]
-    params = regressions[model_name][1]
-    return model, params
-
-def select_classification_model(model_name): # todo: 다른 모델들 파라미터 정리 필요
-    classifications = {
-        'logistic regression': [
-            sk.linear_model.LogisticRegression(),
-            {
-                ''
-            }
-        ],
-        # 'naive bayes': [
-        #     sk.naive_bayes.GaussianNB(),
-        #     {
-        #         'var_smoothing':[1e-9]
-        #     }
-        # ],
-        'stochastic gradient descent': [
-            sk.linear_model.SGDClassifier(),
-            {
-                'loss':['hinge']
-                , 'penalty':['l2']
-                , 'alpha':[0.0001]
-                , 'fit_intercept':[True]
-                , 'max_iter':[1000]
-                , 'tol':[1e-3]
-                , 'shuffle':[True]
-                # , 'verbose':[]
-                # , 'epsilon':[]
-                , 'n_jobs':[None]
-                , 'random_state':[None]
-                # , 'learning_rate':[]
-                , 'power_t':[0.5]
-                , 'early_stopping':[False]
-                , 'validation_fraction':[0.1]
-                , 'n_iter_no_change':[5]
-                # , 'class_weight':[]
-                # , 'warm_start':[]
-                # , 'average':[]
-                , 'n_iter':[None]
-            }
-        ],
-        'k-nearest neighbours': [
-
-        ],
-        'decision tree': [
-            sk.tree.DecisionTreeClassifier(),
-            {}
-        ],
-        'random forest': [
-            sk.ensemble.RandomForestClassifier(),
-            {
-                'n_estimators': [10]
-                , 'criterion': ['gini']
-                , 'max_depth': [None]
-                , 'min_samples_split': [2]
-                , 'min_samples_leaf': [1]
-                , 'min_weight_fraction_leaf': [0.]
-                , 'max_features': ['auto']
-                , 'max_leaf_nodes': [None]
-                , 'min_impurity_decrease': [0.]
-                # , 'min_impurity_split': [0]
-                , 'bootstrap': [True]
-                , 'oob_score': [False]
-                , 'n_jobs': [None]
-                , 'random_state': [None]
-                , 'verbose': [0]
-                , 'warm_start': [False]
-                , 'class_weight': [None]
-            }
-        ],
-        'support vector machine': [
-            sk.svm.SVC(),
-            {
-                'C':[1.0]
-                , 'kernel':['rbf']
-                # , 'degree':[3]
-                , 'gamma':['auto']
-                , 'coef0':[0.0]
-                , 'shrinking':[True]
-                , 'probability':[False]
-                , 'tol':[1e-3]
-                , 'cache_size':[]
-                , 'class_weight':[]
-                , 'verbose':[False]
-                , 'max_iter':[-1]
-                , 'decision_function_shape':['ovr']
-                , 'random_state':[None]
-            }
-        ]
-    }
-    model = classifications[model_name][0]
-    params = classifications[model_name][1]
-    return model, params
-
-def search_device_address(member_name, appliance_name):
-    member_name = member_name or '박재훈'
-    appliance_name = appliance_name or 'TV'
-    sql = f"""
-    SELECT AD.DEVICE_ID
-    FROM	
-    	(SELECT AG.GATEWAY_ID AS GATEWAY_ID, AG.GATEWAY_NAME AS GATEWAY_NAME, ADI.DEVICE_ID AS DEVICE_ID
-    	FROM 
-    		AH_GATEWAY AS AG
-    		JOIN AH_DEVICE_INSTALL AS ADI
-    		ON AG.GATEWAY_ID = ADI.GATEWAY_ID
-    	WHERE AG.GATEWAY_NAME = '{member_name}') T1
-    	JOIN AH_DEVICE AS AD
-    	ON T1.DEVICE_ID = AD.DEVICE_ID
-    WHERE AD.DEVICE_NAME = '{appliance_name}'
-    """
-    aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
-                                                charset='utf8')
-
-    cursor = aihems_service_db_connect.cursor()
-    cursor.execute(sql)
-    result = cursor.fetchone()
-    device_address = result[0]
-
-    return device_address
-
 # todo: 검침일 적용
 
 # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
 # 전체 데이터가 6초 걸림
+
+# todo: label로 변경
