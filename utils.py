@@ -19,6 +19,15 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
     df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
     return df
 
+def get_appliance_name(appliance_no):
+    sql = f"""
+    SELECT appliance_name
+    FROM AH_APPLIANCE
+    WHERE appliance_no = '{appliance_no}' 
+    """
+    device_name = get_table_from_db(sql)
+    return device_name.values.item()
+
 def get_gateway_id(name):
     sql = f"""
     SELECT gateway_id
@@ -75,6 +84,37 @@ def select_device(device_list):
     print(device_list)
     return 0
 
+def get_house_no():
+    house_no = 0
+    return house_no
+
+def get_home_energy(gateway_id):
+    df_home_energy = 0
+    return df_home_energy
+
+def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
+    sql = f"""
+    SELECT *
+    FROM {table_name}
+    WHERE 1=1
+    """
+
+    if gateway_id != None:
+        sql += f"""AND gateway_id = '{gateway_id}'\n"""
+
+    if device_id != None:
+        if table_name == 'AH_USE_LOG_BYMINUTE_LABLED':
+            device_id = device_id[:-1]
+        sql += f"""AND device_id = '{device_id}'\n"""
+
+    df = get_table_from_db(sql)
+    return df
+
+def get_usage_hourly(df):
+
+    df_hourly = df.resample('1H').sum()
+    return df_hourly
+
 def get_weekly_schedule(gateway_id): # todo: 수정 중
 
     return 0
@@ -106,14 +146,14 @@ def progressive_level(cumulative_energy):
     return(progressive_level)
 
 
-def get_table_from_db(sql, db = 'aihems_service_db'):
+def get_table_from_db(sql, db = 'aihems_api_db'):
     """
     작성된 SQL 문으로 데이터 불러오기
     :return:
     :param sql: sql 문
     :return: python DataFrame
     """
-    db = db or 'aihems_service_db'
+    db = db or 'aihems_api_db'
 
     aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
                                                 port=3306, user='aihems', passwd='#cslee1234', db=db,
@@ -382,6 +422,15 @@ cols_dic = {
         , 'use_energy'
         , 'predict_use_energy'
         , 'progressive_level'
+        , 'create_date'
+        , 'modify_date'
+    ],
+    'ah_usage_hourly': [
+        'house_no'
+        , 'year'
+        , 'month'
+        , 'hour'
+        , 'use_energy'
         , 'create_date'
         , 'modify_date'
     ],
