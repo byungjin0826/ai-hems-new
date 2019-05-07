@@ -7,8 +7,7 @@ appliance_name = input('appliance name : ')
 
 device_address = search_device_address(member_name, appliance_name)
 
-print(device_address)
-
+gs = load('./sample_data/joblib/'+device_address+'.joblib')
 
 lag = 10
 
@@ -25,26 +24,15 @@ device_address_condition = f"AND device_address = '{device_address}'"
 sql += device_address_condition
 # sql += gateway_id_conditon
 
-df = get_table_from_db(sql, db='aihems_api_db')
+df = labeling_db_to_db(sql, db='aihems_service_db')
 
 x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
 x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
 
-model, params = select_classification_model('random forest')
+df.appliance_status = gs.predict(x)
 
-gs = sk.model_selection.GridSearchCV(estimator=model,
-                                     param_grid=params,
-                                     cv=5,
-                                     scoring='accuracy',
-                                     n_jobs=-1)
+write_db(df)
 
-gs.fit(x, y)
 
-print(round(gs.best_score_*100, 2), '%', sep = '')
 
-df = df.iloc[:-lag]
-
-df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
-
-# dump(gs, './sample_data/joblib/'+device_address+'_labeling.joblib') # 저장
