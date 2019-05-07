@@ -9,6 +9,75 @@ from joblib import dump, load
 import time
 import sklearn.metrics
 
+def labeling_db_to_db(sql,db='aihems_service_db'):
+    df = get_table_from_db(sql, db)
+    df.columns.values[-1] = 'appliance_status'
+    df.energy_diff = df.energy - df.energy.shift(1)
+    df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
+    df.loc[:,'end_point'] = 1
+    df.loc[:,'quality'] = 100
+    df = df.loc[:, cols_dic['ah_use_log_byminute_labled'][:-1]]
+    return df
+
+def get_gateway_id(name):
+    sql = f"""
+    SELECT gateway_id
+    FROM AH_GATEWAY
+    WHERE gateway_name = '{name}'
+    """
+    gateway_id = get_table_from_db(sql)
+    return gateway_id.values.item()
+
+def get_appliance_no(device_id):
+    sql = f"""
+    SELECT appliance_no
+    FROM AH_APPLIANCE_CONNECT
+    WHERE 1=1
+    AND device_id = '{device_id}'
+    """
+    appliance_no = get_table_from_db(sql)
+    return appliance_no.values.item()
+
+def get_device_list(gateway_id):
+    sql = f"""
+    SELECT AH_DEVICE_INSTALL.device_id, device_name, device_type
+    FROM AH_DEVICE_INSTALL
+    LEFT JOIN AH_DEVICE
+    ON AH_DEVICE_INSTALL.device_id = AH_DEVICE.device_id
+    WHERE 1=1
+    AND gateway_id = '{gateway_id}'
+    """
+    device_list = get_table_from_db(sql)
+    return device_list
+
+def get_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABLED
+    WHERE 1=1
+    AND device_id = '{device_id[:-1]}'
+    """
+    df = get_table_from_db(sql)
+    wait_energy = df.loc[df.appliance_status == 0, 'energy_diff'].sum()
+    wait_minute = df.loc[df.appliance_status == 0, 'energy_diff'].count()
+    use_energy = df.loc[df.appliance_status == 1, 'energy_diff'].sum()
+    use_minute = df.loc[df.appliance_status == 1, 'energy_diff'].count()
+    appliance_no = get_appliance_no(device_id)
+    energy_history = {'appliance_no':[appliance_no],
+                      'wait_energy':[wait_energy],
+                      'wait_minute':[wait_minute],
+                      'use_energy':[use_energy],
+                      'use_minute':[use_minute]}
+    energy_history_table = pd.DataFrame(energy_history)
+    return energy_history_table
+
+def select_device(device_list):
+    print(device_list)
+    return 0
+
+def get_weekly_schedule(gateway_id): # todo: 수정 중
+
+    return 0
 
 def excel_to_db(names):
     def load_data(name):
@@ -466,11 +535,36 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
                 ''
             }
         ],
-        'naive bayes': [
-
-        ],
+        # 'naive bayes': [
+        #     sk.naive_bayes.GaussianNB(),
+        #     {
+        #         'var_smoothing':[1e-9]
+        #     }
+        # ],
         'stochastic gradient descent': [
-
+            sk.linear_model.SGDClassifier(),
+            {
+                'loss':['hinge']
+                , 'penalty':['l2']
+                , 'alpha':[0.0001]
+                , 'fit_intercept':[True]
+                , 'max_iter':[1000]
+                , 'tol':[1e-3]
+                , 'shuffle':[True]
+                # , 'verbose':[]
+                # , 'epsilon':[]
+                , 'n_jobs':[None]
+                , 'random_state':[None]
+                # , 'learning_rate':[]
+                , 'power_t':[0.5]
+                , 'early_stopping':[False]
+                , 'validation_fraction':[0.1]
+                , 'n_iter_no_change':[5]
+                # , 'class_weight':[]
+                # , 'warm_start':[]
+                # , 'average':[]
+                , 'n_iter':[None]
+            }
         ],
         'k-nearest neighbours': [
 
@@ -482,7 +576,7 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
         'random forest': [
             sk.ensemble.RandomForestClassifier(),
             {
-                'n_estimators': [100]
+                'n_estimators': [10]
                 , 'criterion': ['gini']
                 , 'max_depth': [None]
                 , 'min_samples_split': [2]
@@ -504,7 +598,20 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
         'support vector machine': [
             sk.svm.SVC(),
             {
-
+                'C':[1.0]
+                , 'kernel':['rbf']
+                # , 'degree':[3]
+                , 'gamma':['auto']
+                , 'coef0':[0.0]
+                , 'shrinking':[True]
+                , 'probability':[False]
+                , 'tol':[1e-3]
+                , 'cache_size':[]
+                , 'class_weight':[]
+                , 'verbose':[False]
+                , 'max_iter':[-1]
+                , 'decision_function_shape':['ovr']
+                , 'random_state':[None]
             }
         ]
     }
@@ -512,3 +619,29 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+def search_device_address(member_name, appliance_name):
+    member_name = member_name or '박재훈'
+    appliance_name = appliance_name or 'TV'
+    sql = f"""
+    SELECT AD.DEVICE_ID
+    FROM	
+    	(SELECT AG.GATEWAY_ID AS GATEWAY_ID, AG.GATEWAY_NAME AS GATEWAY_NAME, ADI.DEVICE_ID AS DEVICE_ID
+    	FROM 
+    		AH_GATEWAY AS AG
+    		JOIN AH_DEVICE_INSTALL AS ADI
+    		ON AG.GATEWAY_ID = ADI.GATEWAY_ID
+    	WHERE AG.GATEWAY_NAME = '{member_name}') T1
+    	JOIN AH_DEVICE AS AD
+    	ON T1.DEVICE_ID = AD.DEVICE_ID
+    WHERE AD.DEVICE_NAME = '{appliance_name}'
+    """
+    aihems_service_db_connect = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                                port=3306, user='aihems', passwd='#cslee1234', db='aihems_api_db',
+                                                charset='utf8')
+
+    cursor = aihems_service_db_connect.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    device_address = result[0]
+
+    return device_address
