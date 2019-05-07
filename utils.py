@@ -84,9 +84,23 @@ def select_device(device_list):
     print(device_list)
     return 0
 
-def get_house_no():
-    house_no = 0
-    return house_no
+def get_house_name(gateway_id):
+    sql = f"""
+    SELECT gateway_name
+    FROM AH_GATEWAY
+    WHERE gateway_id = '{gateway_id}'
+    """
+    house_name = get_table_from_db(sql)
+    return house_name.values.item()
+
+def get_house_no(house_name):
+    sql = f"""
+    SELECT house_no
+    FROM AH_HOUSE
+    WHERE house_name = '{house_name}'
+    """
+    house_no = get_table_from_db(sql)
+    return house_no.values.item()
 
 def get_home_energy(gateway_id):
     df_home_energy = 0
@@ -110,10 +124,40 @@ def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_B
     df = get_table_from_db(sql)
     return df
 
-def get_usage_hourly(df):
+def get_usage_hourly(gateway_id):
+    df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABLED')   # table 향후 변경 필요
+    df = binding_time(df)
+    house_name = get_house_name(gateway_id)
+    house_no = get_house_no(house_name)
 
     df_hourly = df.resample('1H').sum()
-    return df_hourly
+
+    df_hourly.loc[:, 'house_no'] = house_no
+    df_hourly.loc[:, 'year'] = [str(x).replace("-", "")[:4] for x in df_hourly.index.date]
+    df_hourly.loc[:, 'month'] = [str(x).replace("-", "")[4:6] for x in df_hourly.index.date]
+    df_hourly.loc[:, 'day'] = [str(x).replace("-", "")[6:] for x in df_hourly.index.date]
+    df_hourly.loc[:, 'hour'] = [str(x)[:2] for x in df_hourly.index.time]
+
+    return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
+
+def get_cbl(house_no, year, month, day, hour):
+    sql = f"""
+    SELECT *
+    FROM ah_usage_hourly
+    WHERE 1=1
+    
+    """
+    df = get_table_from_db(sql)
+    usage_before_5days = df
+    cbl = usage_before_5days * (4/5)
+    return cbl
+
+def get_number_of_times(device_id):
+    return 0
+
+def check_meter(device_list):
+
+    return 0
 
 def get_weekly_schedule(gateway_id): # todo: 수정 중
 
@@ -259,7 +303,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
-def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'): # todo: update 기능 구현
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
@@ -274,7 +318,9 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABLED'):
     engine = create_engine("mysql+mysqldb://" + user + ":" + passwd + "@" + addr + ":" + port + "/" + db_name,
                            encoding='utf-8')
     # conn = engine.connect()
+
     df.to_sql(table_name, con=engine, if_exists='append', index=False)
+
     return 0
 
 
@@ -288,14 +334,9 @@ def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 �
 
 def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df = df_time_indexing.reset_index()
-    df.loc[:, 'collected_date'] = [x for x in df.time]
+    df.loc[:, 'collected_date'] = [x for x in df.date]
     df.loc[:, 'collected_time'] = [x for x in df.time]
     return df
-
-def get_appliance_energy_history(df): # todo: 작성 중
-    df = df.groupby('appliance_status').sum()
-    ah_appliance_energy_history = df.loc[:, cols_dic['ah_appliance_energy_history']]
-    return ah_appliance_energy_history
 
 
 def get_appliance_usage_history(df):
@@ -429,8 +470,9 @@ cols_dic = {
         'house_no'
         , 'year'
         , 'month'
+        , 'day'
         , 'hour'
-        , 'use_energy'
+        , 'energy_diff' # todo: 수정필요
         , 'create_date'
         , 'modify_date'
     ],
