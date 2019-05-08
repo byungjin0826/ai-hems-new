@@ -227,21 +227,19 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
     df_hourly = df.resample('1H').sum()
 
     # db에 있는 형식을 맞추기 위한...
+    df_hourly = unpacking_time(df_hourly)
     df_hourly.loc[:, 'house_no'] = house_no
-    df_hourly.loc[:, 'year'] = [str(x).replace("-", "")[:4] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'month'] = [str(x).replace("-", "")[4:6] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'day'] = [str(x).replace("-", "")[6:] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'hour'] = [str(x)[:2] for x in df_hourly.index.time]
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
 def calc_weekly_schedule(device_id, threshold = 0.95): # todo: 수정 중
     df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
     df = binding_time(df)
-    schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
+    schedule = df.pivot_table(values='appliance_status', index=df.index.time,
+                              columns=df.index.dayofweek, aggfunc='max')
     return schedule
 
-def calc_cbl(house_no, year, month, day, hour):
+def calc_cbl(house_no, collected_date, collected_time):
     sql = f"""
     SELECT *
     FROM ah_usage_hourly
