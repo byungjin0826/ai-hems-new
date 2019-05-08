@@ -224,7 +224,7 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
     house_name = get_house_name(gateway_id)
     house_no = get_house_no(house_name)
 
-    df_hourly = df.resample('1H').sum()
+    df_hourly = df.resample('15min').sum()
 
     # db에 있는 형식을 맞추기 위한...
     df_hourly = unpacking_time(df_hourly)
@@ -239,17 +239,21 @@ def calc_weekly_schedule(device_id, threshold = 0.95): # todo: 수정 중
                               columns=df.index.dayofweek, aggfunc='max')
     return schedule
 
-def calc_cbl(house_no, collected_date, collected_time):
-    sql = f"""
-    SELECT *
-    FROM ah_usage_hourly
-    WHERE 1=1
-    
-    """
-    df = get_table_from_db(sql)
-    usage_before_5days = df
-    cbl = usage_before_5days * (4/5)
-    return cbl
+def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정
+    df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_201808')   # table 향후 변경 필요
+    df = binding_time(df)[:date]
+
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
+
+    df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
+
+    cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
+    cbl_list.sort()
+    print(cbl_list)
+    return sum(cbl_list[:4])/4 # todo: max 4/5 확인 필요
 
 def calc_number_of_times(device_id):
 
@@ -427,9 +431,9 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기�
     return 0
 
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
-    df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
-    df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
+    df.loc[:, 'collect_date'] = [str(x) for x in df.collect_date]
+    df.loc[:, 'collect_time'] = [str(x) for x in df.collect_time]
+    df.loc[:, 'time'] = pd.to_datetime(df.collect_date + " " + df.collect_time, format='%Y%m%d %H:%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 

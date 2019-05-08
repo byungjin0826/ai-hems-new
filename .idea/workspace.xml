@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="불필요한 파일 제거">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_bed.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_bed.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
@@ -17,20 +17,63 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service_class.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="167">
+              <caret line="241" column="113" selection-start-line="241" selection-start-column="113" selection-end-line="241" selection-end-column="113" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <element signature="e#2780#2883#0" />
+                <element signature="e#2997#3371#0" />
+                <element signature="e#3409#3440#0" />
+                <element signature="e#3478#3654#0" />
+                <element signature="e#3690#3856#0" />
+                <element signature="e#3886#4092#0" />
+                <element signature="e#4134#4267#0" />
+                <element signature="e#4329#5294#0" />
+                <element signature="e#5346#5504#0" />
+                <element signature="e#5601#6432#0" />
+                <element signature="e#7367#7616#0" />
+                <element signature="e#7901#7909#0" />
+                <element signature="e#7945#8021#0" />
+                <element signature="e#8051#8626#0" />
+                <element signature="e#8674#8852#0" />
+                <element signature="e#8908#9440#0" />
+                <element signature="e#9540#9943#0" />
+                <element signature="e#10014#10361#0" />
+                <element signature="e#10401#10665#0" />
+                <element signature="e#10745#10910#0" />
+                <element signature="e#10964#11521#0" />
+                <element signature="e#11623#12535#0" />
+                <element signature="e#12640#13215#0" />
+                <element signature="e#13677#13836#0" />
+                <element signature="e#13883#16151#0" />
+                <element signature="e#16228#19077#0" />
+                <element signature="e#19122#19394#0" />
+                <element signature="e#19407#23759#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/service_class.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="437">
+              <caret line="23" column="16" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test_bed.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+            <state relative-caret-position="285">
+              <caret line="15" column="29" lean-forward="true" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -77,7 +120,6 @@
       <find>select_</find>
       <find>cbl</find>
       <find>AH_house</find>
-      <find>hourly</find>
       <find>cols_dic</find>
       <find>frequency</find>
       <find>number_f</find>
@@ -88,6 +130,7 @@
       <find>week</find>
       <find>lable</find>
       <find>print</find>
+      <find>hourly</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -98,16 +141,56 @@
       </map>
     </option>
     <option name="RESET_MODE" value="MIXED" />
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="sbj" />
+              </list>
+            </value>
+          </entry>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/sbj" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/db_connect_test.py" />
         <option value="$PROJECT_DIR$/db_connect_test_cu.py" />
-        <option value="$PROJECT_DIR$/service_class.py" />
-        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/test_bed.py" />
+        <option value="$PROJECT_DIR$/service_class.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
       </list>
     </option>
   </component>
@@ -285,7 +368,21 @@
       <option name="project" value="LOCAL" />
       <updated>1557299354321</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="불필요한 파일 제거">
+      <created>1557299783737</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1557299783737</updated>
+    </task>
+    <task id="LOCAL-00019" summary="hourly table 컬럼 변경">
+      <created>1557302076295</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1557302076295</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TodoView">
@@ -310,8 +407,8 @@
       <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50496143" side_tool="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" visible="true" weight="0.3253638" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" weight="0.3004158" />
+      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" weight="0.3253638" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -345,7 +442,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/master" />
+                        <option value="sbj" />
                       </list>
                     </value>
                   </entry>
@@ -369,6 +466,11 @@
         <entry key="Branch">
           <value>
             <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="sbj" />
+                </option>
+              </RecentGroup>
               <RecentGroup>
                 <option name="FILTER_VALUES">
                   <option value="origin/master" />
@@ -407,7 +509,8 @@
     <MESSAGE value="모델 로딩 추가" />
     <MESSAGE value="모델 자동 테스트" />
     <MESSAGE value="불필요한 파일 제거" />
-    <option name="LAST_COMMIT_MESSAGE" value="불필요한 파일 제거" />
+    <MESSAGE value="hourly table 컬럼 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="hourly table 컬럼 변경" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -426,16 +529,6 @@
     <entry file="file://$PROJECT_DIR$/laundary.py" />
     <entry file="file://$PROJECT_DIR$/excel_input.py" />
     <entry file="file://$PROJECT_DIR$/db_connect_test_cu.py" />
-    <entry file="file://$PROJECT_DIR$/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1596">
-          <caret line="84" column="44" selection-start-line="84" selection-start-column="44" selection-end-line="84" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/daily_elec.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="703">
@@ -510,10 +603,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/service_class.py">
+    <entry file="file://$PROJECT_DIR$/test_bed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="285">
+          <caret line="15" column="29" lean-forward="true" selection-start-line="15" selection-start-column="29" selection-end-line="15" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -527,10 +620,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test_bed.py">
+    <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+        <state relative-caret-position="437">
+          <caret line="23" column="16" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="241" column="113" selection-start-line="241" selection-start-column="113" selection-end-line="241" selection-end-column="113" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <element signature="e#2780#2883#0" />
+            <element signature="e#2997#3371#0" />
+            <element signature="e#3409#3440#0" />
+            <element signature="e#3478#3654#0" />
+            <element signature="e#3690#3856#0" />
+            <element signature="e#3886#4092#0" />
+            <element signature="e#4134#4267#0" />
+            <element signature="e#4329#5294#0" />
+            <element signature="e#5346#5504#0" />
+            <element signature="e#5601#6432#0" />
+            <element signature="e#7367#7616#0" />
+            <element signature="e#7901#7909#0" />
+            <element signature="e#7945#8021#0" />
+            <element signature="e#8051#8626#0" />
+            <element signature="e#8674#8852#0" />
+            <element signature="e#8908#9440#0" />
+            <element signature="e#9540#9943#0" />
+            <element signature="e#10014#10361#0" />
+            <element signature="e#10401#10665#0" />
+            <element signature="e#10745#10910#0" />
+            <element signature="e#10964#11521#0" />
+            <element signature="e#11623#12535#0" />
+            <element signature="e#12640#13215#0" />
+            <element signature="e#13677#13836#0" />
+            <element signature="e#13883#16151#0" />
+            <element signature="e#16228#19077#0" />
+            <element signature="e#19122#19394#0" />
+            <element signature="e#19407#23759#0" />
+          </folding>
         </state>
       </provider>
     </entry>
