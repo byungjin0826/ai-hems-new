@@ -20,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="114" column="16" lean-forward="true" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
+            <state relative-caret-position="408">
+              <caret line="280" column="37" selection-start-line="280" selection-start-column="37" selection-end-line="280" selection-end-column="37" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#2780#2883#0" />
@@ -32,25 +32,18 @@
                 <element signature="e#4134#4267#0" />
                 <element signature="e#4329#5294#0" />
                 <element signature="e#5346#5504#0" />
-                <element signature="e#5601#6432#0" />
-                <element signature="e#7417#8003#0" />
-                <element signature="e#7901#7909#0" />
                 <element signature="e#7945#8021#0" />
                 <element signature="e#8051#8626#0" />
                 <element signature="e#8674#8852#0" />
                 <element signature="e#8908#9440#0" />
-                <element signature="e#9540#9943#0" />
                 <element signature="e#10014#10361#0" />
                 <element signature="e#10401#10665#0" />
-                <element signature="e#10745#10910#0" />
                 <element signature="e#10964#11521#0" />
                 <element signature="e#11623#12535#0" />
                 <element signature="e#13289#13614#0" />
                 <element signature="e#13677#13836#0" />
                 <element signature="e#13883#16151#0" />
-                <element signature="e#16228#19077#0" />
                 <element signature="e#19122#19394#0" />
-                <element signature="e#19407#23759#0" />
               </folding>
             </state>
           </provider>
@@ -388,7 +381,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557305761640</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="날짜 조회 추가">
+      <created>1557307305510</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1557307305510</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TodoView">
@@ -414,13 +414,13 @@
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" weight="0.3253638" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" weight="0.3004158" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="10" sideWeight="0.4983462" weight="0.32952183" />
+      <window_info active="true" anchor="bottom" id="TODO" order="10" sideWeight="0.4983462" visible="true" weight="0.32952183" />
       <window_info anchor="bottom" id="Console" order="11" />
       <window_info anchor="bottom" id="DB Execution Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -640,8 +640,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="114" column="16" lean-forward="true" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
+        <state relative-caret-position="408">
+          <caret line="280" column="37" selection-start-line="280" selection-start-column="37" selection-end-line="280" selection-end-column="37" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
             <element signature="e#2780#2883#0" />
@@ -652,25 +652,18 @@
             <element signature="e#4134#4267#0" />
             <element signature="e#4329#5294#0" />
             <element signature="e#5346#5504#0" />
-            <element signature="e#5601#6432#0" />
-            <element signature="e#7417#8003#0" />
-            <element signature="e#7901#7909#0" />
             <element signature="e#7945#8021#0" />
             <element signature="e#8051#8626#0" />
             <element signature="e#8674#8852#0" />
             <element signature="e#8908#9440#0" />
-            <element signature="e#9540#9943#0" />
             <element signature="e#10014#10361#0" />
             <element signature="e#10401#10665#0" />
-            <element signature="e#10745#10910#0" />
             <element signature="e#10964#11521#0" />
             <element signature="e#11623#12535#0" />
             <element signature="e#13289#13614#0" />
             <element signature="e#13677#13836#0" />
             <element signature="e#13883#16151#0" />
-            <element signature="e#16228#19077#0" />
             <element signature="e#19122#19394#0" />
-            <element signature="e#19407#23759#0" />
           </folding>
         </state>
       </provider>

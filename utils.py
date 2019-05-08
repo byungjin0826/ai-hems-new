@@ -103,9 +103,9 @@ def get_appliance_types():
     df = get_table_from_db(sql)
     return df
 
-def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, print = False,
-                 table_name = 'AH_USE_LOG_BYMINUTE'):
-    start = start or '20180801'
+def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
+                 sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
+    start = start or (datetime.datetime.now() - datetime.timedelta(30)).strftime('%Y%m%d')
     end = end or datetime.datetime.now().strftime('%Y%m%d')
     months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
 
@@ -129,8 +129,11 @@ def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, 
 
         temp = get_table_from_db(sql)
         df = df.append(temp)
-        if print:
+        if month_print:
             print(month)
+
+        if sql_print:
+            print(sql)
     return df
 
 def select_device(device_list):
@@ -231,6 +234,10 @@ def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또
     return energy_history_table
 
 def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 미터가 있는 경우 meter 데이터를 활용
+    device_list = get_device_list(gateway_id)
+    if check_meter(device_list):
+        print('True')
+
     df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABELED')   # table 향후 변경 필요
     df = binding_time(df)
     house_name = get_house_name(gateway_id)
@@ -244,11 +251,15 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
-def calc_weekly_schedule(device_id, threshold = 0.95): # todo: 수정 중
-    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+def calc_weekly_schedule(device_id, threshold = 0.95): # todo: test 해보기
+    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE')
     df = binding_time(df)
-    schedule = df.pivot_table(values='appliance_status', index=df.index.time,
+    schedule_sum = df.pivot_table(values='appliance_status', index=df.index.time,
                               columns=df.index.dayofweek, aggfunc='sum')
+    schedule_count = df.pivot_table(values='appliance_status', index=df.index.time,
+                              columns=df.index.dayofweek, aggfunc='count')
+    schedule = schedule_sum/schedule_count
+    schedule = schedule[schedule>threshold]
     return schedule
 
 def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정
@@ -267,7 +278,7 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     print(cbl_list)
     return sum(cbl_list[:4])/4 # todo: max 4/5 확인 필요
 
-def calc_number_of_times(device_id):
+def calc_number_of_times(device_id): # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
 
     return 0
 
@@ -828,7 +839,5 @@ cols_dic = {
     ]
 }
 
-# todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-# 전체 데이터가 6초 걸림
 
-# todo: label로 변경
+
