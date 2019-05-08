@@ -32,6 +32,16 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
                   'energy_diff', 'appliance_status', 'create_date']
     return df
 
+def get_appliance_type(device_id):
+    sql = f"""
+    SELECT appliance_type
+    FROM AH_APPLIANCE_HISTORY
+    WHERE 1=1
+    AND device_id = '{device_id}'
+    """
+    appliance_type = get_table_from_db(sql)
+    return appliance_type.values.item()
+
 def get_appliance_name(appliance_no):
     sql = f"""
     SELECT appliance_name
@@ -72,7 +82,7 @@ def get_device_list(gateway_id):
     device_list = get_table_from_db(sql)
     return device_list
 
-def get_device_list_same_type(appliance_type_name):
+def get_device_list_same_type(appliance_type):
     sql = f"""
     SELECT APPLIANCE_NO, APPLIANCE_NAME, DEVICE_ID, GATEWAY_ID
     FROM AH_APPLIANCE_HISTORY
@@ -80,12 +90,12 @@ def get_device_list_same_type(appliance_type_name):
             (SELECT APPLIANCE_TYPE
             FROM AH_APPLIANCE_TYPE
             WHERE 1 = 1
-            AND APPLIANCE_TYPE_NAME = '{appliance_type_name}')
+            AND APPLIANCE_TYPE = '{appliance_type}')
     """
     device_list = get_table_from_db(sql)
     return device_list
 
-def get_appliance_type():
+def get_appliance_types():
     sql = """
     SELECT *
     FROM AH_APPLIANCE_TYPE
