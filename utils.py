@@ -111,6 +111,12 @@ def get_house_no(house_name):
     house_no = get_table_from_db(sql)
     return house_no.values.item()
 
+def load_labeling_model(device_id):
+    root_path = './sample_data/joblib/'
+    path = root_path + f"""{device_id}_labeling.joblib"""
+    model = load(path)
+    return model
+
 def search_device_address(member_name, appliance_name):
     member_name = member_name or '박재훈'
     appliance_name = appliance_name or 'TV'
@@ -208,7 +214,7 @@ def calc_number_of_times(device_id):
 
     return 0
 
-def check_meter(device_list): # todo: 미터가 있는지 학인
+def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
 
 def excel_to_db(names):

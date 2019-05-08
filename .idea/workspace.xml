@@ -2,13 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="함수 추가">
-      <change beforePath="$PROJECT_DIR$/.idea/ai-hems-new.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ai-hems-new.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/service_class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
     <ignored path="sample_data/csv/household_power_consumption.txt" />
+    <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,24 +18,59 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="760" column="14" lean-forward="true" selection-start-line="760" selection-start-column="14" selection-end-line="760" selection-end-column="14" />
+            <state relative-caret-position="547">
+              <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
-                <element signature="e#11402#11977#0" />
+                <element signature="e#350#1065#0" />
+                <element signature="e#1109#1296#0" />
+                <element signature="e#1328#1498#0" />
+                <element signature="e#1537#1737#0" />
+                <element signature="e#1776#2081#0" />
+                <element signature="e#2195#2569#0" />
+                <element signature="e#2607#2638#0" />
+                <element signature="e#2676#2852#0" />
+                <element signature="e#2888#3054#0" />
+                <element signature="e#3096#3229#0" />
+                <element signature="e#3291#4256#0" />
+                <element signature="e#4308#4466#0" />
+                <element signature="e#4563#5394#0" />
+                <element signature="e#5492#6229#0" />
+                <element signature="e#6285#6534#0" />
+                <element signature="e#6588#6775#0" />
+                <element signature="e#6819#6827#0" />
+                <element signature="e#6882#6958#0" />
+                <element signature="e#6988#7563#0" />
+                <element signature="e#7611#7789#0" />
+                <element signature="e#7845#8377#0" />
+                <element signature="e#8477#8880#0" />
+                <element signature="e#8951#9298#0" />
+                <element signature="e#9338#9602#0" />
+                <element signature="e#9682#9847#0" />
+                <element signature="e#9901#10458#0" />
+                <element signature="e#10560#11472#0" />
+                <element signature="e#11577#12152#0" />
+                <element signature="e#12226#12551#0" />
+                <element signature="e#12614#12773#0" />
+                <element signature="e#12820#15088#0" />
+                <element signature="e#12834#14984#0" />
+                <element signature="e#15165#18014#0" />
+                <element signature="e#15183#17902#0" />
+                <element signature="e#18008#22360#0" />
+                <element signature="e#18049#18344#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/service_class.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="7" column="59" lean-forward="true" selection-start-line="7" selection-start-column="59" selection-end-line="7" selection-end-column="59" />
+            <state relative-caret-position="361">
+              <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -72,8 +108,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="608">
-              <caret line="32" selection-start-line="32" selection-end-line="32" />
+            <state relative-caret-position="513">
+              <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -164,6 +200,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RESET_MODE" value="MIXED" />
   </component>
   <component name="IdeDocumentHistory">
@@ -191,7 +232,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -199,26 +239,16 @@
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
-              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
-              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
-              <item name="joblib" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.idea/workspace.xml" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -314,7 +344,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557220831841</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="함수 추가">
+      <created>1557275737885</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1557275737885</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -331,7 +368,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.13726571" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.14222713" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
@@ -340,7 +377,7 @@
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" weight="0.3253638" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4966924" visible="true" weight="0.3004158" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -457,8 +494,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        <state relative-caret-position="513">
+          <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -495,21 +532,56 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/service_class.py">
+    <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="59" lean-forward="true" selection-start-line="7" selection-start-column="59" selection-end-line="7" selection-end-column="59" />
+        <state relative-caret-position="547">
+          <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <element signature="e#350#1065#0" />
+            <element signature="e#1109#1296#0" />
+            <element signature="e#1328#1498#0" />
+            <element signature="e#1537#1737#0" />
+            <element signature="e#1776#2081#0" />
+            <element signature="e#2195#2569#0" />
+            <element signature="e#2607#2638#0" />
+            <element signature="e#2676#2852#0" />
+            <element signature="e#2888#3054#0" />
+            <element signature="e#3096#3229#0" />
+            <element signature="e#3291#4256#0" />
+            <element signature="e#4308#4466#0" />
+            <element signature="e#4563#5394#0" />
+            <element signature="e#5492#6229#0" />
+            <element signature="e#6285#6534#0" />
+            <element signature="e#6588#6775#0" />
+            <element signature="e#6819#6827#0" />
+            <element signature="e#6882#6958#0" />
+            <element signature="e#6988#7563#0" />
+            <element signature="e#7611#7789#0" />
+            <element signature="e#7845#8377#0" />
+            <element signature="e#8477#8880#0" />
+            <element signature="e#8951#9298#0" />
+            <element signature="e#9338#9602#0" />
+            <element signature="e#9682#9847#0" />
+            <element signature="e#9901#10458#0" />
+            <element signature="e#10560#11472#0" />
+            <element signature="e#11577#12152#0" />
+            <element signature="e#12226#12551#0" />
+            <element signature="e#12614#12773#0" />
+            <element signature="e#12820#15088#0" />
+            <element signature="e#12834#14984#0" />
+            <element signature="e#15165#18014#0" />
+            <element signature="e#15183#17902#0" />
+            <element signature="e#18008#22360#0" />
+            <element signature="e#18049#18344#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
+    <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="760" column="14" lean-forward="true" selection-start-line="760" selection-start-column="14" selection-end-line="760" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-            <element signature="e#11402#11977#0" />
-          </folding>
+        <state relative-caret-position="361">
+          <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
         </state>
       </provider>
     </entry>
