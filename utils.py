@@ -9,6 +9,7 @@ from joblib import dump, load
 import time
 import sklearn.metrics
 import sklearn.metrics
+import datetime
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -71,6 +72,27 @@ def get_device_list(gateway_id):
     device_list = get_table_from_db(sql)
     return device_list
 
+def get_device_list_same_type(appliance_type_name):
+    sql = f"""
+    SELECT APPLIANCE_NO, APPLIANCE_NAME, DEVICE_ID, GATEWAY_ID
+    FROM AH_APPLIANCE_HISTORY
+    WHERE APPLIANCE_TYPE = 
+            (SELECT APPLIANCE_TYPE
+            FROM AH_APPLIANCE_TYPE
+            WHERE 1 = 1
+            AND APPLIANCE_TYPE_NAME = '{appliance_type_name}')
+    """
+    device_list = get_table_from_db(sql)
+    return device_list
+
+def get_appliance_type():
+    sql = """
+    SELECT *
+    FROM AH_APPLIANCE_TYPE
+    """
+    df = get_table_from_db(sql)
+    return df
+
 def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
     sql = f"""
     SELECT *
@@ -110,6 +132,17 @@ def get_house_no(house_name):
     """
     house_no = get_table_from_db(sql)
     return house_no.values.item()
+
+def get_adr_schedule():
+    now = datetime.datetime.now().date().strftime('%y%m%d')
+    sql = f"""
+    SELECT *
+    FROM adr
+    WHERE 1=1
+    AND start_date >= {now}
+    """
+    date_time = get_table_from_db(sql)
+    return date_time
 
 def load_labeling_model(device_id):
     root_path = './sample_data/joblib/'
@@ -565,6 +598,13 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     model = classifications[model_name][0]
     params = classifications[model_name][1]
     return model, params
+
+def prediction_test(model, device_id):
+    df = get_raw_data(device_id=device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+    x, y = split_x_y(df)
+    x, y = sliding_window_transform(x, y, lag=10, step_size=30)
+    accuracy = sk.metrics.accuracy_score(y, model.predict(x))
+    return accuracy
 
 cols_dic = {
     'ah_appliance': [
