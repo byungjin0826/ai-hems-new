@@ -2,7 +2,7 @@ from utils import *
 
 query = """
 SELECT distinct(device_id)
-FROM AH_USE_LOG_BYMINUTE_LABLED
+FROM AH_USE_LOG_BYMINUTE_LABELED
 """
 device_address_list = get_table_from_db(query, db='aihems_api_db')
 
@@ -21,7 +21,7 @@ for device_address in device_address_list.device_id:
 
     sql = """
     SELECT *
-    FROM AH_USE_LOG_BYMINUTE_LABLED
+    FROM AH_USE_LOG_BYMINUTE_LABELED
     WHERE 1=1
     """
 
