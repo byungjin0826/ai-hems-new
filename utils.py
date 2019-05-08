@@ -103,22 +103,34 @@ def get_appliance_types():
     df = get_table_from_db(sql)
     return df
 
-def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
-    sql = f"""
-    SELECT *
-    FROM {table_name}
-    WHERE 1=1
-    """
+def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, print = False,
+                 table_name = 'AH_USE_LOG_BYMINUTE'):
+    start = start or '20180801'
+    end = end or datetime.datetime.now().strftime('%Y%m%d')
+    months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
 
-    if gateway_id != None:
-        sql += f"""AND gateway_id = '{gateway_id}'\n"""
+    df = pd.DataFrame()
+    for month in months:
+        sql = f"""
+        SELECT *
+        FROM {table_name}_{month}
+        WHERE 1=1
+        AND COLLECT_DATE >= {start}
+        AND COLLECT_DATE <= {end}
+        """
 
-    if device_id != None:
-        if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
-            device_id = device_id[:-1]
-        sql += f"""AND device_id = '{device_id}'\n"""
+        if gateway_id != None:
+            sql += f"""AND gateway_id = '{gateway_id}'\n"""
 
-    df = get_table_from_db(sql)
+        if device_id != None:
+            if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
+                device_id = device_id[:-1]
+            sql += f"""AND device_id = '{device_id}'\n"""
+
+        temp = get_table_from_db(sql)
+        df = df.append(temp)
+        if print:
+            print(month)
     return df
 
 def select_device(device_list):
@@ -236,7 +248,7 @@ def calc_weekly_schedule(device_id, threshold = 0.95): # todo: 수정 중
     df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
     df = binding_time(df)
     schedule = df.pivot_table(values='appliance_status', index=df.index.time,
-                              columns=df.index.dayofweek, aggfunc='max')
+                              columns=df.index.dayofweek, aggfunc='sum')
     return schedule
 
 def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정

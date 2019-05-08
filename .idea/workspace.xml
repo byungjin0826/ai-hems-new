@@ -20,12 +20,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
-              <caret line="241" column="113" selection-start-line="241" selection-start-column="113" selection-end-line="241" selection-end-column="113" />
+            <state relative-caret-position="186">
+              <caret line="114" column="16" lean-forward="true" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#2780#2883#0" />
-                <element signature="e#2997#3371#0" />
                 <element signature="e#3409#3440#0" />
                 <element signature="e#3478#3654#0" />
                 <element signature="e#3690#3856#0" />
@@ -34,7 +33,7 @@
                 <element signature="e#4329#5294#0" />
                 <element signature="e#5346#5504#0" />
                 <element signature="e#5601#6432#0" />
-                <element signature="e#7367#7616#0" />
+                <element signature="e#7417#8003#0" />
                 <element signature="e#7901#7909#0" />
                 <element signature="e#7945#8021#0" />
                 <element signature="e#8051#8626#0" />
@@ -46,7 +45,7 @@
                 <element signature="e#10745#10910#0" />
                 <element signature="e#10964#11521#0" />
                 <element signature="e#11623#12535#0" />
-                <element signature="e#12640#13215#0" />
+                <element signature="e#13289#13614#0" />
                 <element signature="e#13677#13836#0" />
                 <element signature="e#13883#16151#0" />
                 <element signature="e#16228#19077#0" />
@@ -382,7 +381,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557302076295</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="cbl 계산 함수 추가">
+      <created>1557305761640</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1557305761640</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TodoView">
@@ -510,7 +516,9 @@
     <MESSAGE value="모델 자동 테스트" />
     <MESSAGE value="불필요한 파일 제거" />
     <MESSAGE value="hourly table 컬럼 변경" />
-    <option name="LAST_COMMIT_MESSAGE" value="hourly table 컬럼 변경" />
+    <MESSAGE value="cbl 계산 함수 추가" />
+    <MESSAGE value="날짜 조회 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="날짜 조회 추가" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -632,12 +640,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="241" column="113" selection-start-line="241" selection-start-column="113" selection-end-line="241" selection-end-column="113" />
+        <state relative-caret-position="186">
+          <caret line="114" column="16" lean-forward="true" selection-start-line="114" selection-start-column="16" selection-end-line="114" selection-end-column="16" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
             <element signature="e#2780#2883#0" />
-            <element signature="e#2997#3371#0" />
             <element signature="e#3409#3440#0" />
             <element signature="e#3478#3654#0" />
             <element signature="e#3690#3856#0" />
@@ -646,7 +653,7 @@
             <element signature="e#4329#5294#0" />
             <element signature="e#5346#5504#0" />
             <element signature="e#5601#6432#0" />
-            <element signature="e#7367#7616#0" />
+            <element signature="e#7417#8003#0" />
             <element signature="e#7901#7909#0" />
             <element signature="e#7945#8021#0" />
             <element signature="e#8051#8626#0" />
@@ -658,7 +665,7 @@
             <element signature="e#10745#10910#0" />
             <element signature="e#10964#11521#0" />
             <element signature="e#11623#12535#0" />
-            <element signature="e#12640#13215#0" />
+            <element signature="e#13289#13614#0" />
             <element signature="e#13677#13836#0" />
             <element signature="e#13883#16151#0" />
             <element signature="e#16228#19077#0" />
