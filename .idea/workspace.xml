@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="모델 로딩 추가">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="불필요한 파일 제거">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_elec.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_appliance_status.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_schedule.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_schedule1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_status_to_db.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_status_to_db_3_4.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/querys.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/schedule_onoff.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/labeling_model_test_automation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_bed.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_bed.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
@@ -46,35 +38,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="200">
+              <caret line="16" column="36" lean-forward="true" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <element signature="e#145#804#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sample_code/multioutput_gridsearch.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#33#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sample_code/oneclassSVM.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-              <folding>
-                <element signature="e#16#34#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -137,10 +104,10 @@
       <list>
         <option value="$PROJECT_DIR$/db_connect_test.py" />
         <option value="$PROJECT_DIR$/db_connect_test_cu.py" />
-        <option value="$PROJECT_DIR$/test_bed.py" />
         <option value="$PROJECT_DIR$/service_class.py" />
         <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/test_bed.py" />
       </list>
     </option>
   </component>
@@ -164,11 +131,6 @@
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
-              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -179,7 +141,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/.idea/workspace.xml" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -309,7 +271,21 @@
       <option name="project" value="LOCAL" />
       <updated>1557298710522</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="불필요한 파일 제거">
+      <created>1557299324664</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1557299324664</updated>
+    </task>
+    <task id="LOCAL-00017" summary="불필요한 파일 제거">
+      <created>1557299354321</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1557299354321</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TodoView">
@@ -331,11 +307,11 @@
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
       <window_info id="Job Explorer" order="5" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="0" sideWeight="0.50496143" side_tool="true" visible="true" weight="0.3004158" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50496143" side_tool="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" weight="0.3253638" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" visible="true" weight="0.3253638" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" weight="0.3004158" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -364,6 +340,17 @@
               <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
                 <collection />
               </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="COLUMN_ORDER">
                 <list>
                   <option value="0" />
@@ -381,7 +368,23 @@
       <map>
         <entry key="Branch">
           <value>
-            <list />
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/master" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/sbj" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="master" />
+                </option>
+              </RecentGroup>
+            </list>
           </value>
         </entry>
         <entry key="User">
@@ -403,7 +406,8 @@
     <MESSAGE value="joblib를 로드하여 테스트하는 코드 추가" />
     <MESSAGE value="모델 로딩 추가" />
     <MESSAGE value="모델 자동 테스트" />
-    <option name="LAST_COMMIT_MESSAGE" value="모델 자동 테스트" />
+    <MESSAGE value="불필요한 파일 제거" />
+    <option name="LAST_COMMIT_MESSAGE" value="불필요한 파일 제거" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -428,16 +432,6 @@
           <caret line="84" column="44" selection-start-line="84" selection-start-column="44" selection-end-line="84" selection-end-column="44" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sample_code/multioutput_gridsearch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -486,17 +480,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#145#804#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/schedule_onoff.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-441">
@@ -517,10 +500,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/multioutput_gridsearch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
           <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="16" column="36" lean-forward="true" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

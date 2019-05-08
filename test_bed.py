@@ -18,5 +18,7 @@ schedule = calc_weekly_schedule(device_list.device_id[4])
 # df = get_usage_hourly(gateway_id)
 #
 # write_db(df, table_name='ah_usage_hourly')
+# 
 #
-#
+
+# 변경 테스트
