@@ -225,7 +225,7 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
-def calc_weekly_schedule(device_id): # todo: 수정 중
+def calc_weekly_schedule(device_id, threshold = 0.95): # todo: 수정 중
     df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
     df = binding_time(df)
     schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
@@ -601,7 +601,7 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
 
 def prediction_test(model, device_id):
     df = get_raw_data(device_id=device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
-    x, y = split_x_y(df)
+    x, y = split_x_y(df, x_col='energy_diff')
     x, y = sliding_window_transform(x, y, lag=10, step_size=30)
     accuracy = sk.metrics.accuracy_score(y, model.predict(x))
     return accuracy
@@ -803,8 +803,6 @@ cols_dic = {
         , 'create_date'
     ]
 }
-
-# todo: 검침일 적용
 
 # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
 # 전체 데이터가 6초 걸림
