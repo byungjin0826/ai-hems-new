@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 from joblib import dump, load
 import time
 import sklearn.metrics
-import sklearn.metrics
 import datetime
 
 # 변환없이 원본 가져오는 건 get
@@ -908,3 +907,5 @@ def update(df, table_name):
 # todo: class 구성
 
 # todo: 같은 타입 전체 데이터로 학습
+
+# todo: erm 설치
