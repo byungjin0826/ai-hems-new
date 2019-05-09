@@ -5,7 +5,6 @@
       <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/update_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
@@ -24,8 +23,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="547">
-              <caret line="866" column="16" selection-start-line="866" selection-start-column="16" selection-end-line="866" selection-end-column="16" />
+            <state relative-caret-position="490">
+              <caret line="863" lean-forward="true" selection-start-line="863" selection-end-line="863" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -407,7 +406,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557360689479</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="collected -&gt; collect로 변경">
+      <created>1557375003610</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1557375003610</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TodoView">
@@ -421,7 +427,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="54" y="-8" width="1874" height="1096" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.14553472" />
@@ -429,11 +434,11 @@
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
       <window_info id="Job Explorer" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5033076" side_tool="true" weight="0.3253638" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="0" sideWeight="0.50496143" side_tool="true" visible="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.4966924" weight="0.3253638" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -655,8 +660,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="547">
-          <caret line="866" column="16" selection-start-line="866" selection-start-column="16" selection-end-line="866" selection-end-column="16" />
+        <state relative-caret-position="490">
+          <caret line="863" lean-forward="true" selection-start-line="863" selection-end-line="863" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
