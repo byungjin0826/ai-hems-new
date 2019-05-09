@@ -283,7 +283,12 @@ def calc_weekly_schedule(device_id, threshold = 0.95):
     return schedule
 
 def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정
-    df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_201808')   # table 향후 변경 필요
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE gateway_id = '{gateway_id}' 
+    """  # table 향후 변경 필요
+    df = get_table_from_db(sql)
     df = binding_time(df)[:date]
 
     start_time = datetime.time(int(start[:2]), int(start[-2:]))
@@ -887,7 +892,7 @@ cols_dic = {
     ]
 }
 
-# todo: 업데이트 코드 작성
+# todo: 업데이트 코드 작성(update_test)
 
 def update(df, table_name):
     write_db(df, table_name='temp', if_exists='replace')
