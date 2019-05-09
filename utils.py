@@ -123,8 +123,6 @@ def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, 
             sql += f"""AND gateway_id = '{gateway_id}'\n"""
 
         if device_id != None:
-            if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
-                device_id = device_id[:-1]
             sql += f"""AND device_id = '{device_id}'\n"""
 
         temp = get_table_from_db(sql)
@@ -234,6 +232,7 @@ def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또
     return energy_history_table
 
 def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 미터가 있는 경우 meter 데이터를 활용
+    # 시간당 데이터 필요 없을 수 있음
     device_list = get_device_list(gateway_id)
     if check_meter(device_list):
         print('True')
@@ -279,7 +278,20 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     return sum(cbl_list[:4])/4 # todo: max 4/5 확인 필요
 
 def calc_number_of_times(device_id): # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
+    date = datetime.datetime.now().strftime('%Y%m%d')
+    df = get_raw_data(gateway_id='ep17470141')   # table 향후 변경 필요
+    df = binding_time(df)[:date]
 
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
+
+    df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
+
+    cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
+    cbl_list.sort()
+    print(cbl_list)
     return 0
 
 def check_meter(device_list):
@@ -298,7 +310,7 @@ def excel_to_db(names):
 
     for name in names:
         df = load_data(name)
-        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_copy')
         print(name)
     return df
 
@@ -433,7 +445,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
-def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED', if_exists = 'append'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
@@ -449,7 +461,7 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기�
                            encoding='utf-8')
     # conn = engine.connect()
 
-    df.to_sql(table_name, con=engine, if_exists='append', index=False)
+    df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
 
     return 0
 
@@ -826,8 +838,7 @@ cols_dic = {
     ],
     'ah_use_log_byminute_labeled': [
         'gateway_id'
-        , 'device_address'
-        , 'end_point'
+        , 'device_id'
         , 'collect_date'
         , 'collect_time'
         , 'quality'
@@ -839,5 +850,18 @@ cols_dic = {
     ]
 }
 
+# todo: 업데이트 코드 작성
 
+def update(df, table_name):
+    write_db(df, table_name='temp', if_exists='replace')
+    sql = f"""
+    UPDATE final_table AS f
+    SET col1 = t.col1
+    FROM temp_table AS t
+    WHERE f.id = t.id
+    """
+    return
 
+# todo: 예외처리
+
+# todo: class 구성
