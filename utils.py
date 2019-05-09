@@ -266,7 +266,7 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
-def calc_weekly_schedule(device_id, threshold = 0.95): # todo: test 해보기
+def calc_weekly_schedule(device_id, threshold = 0.95):
     sql = f"""
     SELECT *
     FROM AH_USE_LOG_BYMINUTE_LABELED_copy
@@ -279,7 +279,7 @@ def calc_weekly_schedule(device_id, threshold = 0.95): # todo: test 해보기
     schedule_count = df.pivot_table(values='appliance_status', index=df.index.time,
                               columns=df.index.dayofweek, aggfunc='count')
     schedule = schedule_sum/schedule_count
-    schedule = schedule[schedule>threshold]
+    schedule = schedule>(1-threshold)
     return schedule
 
 def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정
