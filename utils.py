@@ -291,7 +291,7 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
     cbl_list.sort()
     print(cbl_list)
-    return sum(cbl_list[:4])/4 # todo: max 4/5 확인 필요
+    return sum(cbl_list[1:])/4 # todo: max 4/5 확인 필요
 
 def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
     sql = f"""
