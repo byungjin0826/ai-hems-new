@@ -267,7 +267,12 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
 def calc_weekly_schedule(device_id, threshold = 0.95): # todo: test 해보기
-    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE')
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE device_id = '{device_id}'
+    """
+    df = get_table_from_db(sql)
     df = binding_time(df)
     schedule_sum = df.pivot_table(values='appliance_status', index=df.index.time,
                               columns=df.index.dayofweek, aggfunc='sum')
@@ -291,7 +296,7 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
     cbl_list.sort()
     print(cbl_list)
-    return sum(cbl_list[1:])/4 # todo: max 4/5 확인 필요
+    return sum(cbl_list[1:])/4 # 최대 4일의 평균
 
 def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
     sql = f"""

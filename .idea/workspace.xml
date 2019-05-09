@@ -22,8 +22,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="293" column="52" lean-forward="true" selection-start-line="293" selection-start-column="52" selection-end-line="293" selection-end-column="52" />
+            <state relative-caret-position="320">
+              <caret line="278" column="66" selection-start-line="278" selection-start-column="66" selection-end-line="278" selection-end-column="66" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -475,7 +475,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557386400250</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="cbl 산정 기준 확인">
+      <created>1557386604321</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1557386604321</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TodoView">
@@ -501,7 +508,7 @@
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.4966924" weight="0.3253638" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49448732" weight="0.2993763" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.49448732" visible="true" weight="0.2993763" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -510,7 +517,7 @@
       <window_info anchor="bottom" id="Console" order="10" />
       <window_info anchor="bottom" id="DB Execution Console" order="11" />
       <window_info anchor="bottom" id="Messages" order="12" />
-      <window_info active="true" anchor="bottom" id="TODO" order="13" sideWeight="0.49614114" visible="true" weight="0.32952183" />
+      <window_info anchor="bottom" id="TODO" order="13" sideWeight="0.49614114" weight="0.32952183" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -640,7 +647,8 @@
     <MESSAGE value="빈도 계산 함수 추가" />
     <MESSAGE value="에너지 사용 요약 함수 추가" />
     <MESSAGE value="usage_summary 오류 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="usage_summary 오류 수정" />
+    <MESSAGE value="cbl 산정 기준 확인" />
+    <option name="LAST_COMMIT_MESSAGE" value="cbl 산정 기준 확인" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -746,8 +754,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="293" column="52" lean-forward="true" selection-start-line="293" selection-start-column="52" selection-end-line="293" selection-end-column="52" />
+        <state relative-caret-position="320">
+          <caret line="278" column="66" selection-start-line="278" selection-start-column="66" selection-end-line="278" selection-end-column="66" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
