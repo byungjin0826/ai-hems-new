@@ -294,6 +294,10 @@ def calc_number_of_times(device_id): # todo: 정시에 발령되지 않는 상�
     print(cbl_list)
     return 0
 
+def calc_possible_ready_energy_saving(gateway_id):
+    saving_erergy = 0
+    return saving_erergy
+
 def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
 
