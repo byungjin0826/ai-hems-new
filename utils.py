@@ -167,6 +167,21 @@ def get_adr_schedule():
     date_time = get_table_from_db(sql)
     return date_time
 
+def get_usage_summary(df):
+    df.loc[:, 'break_point'] = df.appliance_status != df.appliance_status.shift(1)
+    time_table = df.loc[df.break_point == True, ['appliance_status']]
+    start = df.index[0]
+    result = pd.DataFrame(columns=['start', 'end', 'duration', 'sum_of_energy_diff', 'appliance_status'])
+    for end in time_table.index[1:]:
+        temp = {'start': start,
+                'end':end,
+                'duration':int((end-start).seconds/60),
+                'sum_of_energy_diff':int(sum(df.loc[start:end].energy_diff)),
+                'appliance_status':df.loc[start].appliance_status}
+        result = result.append(temp, ignore_index=True)
+        start = end
+    return result
+
 def load_labeling_model(device_id):
     root_path = './sample_data/joblib/'
     path = root_path + f"""{device_id}_labeling.joblib"""
