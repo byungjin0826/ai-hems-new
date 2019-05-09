@@ -297,7 +297,6 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
 
     df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
-
     cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
     cbl_list.sort()
     print(cbl_list)
