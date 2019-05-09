@@ -169,6 +169,7 @@ def get_adr_schedule():
 
 def get_usage_summary(df):
     df.loc[:, 'break_point'] = df.appliance_status != df.appliance_status.shift(1)
+    df = binding_time(df)
     time_table = df.loc[df.break_point == True, ['appliance_status']]
     start = df.index[0]
     result = pd.DataFrame(columns=['start', 'end', 'duration', 'sum_of_energy_diff', 'appliance_status'])
@@ -301,9 +302,6 @@ def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:4
     """
 
     date = date or datetime.datetime.now().strftime('%Y%m%d')
-    print(date)
-    print(start)
-    print(end)
 
     dayofweek = datetime.datetime.today().weekday()
 
@@ -899,3 +897,5 @@ def update(df, table_name):
 # todo: 예외처리
 
 # todo: class 구성
+
+# todo: 같은 타입 전체 데이터로 학습
