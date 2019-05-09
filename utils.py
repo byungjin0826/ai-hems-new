@@ -27,8 +27,8 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
     df.loc[:, 'create_date'] = pd.datetime.today()
     gateway_id = df.gateway_id[0]
     df.gateway_id = gateway_id[:6] + gateway_id[-4:]
-    df.columns = ['gateway_id', 'device_id', 'end_point', 'collected_date',
-                  'collected_time', 'quality', 'onoff', 'energy',
+    df.columns = ['gateway_id', 'device_id', 'end_point', 'collect_date',
+                  'collect_time', 'quality', 'onoff', 'energy',
                   'energy_diff', 'appliance_status', 'create_date']
     return df
 
@@ -328,7 +328,7 @@ def get_table_from_db(sql, db = 'aihems_api_db'):
 
 def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
     """
-    상태 판별 예측을 위한 입력 데이터 변환
+    상태 판별 예측을 위한 입력 데이터 변환, 나중에 날짜나 요일, 시간, 날씨 데이터를 추가
     :param x: 분 단위 전력 사용량
     :param step_size: Sliding window 의 사이즈
     :param lag: 숫자만큼 지연
@@ -362,23 +362,23 @@ def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
 def set_data_type(df):  # 현재 사용안함
     data_type_list = {
         'energy':float
-        , 'collected_date':int
+        , 'collect_date':int
         , 'month':int
         , 'dayinmonth':int
         # , 'day'
     }
 
-    if df.columns in 'collected_date':
+    if df.columns in 'collect_date':
         df.loc[:, ]
     df_data_type_setted = 1
     return df_data_type_setted
 
-def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으로 변환
-    collected_date = pd.to_datetime(collected_date)
-    collected_date_transformed = {
-        'month_x':collected_date.month
+def transform_collect_date(collect_date): # todo: 날짜를 sin 과 cos 으로 변환
+    collect_date = pd.to_datetime(collect_date)
+    collect_date_transformed = {
+        'month_x':collect_date.month
     }
-    return collected_date_transformed
+    return collect_date_transformed
 
 def make_usage_daily_predict_model(gateway_id):
     df = get_raw_data(device_id=gateway_id)
@@ -462,8 +462,8 @@ def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 �
 
 def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df = df_time_indexing.reset_index()
-    df.loc[:, 'collected_date'] = [x for x in df.date]
-    df.loc[:, 'collected_time'] = [x for x in df.time]
+    df.loc[:, 'collect_date'] = [x for x in df.date]
+    df.loc[:, 'collect_time'] = [x for x in df.time]
     return df
 
 def select_regression_model(model_name):
@@ -756,7 +756,7 @@ cols_dic = {
     ],
     'ah_usage_daily_predict': [
         'house_no'
-        , 'collected_date'
+        , 'collect_date'
         , 'use_energy'
         , 'predict_use_energy'
         , 'progressive_level'
@@ -815,8 +815,8 @@ cols_dic = {
         'gateway_id'
         , 'device_address'
         , 'end_point'
-        , 'collected_date'
-        , 'collected_time'
+        , 'collect_date'
+        , 'collect_time'
         , 'quality'
         , 'onoff'
         , 'energy'
@@ -828,8 +828,8 @@ cols_dic = {
         'gateway_id'
         , 'device_address'
         , 'end_point'
-        , 'collected_date'
-        , 'collected_time'
+        , 'collect_date'
+        , 'collect_time'
         , 'quality'
         , 'onoff'
         , 'energy'

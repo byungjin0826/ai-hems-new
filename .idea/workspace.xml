@@ -20,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="280" column="37" selection-start-line="280" selection-start-column="37" selection-end-line="280" selection-end-column="37" />
+            <state relative-caret-position="315">
+              <caret line="369" lean-forward="true" selection-start-line="369" selection-end-line="369" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#2780#2883#0" />
@@ -37,11 +37,9 @@
                 <element signature="e#8674#8852#0" />
                 <element signature="e#8908#9440#0" />
                 <element signature="e#10014#10361#0" />
-                <element signature="e#10401#10665#0" />
                 <element signature="e#10964#11521#0" />
                 <element signature="e#11623#12535#0" />
                 <element signature="e#13289#13614#0" />
-                <element signature="e#13677#13836#0" />
                 <element signature="e#13883#16151#0" />
                 <element signature="e#19122#19394#0" />
               </folding>
@@ -93,7 +91,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>end</find>
       <find>df1</find>
       <find>df</find>
       <find>predict</find>
@@ -123,6 +120,7 @@
       <find>lable</find>
       <find>print</find>
       <find>hourly</find>
+      <find>collecte</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -388,7 +386,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557307305510</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="weekly_schedule에 threshold 추가">
+      <created>1557309657522</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1557309657522</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TodoView">
@@ -518,7 +523,8 @@
     <MESSAGE value="hourly table 컬럼 변경" />
     <MESSAGE value="cbl 계산 함수 추가" />
     <MESSAGE value="날짜 조회 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="날짜 조회 추가" />
+    <MESSAGE value="weekly_schedule에 threshold 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="weekly_schedule에 threshold 추가" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -640,8 +646,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="280" column="37" selection-start-line="280" selection-start-column="37" selection-end-line="280" selection-end-column="37" />
+        <state relative-caret-position="315">
+          <caret line="369" lean-forward="true" selection-start-line="369" selection-end-line="369" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
             <element signature="e#2780#2883#0" />
@@ -657,11 +663,9 @@
             <element signature="e#8674#8852#0" />
             <element signature="e#8908#9440#0" />
             <element signature="e#10014#10361#0" />
-            <element signature="e#10401#10665#0" />
             <element signature="e#10964#11521#0" />
             <element signature="e#11623#12535#0" />
             <element signature="e#13289#13614#0" />
-            <element signature="e#13677#13836#0" />
             <element signature="e#13883#16151#0" />
             <element signature="e#19122#19394#0" />
           </folding>
