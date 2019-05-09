@@ -210,7 +210,7 @@ def calc_payment_month(date_time, meter_day):
         month = 12
     return(month)
 
-def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
+def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경, 속도 느림
     sql = f"""
     SELECT *
     FROM AH_USE_LOG_BYMINUTE_LABELED
@@ -277,24 +277,39 @@ def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end
     print(cbl_list)
     return sum(cbl_list[:4])/4 # todo: max 4/5 확인 필요
 
-def calc_number_of_times(device_id): # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-    date = datetime.datetime.now().strftime('%Y%m%d')
-    df = get_raw_data(gateway_id='ep17470141')   # table 향후 변경 필요
-    df = binding_time(df)[:date]
+def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE 1=1
+    AND DEVICE_ID = '{device_id}'
+    """
+
+    date = date or datetime.datetime.now().strftime('%Y%m%d')
+    print(date)
+    print(start)
+    print(end)
+
+    dayofweek = datetime.datetime.today().weekday()
 
     start_time = datetime.time(int(start[:2]), int(start[-2:]))
     end_time = datetime.time(int(end[:2]), int(end[-2:]))
 
-    df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
+    df = get_table_from_db(sql)
 
-    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
+    df = binding_time(df)[:date]
 
-    cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
-    cbl_list.sort()
-    print(cbl_list)
-    return 0
+    df_subset = df.loc[df.index.dayofweek == dayofweek, :]  # 요일 필터
 
-def calc_possible_ready_energy_saving(gateway_id):
+    df_hourly_per_15min = df_subset.loc[:, 'appliance_status'].resample('15min').max()
+
+    df_hourly_per_15min[df_hourly_per_15min.isna()] = 0
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time] # DR 발령 시간 필터
+
+    return sum(df_hourly_per_15min_subset.resample('1d').max())
+
+def calc_possible_ready_energy_saving(gateway_id): # todo: 작업 필요
     saving_erergy = 0
     return saving_erergy
 
