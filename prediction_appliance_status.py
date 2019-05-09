@@ -47,7 +47,7 @@ for device_address in device_address_list.device_id:
                                          n_jobs=-1)
 
     gs.fit(x, y)
-
+    print(device_address)
     print(round(gs.best_score_*100, 2), '%', sep = '')
 
     df = df.iloc[:-lag]

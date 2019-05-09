@@ -9,13 +9,28 @@ from utils import *
 
 query = """
 SELECT distinct(device_id)
-FROM AH_USE_LOG_BYMINUTE_LABELED
+FROM AH_USE_LOG_BYMINUTE_LABELED_copy
 """
 device_address_list = get_table_from_db(query, db='aihems_api_db')
 
 for device_address in device_address_list.device_id:
     if device_address == '00158D0001A42F8A1':
         continue
+    # if device_address == '00158D000151B1F91':
+    #     continue
+    # if device_address == '00158D000151B2131':
+    #     continue
+    # if device_address == '00158D000151B31C1':
+    #     continue
+    # if device_address == '00158D000151B4441':
+    #     continue
+    # if device_address == '00158D0001524AF71':
+    #     continue
+    # if device_address == '00158D000151B4751':
+    #     continue
+    # if device_address == '00158D0001A42F2F1':
+    #     continue
+
     # device_address = device_address[:-1]
     print(device_address)
     gs = load('./sample_data/joblib/'+device_address+'_labeling.joblib')
@@ -23,21 +38,17 @@ for device_address in device_address_list.device_id:
     lag = 10
 
     sql = f"""
-    SELECT AL.*
-    FROM ah_device AS AD
-    JOIN
-    ah_log_socket_201903 AS AL
-    ON AD.gateway_id = AL.gateway_id
-    WHERE 1=1
-    AND AL.device_address = '{device_address}'
+    SELECT AUL.*
+    FROM AH_GATEWAY AS AG
+    JOIN AH_USE_LOG_BYMINUTE_201903 AS AUL
+    ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+    WHERE AUL.DEVICE_ID='{device_address}'
     UNION
-    SELECT AL.*
-    FROM ah_device AS AD
-    JOIN
-    ah_log_socket_201904 AS AL
-    ON AD.gateway_id = AL.gateway_id
-    WHERE 1=1
-    AND AL.device_address = '{device_address}'
+    SELECT AUL.*
+    FROM AH_GATEWAY AS AG
+    JOIN AH_USE_LOG_BYMINUTE_201904 AS AUL
+    ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+    WHERE AUL.DEVICE_ID='{device_address}'
     """
 
     # gateway_id = ""
@@ -48,17 +59,18 @@ for device_address in device_address_list.device_id:
     # sql += device_address_condition
     # sql += gateway_id_conditon
 
-    df = labeling_db_to_db(sql, db='aihems_service_db')
+    df = labeling_db_to_db(sql, db='aihems_api_db')
 
-    x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+    # x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+    #
+    # x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
+    #
+    # df = df.iloc[:-lag]
+    #
+    # df['appliance_status'] = gs.predict(x)
+    break
 
-    x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
-
-    df = df.iloc[:-lag]
-
-    df['appliance_status'] = gs.predict(x)
-
-    write_db(df)
+    # write_db(df)
 
 
 

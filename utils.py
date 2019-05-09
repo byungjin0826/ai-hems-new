@@ -13,22 +13,23 @@ import sklearn.metrics
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
 
-def labeling_db_to_db(sql,db='aihems_service_db'):
+def labeling_db_to_db(sql,db='aihems_api_db'):
     df = get_table_from_db(sql, db)
-    df = df.dropna()
-    df.loc[:, 'energy_diff'] = 0
-    df.loc[:, 'appliance_status'] = 0
-    df.energy_diff = df.energy - df.energy.shift(1)
-    df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
-    df.loc[:,'end_point'] = 1
-    df.loc[:,'quality'] = 100
-    df = df.loc[:, cols_dic['ah_use_log_byminute_labeled'][:-1]]
-    df.loc[:, 'create_date'] = pd.datetime.today()
-    gateway_id = df.gateway_id[0]
-    df.gateway_id = gateway_id[:6] + gateway_id[-4:]
-    df.columns = ['gateway_id', 'device_id', 'end_point', 'collected_date',
-                  'collected_time', 'quality', 'onoff', 'energy',
-                  'energy_diff', 'appliance_status', 'create_date']
+    # df = df.dropna()
+    # # df.loc[:, 'energy_diff'] = 0
+    # # df.loc[:, 'appliance_status'] = 0
+    # df['appliance_status']=0
+    # # df.energy_diff = df.energy - df.energy.shift(1)
+    # df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
+    # # df.loc[:,'end_point'] = 1
+    # df.loc[:,'quality'] = 100
+    # df = df.loc[:, cols_dic['ah_use_log_byminute_labeled'][:-1]]
+    # # df.loc[:, 'create_date'] = pd.datetime.today()
+    # # gateway_id = df.gateway_id[0]
+    # # df.gateway_id = gateway_id[:6] + gateway_id[-4:]
+    # # df.columns = ['gateway_id', 'device_id', 'collect_date',
+    # #               'collect_time', 'quality', 'onoff', 'energy',
+    # #               'energy_diff', 'appliance_status']
     return df
 
 def get_appliance_name(appliance_no):
@@ -745,10 +746,9 @@ cols_dic = {
     ],
     'ah_use_log_byminute_labeled': [
         'gateway_id'
-        , 'device_address'
-        , 'end_point'
-        , 'collected_date'
-        , 'collected_time'
+        , 'device_id'
+        , 'collect_date'
+        , 'collect_time'
         , 'quality'
         , 'onoff'
         , 'energy'
