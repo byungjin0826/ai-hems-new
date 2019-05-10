@@ -8,8 +8,8 @@ file_list = os.listdir(path_dir)
 file_list.sort()
 
 for file in file_list:
-    device_id = file[:16]
-    appliance_type = get_appliance_type(device_id+'1')
+    device_id = file[:17]
+    appliance_type = get_appliance_type(device_id)
     print(appliance_type, ',', device_id)
 
     sql = """

@@ -757,6 +757,41 @@ cols_dic = {
         , 'create_date'
     ]
 }
+def get_device_list_same_type(appliance_type):
+    sql = f"""
+    SELECT APPLIANCE_NO, APPLIANCE_NAME, DEVICE_ID, GATEWAY_ID
+    FROM AH_APPLIANCE_HISTORY
+    WHERE APPLIANCE_TYPE =
+        (SELECT APPLIANCE_TYPE
+        FROM AH_APPLIANCE_TYPE
+        WHERE 1 = 1
+        AND APPLIANCE_TYPE = '{appliance_type}')
+    """
+    device_list = get_table_from_db(sql)
+    return device_list
+
+def get_appliance_type(device_id):
+    sql = f"""
+    SELECT appliance_type
+    FROM AH_APPLIANCE_HISTORY
+    WHERE 1 = 1
+    AND device_id = '{device_id}'
+    """
+    appliance_type = get_table_from_db(sql)
+    return appliance_type.values.item()
+
+def load_labeling_model(device_id):
+    root_path = './sample_data/joblib/'
+    path = root_path + f"""{device_id}_labeling.joblib"""
+    model = load(path)
+    return model
+
+def prediction_test(model, device_id):
+    df = get_raw_data(device_id=device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+    x, y = split_x_y(df, x_col='energy_diff')
+    x, y = sliding_window_transform(x, y, lag=10, step_size=30)
+    accuracy = sk.metrics.accuracy_score(y, model.predict(x))
+    return accuracy
 
 # todo: 검침일 적용
 
