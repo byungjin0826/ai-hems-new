@@ -1,55 +1,46 @@
 from utils import *
 
-# # 일단 모델을 로컬에 저장
-# member_name = input('member name : ')
-# appliance_name = input('appliance name : ')
-# # device_address = input('device_address:')
-#
-# device_address = search_device_address(member_name, appliance_name)
-
 query = """
-SELECT distinct(device_id)
-FROM AH_USE_LOG_BYMINUTE_LABELED
+SELECT distinct(device_id), gateway_id
+FROM AH_USE_LOG_BYMINUTE_LABELED_copy
 """
-device_address_list = get_table_from_db(query, db='aihems_api_db')
-
-for device_address in device_address_list.device_id:
-    if device_address == '00158D0001A42F8A1':
+device_address_df = get_table_from_db(query, db='aihems_api_db')
+device_address_list = device_address_df.values.tolist()
+for device in device_address_list:
+    if device[0] == '00158D0001A42F8A1':
         continue
-    # device_address = device_address[:-1]
-    print(device_address)
+    device_address = device[0]
+    gateway_id = device[1]
     gs = load('./sample_data/joblib/'+device_address+'_labeling.joblib')
-
+    test_bed_list = ['ep18270486', 'ep18270236', 'ep18270363']
     lag = 10
+    if gateway_id in test_bed_list:
+        sql = f"""
+        SELECT AUL.*
+        FROM AH_GATEWAY AS AG
+        JOIN AH_USE_LOG_BYMINUTE_201904 AS AUL
+        ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+        WHERE AUL.DEVICE_ID='{device_address}'
+        """
+    else:
+        sql = f"""
+        SELECT AUL.*
+        FROM AH_GATEWAY AS AG
+        JOIN AH_USE_LOG_BYMINUTE_201903 AS AUL
+        ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+        WHERE AUL.DEVICE_ID='{device_address}'
+        UNION
+        SELECT AUL.*
+        FROM AH_GATEWAY AS AG
+        JOIN AH_USE_LOG_BYMINUTE_201904 AS AUL
+        ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+        WHERE AUL.DEVICE_ID='{device_address}'
+        """
 
-    sql = f"""
-    SELECT AL.*
-    FROM ah_device AS AD
-    JOIN
-    ah_log_socket_201903 AS AL
-    ON AD.gateway_id = AL.gateway_id
-    WHERE 1=1
-    AND AL.device_address = '{device_address}'
-    UNION
-    SELECT AL.*
-    FROM ah_device AS AD
-    JOIN
-    ah_log_socket_201904 AS AL
-    ON AD.gateway_id = AL.gateway_id
-    WHERE 1=1
-    AND AL.device_address = '{device_address}'
-    """
-
-    # gateway_id = ""
-    # device_address_condition = f"AND LOG3.device_address = '{device_address}'"
-    # device_address_condition_1 = f"AND LOG4.device_address = '{device_address}'"
-    # gateway_id_condition = f"AND gateway_id = {gateway_id}"
-
-    # sql += device_address_condition
-    # sql += gateway_id_conditon
-
-    df = labeling_db_to_db(sql, db='aihems_service_db')
-
+    df = labeling_db_to_db(sql, db='aihems_api_db')
+    if df.empty:
+        print('empty : '+device_address)
+        continue
     x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
     x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
@@ -57,8 +48,35 @@ for device_address in device_address_list.device_id:
     df = df.iloc[:-lag]
 
     df['appliance_status'] = gs.predict(x)
-
-    write_db(df)
+    df_dic = df.iloc[0].to_dict()
+    key = df_dic['gateway_id']+'-'+df_dic['device_id']+'-'+df_dic['collect_date']+'-'+df_dic['collect_time']
+    if gateway_id in test_bed_list:
+        sql = f"""
+            SELECT CONCAT(AUL.GATEWAY_ID,"-",AUL.DEVICE_ID,"-",AUL.COLLECT_DATE,"-",AUL.COLLECT_TIME) AS PRIMARY_KEY 
+            FROM AH_GATEWAY AS AG
+            JOIN AH_USE_LOG_BYMINUTE_LABELED_copy AS AUL
+            ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+            WHERE AUL.DEVICE_ID='{device_address}'
+            AND COLLECT_DATE >= '20190401' 
+                """
+    else:
+        sql = f"""
+            SELECT CONCAT(AUL.GATEWAY_ID,"-",AUL.DEVICE_ID,"-",AUL.COLLECT_DATE,"-",AUL.COLLECT_TIME) AS PRIMARY_KEY 
+            FROM AH_GATEWAY AS AG
+            JOIN AH_USE_LOG_BYMINUTE_LABELED_copy AS AUL
+            ON AG.GATEWAY_ID=AUL.GATEWAY_ID
+            WHERE AUL.DEVICE_ID='{device_address}'
+            AND COLLECT_DATE >= '20190301' 
+        """
+    primary_key_df = get_table_from_db(sql, db='aihems_api_db')
+    if primary_key_df.empty:
+        primary_key = " "
+    else:
+        primary_key = primary_key_df.primary_key[0]
+    if key == primary_key:
+        print("duplicate : "+ device_address)
+    else:
+        write_db(df,'AH_USE_LOG_BYMINUTE_LABELED_copy')
 
 
 
