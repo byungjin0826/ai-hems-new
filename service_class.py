@@ -22,3 +22,22 @@ class Home:
 
     def adr(self):
         return 0
+
+
+class Appliance:
+    def __init__(self):
+        self.name = None
+        self.using_elec_per_hour = None
+        self.standby_elec_per_hour = None
+        self.connected_date = None
+        self.appliance_no = None
+
+class Device:
+    def __init__(self):
+        self.device_id = None
+        self.device_type = None
+
+class Gateway:
+    def __init__(self):
+        self.gateway_id = None
+        self.house_name_installed = None
