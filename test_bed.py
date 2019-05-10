@@ -19,4 +19,3 @@ schedule = calc_weekly_schedule(device_list.device_id[4])
 #
 # write_db(df, table_name='ah_usage_hourly')
 #
-#

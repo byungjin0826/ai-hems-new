@@ -8,29 +8,38 @@ from sqlalchemy import create_engine
 from joblib import dump, load
 import time
 import sklearn.metrics
-import sklearn.metrics
+import datetime
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
 
-def labeling_db_to_db(sql,db='aihems_api_db'):
+def labeling_db_to_db(sql,db='aihems_service_db'):
     df = get_table_from_db(sql, db)
-    df['appliance_status'] = 0
-    df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
     df = df.dropna()
-    # df.loc[:, 'energy_diff'] = 0
-    # df['appliance_status']=0
-    # df.energy_diff = df.energy - df.energy.shift(1)
-    # df.loc[:,'end_point'] = 1
+    df.loc[:, 'energy_diff'] = 0
+    df.loc[:, 'appliance_status'] = 0
+    df.energy_diff = df.energy - df.energy.shift(1)
+    df.loc[df.energy_diff.isna(), 'energy_diff'] = 0
+    df.loc[:,'end_point'] = 1
     df.loc[:,'quality'] = 100
-    df = df.loc[:, cols_dic['ah_use_log_byminute_labeled']]
-    # df.loc[:, 'create_date'] = pd.datetime.today()
-    # gateway_id = df.gateway_id[0]
-    # df.gateway_id = gateway_id[:6] + gateway_id[-4:]
-    # df.columns = ['gateway_id', 'device_id', 'collect_date',
-    #               'collect_time', 'quality', 'onoff', 'energy',
-    #               'energy_diff', 'appliance_status']
+    df = df.loc[:, cols_dic['ah_use_log_byminute_labeled'][:-1]]
+    df.loc[:, 'create_date'] = pd.datetime.today()
+    gateway_id = df.gateway_id[0]
+    df.gateway_id = gateway_id[:6] + gateway_id[-4:]
+    df.columns = ['gateway_id', 'device_id', 'end_point', 'collect_date',
+                  'collect_time', 'quality', 'onoff', 'energy',
+                  'energy_diff', 'appliance_status', 'create_date']
     return df
+
+def get_appliance_type(device_id):
+    sql = f"""
+    SELECT appliance_type
+    FROM AH_APPLIANCE_HISTORY
+    WHERE 1=1
+    AND device_id = '{device_id}'
+    """
+    appliance_type = get_table_from_db(sql)
+    return appliance_type.values.item()
 
 def get_appliance_name(appliance_no):
     sql = f"""
@@ -72,22 +81,56 @@ def get_device_list(gateway_id):
     device_list = get_table_from_db(sql)
     return device_list
 
-def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
+def get_device_list_same_type(appliance_type):
     sql = f"""
-    SELECT *
-    FROM {table_name}
-    WHERE 1=1
+    SELECT APPLIANCE_NO, APPLIANCE_NAME, DEVICE_ID, GATEWAY_ID
+    FROM AH_APPLIANCE_HISTORY
+    WHERE APPLIANCE_TYPE = 
+            (SELECT APPLIANCE_TYPE
+            FROM AH_APPLIANCE_TYPE
+            WHERE 1 = 1
+            AND APPLIANCE_TYPE = '{appliance_type}')
     """
+    device_list = get_table_from_db(sql)
+    return device_list
 
-    if gateway_id != None:
-        sql += f"""AND gateway_id = '{gateway_id}'\n"""
-
-    if device_id != None:
-        if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
-            device_id = device_id[:-1]
-        sql += f"""AND device_id = '{device_id}'\n"""
-
+def get_appliance_types():
+    sql = """
+    SELECT *
+    FROM AH_APPLIANCE_TYPE
+    """
     df = get_table_from_db(sql)
+    return df
+
+def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
+                 sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
+    start = start or (datetime.datetime.now() - datetime.timedelta(30)).strftime('%Y%m%d')
+    end = end or datetime.datetime.now().strftime('%Y%m%d')
+    months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
+
+    df = pd.DataFrame()
+    for month in months:
+        sql = f"""
+        SELECT *
+        FROM {table_name}_{month}
+        WHERE 1=1
+        AND COLLECT_DATE >= {start}
+        AND COLLECT_DATE <= {end}
+        """
+
+        if gateway_id != None:
+            sql += f"""AND gateway_id = '{gateway_id}'\n"""
+
+        if device_id != None:
+            sql += f"""AND device_id = '{device_id}'\n"""
+
+        temp = get_table_from_db(sql)
+        df = df.append(temp)
+        if month_print:
+            print(month)
+
+        if sql_print:
+            print(sql)
     return df
 
 def select_device(device_list):
@@ -111,6 +154,39 @@ def get_house_no(house_name):
     """
     house_no = get_table_from_db(sql)
     return house_no.values.item()
+
+def get_adr_schedule():
+    now = datetime.datetime.now().date().strftime('%y%m%d')
+    sql = f"""
+    SELECT *
+    FROM adr
+    WHERE 1=1
+    AND start_date >= {now}
+    """
+    date_time = get_table_from_db(sql)
+    return date_time
+
+def get_usage_summary(df):
+    df.loc[:, 'break_point'] = df.appliance_status != df.appliance_status.shift(1)
+    df = binding_time(df)
+    time_table = df.loc[df.break_point == True, ['appliance_status']]
+    start = df.index[0]
+    result = pd.DataFrame(columns=['start', 'end', 'duration', 'sum_of_energy_diff', 'appliance_status'])
+    for end in time_table.index[1:]:
+        temp = {'start': start,
+                'end':end,
+                'duration':int((end-start).seconds/60),
+                'sum_of_energy_diff':int(sum(df.loc[start:end].energy_diff)),
+                'appliance_status':df.loc[start].appliance_status}
+        result = result.append(temp, ignore_index=True)
+        start = end
+    return result
+
+def load_labeling_model(device_id):
+    root_path = './sample_data/joblib/'
+    path = root_path + f"""{device_id}_labeling.joblib"""
+    model = load(path)
+    return model
 
 def search_device_address(member_name, appliance_name):
     member_name = member_name or '박재훈'
@@ -149,7 +225,7 @@ def calc_payment_month(date_time, meter_day):
         month = 12
     return(month)
 
-def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
+def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경, 속도 느림
     sql = f"""
     SELECT *
     FROM AH_USE_LOG_BYMINUTE_LABELED
@@ -171,45 +247,94 @@ def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또
     return energy_history_table
 
 def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 미터가 있는 경우 meter 데이터를 활용
+    # 시간당 데이터 필요 없을 수 있음
+    device_list = get_device_list(gateway_id)
+    if check_meter(device_list):
+        print('True')
+
     df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABELED')   # table 향후 변경 필요
     df = binding_time(df)
     house_name = get_house_name(gateway_id)
     house_no = get_house_no(house_name)
 
-    df_hourly = df.resample('1H').sum()
+    df_hourly = df.resample('15min').sum()
 
     # db에 있는 형식을 맞추기 위한...
+    df_hourly = unpacking_time(df_hourly)
     df_hourly.loc[:, 'house_no'] = house_no
-    df_hourly.loc[:, 'year'] = [str(x).replace("-", "")[:4] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'month'] = [str(x).replace("-", "")[4:6] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'day'] = [str(x).replace("-", "")[6:] for x in df_hourly.index.date]
-    df_hourly.loc[:, 'hour'] = [str(x)[:2] for x in df_hourly.index.time]
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
-def calc_weekly_schedule(device_id): # todo: 수정 중
-    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
-    df = binding_time(df)
-    schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
-    return schedule
-
-def calc_cbl(house_no, year, month, day, hour):
+def calc_weekly_schedule(device_id, threshold = 0.95):
     sql = f"""
     SELECT *
-    FROM ah_usage_hourly
-    WHERE 1=1
-    
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE device_id = '{device_id}'
     """
     df = get_table_from_db(sql)
-    usage_before_5days = df
-    cbl = usage_before_5days * (4/5)
-    return cbl
+    df = binding_time(df)
+    schedule_sum = df.pivot_table(values='appliance_status', index=df.index.time,
+                              columns=df.index.dayofweek, aggfunc='sum')
+    schedule_count = df.pivot_table(values='appliance_status', index=df.index.time,
+                              columns=df.index.dayofweek, aggfunc='count')
+    schedule = schedule_sum/schedule_count
+    schedule = schedule>(1-threshold)
+    return schedule
 
-def calc_number_of_times(device_id):
+def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'): # todo: 쿼리로 불러오도록 수정
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE gateway_id = '{gateway_id}' 
+    """  # table 향후 변경 필요
+    df = get_table_from_db(sql)
+    df = binding_time(df)[:date]
 
-    return 0
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
 
-def check_meter(device_list): # todo: 미터가 있는지 학인
+    df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
+    cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
+    cbl_list.sort()
+    print(cbl_list)
+    return sum(cbl_list[1:])/4 # 최대 4일의 평균
+
+def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
+    sql = f"""
+    SELECT *
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE 1=1
+    AND DEVICE_ID = '{device_id}'
+    """
+
+    date = date or datetime.datetime.now().strftime('%Y%m%d')
+
+    dayofweek = datetime.datetime.today().weekday()
+
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
+
+    df = get_table_from_db(sql)
+
+    df = binding_time(df)[:date]
+
+    df_subset = df.loc[df.index.dayofweek == dayofweek, :]  # 요일 필터
+
+    df_hourly_per_15min = df_subset.loc[:, 'appliance_status'].resample('15min').max()
+
+    df_hourly_per_15min[df_hourly_per_15min.isna()] = 0
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time] # DR 발령 시간 필터
+
+    return sum(df_hourly_per_15min_subset.resample('1d').max())
+
+def calc_possible_ready_energy_saving(gateway_id): # todo: 작업 필요
+    saving_erergy = 0
+    return saving_erergy
+
+def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
 
 def excel_to_db(names):
@@ -225,7 +350,7 @@ def excel_to_db(names):
 
     for name in names:
         df = load_data(name)
-        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+        write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_copy')
         print(name)
     return df
 
@@ -255,7 +380,7 @@ def get_table_from_db(sql, db = 'aihems_api_db'):
 
 def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
     """
-    상태 판별 예측을 위한 입력 데이터 변환
+    상태 판별 예측을 위한 입력 데이터 변환, 나중에 날짜나 요일, 시간, 날씨 데이터를 추가
     :param x: 분 단위 전력 사용량
     :param step_size: Sliding window 의 사이즈
     :param lag: 숫자만큼 지연
@@ -289,23 +414,23 @@ def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
 def set_data_type(df):  # 현재 사용안함
     data_type_list = {
         'energy':float
-        , 'collected_date':int
+        , 'collect_date':int
         , 'month':int
         , 'dayinmonth':int
         # , 'day'
     }
 
-    if df.columns in 'collected_date':
+    if df.columns in 'collect_date':
         df.loc[:, ]
     df_data_type_setted = 1
     return df_data_type_setted
 
-def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으로 변환
-    collected_date = pd.to_datetime(collected_date)
-    collected_date_transformed = {
-        'month_x':collected_date.month
+def transform_collect_date(collect_date): # todo: 날짜를 sin 과 cos 으로 변환
+    collect_date = pd.to_datetime(collect_date)
+    collect_date_transformed = {
+        'month_x':collect_date.month
     }
-    return collected_date_transformed
+    return collect_date_transformed
 
 def make_usage_daily_predict_model(gateway_id):
     df = get_raw_data(device_id=gateway_id)
@@ -360,7 +485,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
-def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED', if_exists = 'append'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
@@ -376,21 +501,21 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기�
                            encoding='utf-8')
     # conn = engine.connect()
 
-    df.to_sql(table_name, con=engine, if_exists='append', index=False)
+    df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
 
     return 0
 
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
-    df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
-    df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
+    df.loc[:, 'collect_date'] = [str(x) for x in df.collect_date]
+    df.loc[:, 'collect_time'] = [str(x) for x in df.collect_time]
+    df.loc[:, 'time'] = pd.to_datetime(df.collect_date + " " + df.collect_time, format='%Y%m%d %H:%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
 def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df = df_time_indexing.reset_index()
-    df.loc[:, 'collected_date'] = [x for x in df.date]
-    df.loc[:, 'collected_time'] = [x for x in df.time]
+    df.loc[:, 'collect_date'] = [x for x in df.date]
+    df.loc[:, 'collect_time'] = [x for x in df.time]
     return df
 
 def select_regression_model(model_name):
@@ -561,6 +686,13 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+def prediction_test(model, device_id):
+    df = get_raw_data(device_id=device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+    x, y = split_x_y(df, x_col='energy_diff')
+    x, y = sliding_window_transform(x, y, lag=10, step_size=30)
+    accuracy = sk.metrics.accuracy_score(y, model.predict(x))
+    return accuracy
+
 cols_dic = {
     'ah_appliance': [
         'appliance_no'
@@ -676,7 +808,7 @@ cols_dic = {
     ],
     'ah_usage_daily_predict': [
         'house_no'
-        , 'collected_date'
+        , 'collect_date'
         , 'use_energy'
         , 'predict_use_energy'
         , 'progressive_level'
@@ -735,8 +867,8 @@ cols_dic = {
         'gateway_id'
         , 'device_address'
         , 'end_point'
-        , 'collected_date'
-        , 'collected_time'
+        , 'collect_date'
+        , 'collect_time'
         , 'quality'
         , 'onoff'
         , 'energy'
@@ -758,9 +890,22 @@ cols_dic = {
     ]
 }
 
-# todo: 검침일 적용
+# todo: 업데이트 코드 작성(update_test)
 
-# todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-# 전체 데이터가 6초 걸림
+def update(df, table_name):
+    write_db(df, table_name='temp', if_exists='replace')
+    sql = f"""
+    UPDATE final_table AS f
+    SET col1 = t.col1
+    FROM temp_table AS t
+    WHERE f.id = t.id
+    """
+    return
 
-# todo: label로 변경
+# todo: 예외처리
+
+# todo: class 구성
+
+# todo: 같은 타입 전체 데이터로 학습
+
+# todo: erm 설치
