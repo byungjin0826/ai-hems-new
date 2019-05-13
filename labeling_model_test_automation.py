@@ -14,10 +14,10 @@ for file in file_list:
 
     sql = """
     SELECT DISTINCT(device_id)
-    FROM AH_USE_LOG_BYMINUTE_LABELED
+    FROM AH_USE_LOG_BYMINUTE_LABELED_cc
     """
 
-    list = [x + '1' for x in get_table_from_db(sql).values.flatten()]
+    list = [x for x in get_table_from_db(sql).values.flatten()]
     df = get_device_list_same_type(appliance_type)
     df1 = df.loc[df.device_id.isin(list), :]
     df1 = df1.reset_index(drop=True)
