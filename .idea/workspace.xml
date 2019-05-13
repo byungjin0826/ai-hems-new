@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="joblib 파일 업로드">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/service_class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prediction_by_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_by_type.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
@@ -23,8 +22,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="20" column="37" lean-forward="true" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+            <state relative-caret-position="365">
+              <caret line="663" column="40" lean-forward="true" selection-start-line="663" selection-start-column="40" selection-end-line="663" selection-end-column="40" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -33,10 +32,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test.py">
+        <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+            <state relative-caret-position="342">
+              <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -178,6 +177,7 @@
         <option value="$PROJECT_DIR$/service_class.py" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/clustering_test.py" />
+        <option value="$PROJECT_DIR$/prediction_by_type.py" />
       </list>
     </option>
   </component>
@@ -316,7 +316,28 @@
       <option name="project" value="LOCAL" />
       <updated>1557726473886</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="type 별 모델 생성 및 테스트">
+      <created>1557734415716</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734415716</updated>
+    </task>
+    <task id="LOCAL-00012" summary="type 별 테스트">
+      <created>1557734450109</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734450109</updated>
+    </task>
+    <task id="LOCAL-00013" summary="joblib 파일 업로드">
+      <created>1557734596189</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734596189</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TodoView">
@@ -436,7 +457,10 @@
     <MESSAGE value="수정" />
     <MESSAGE value="model 별 학습 함수 추가" />
     <MESSAGE value="그전에 만들었던 것 복구" />
-    <option name="LAST_COMMIT_MESSAGE" value="그전에 만들었던 것 복구" />
+    <MESSAGE value="type 별 모델 생성 및 테스트" />
+    <MESSAGE value="type 별 테스트" />
+    <MESSAGE value="joblib 파일 업로드" />
+    <option name="LAST_COMMIT_MESSAGE" value="joblib 파일 업로드" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -592,18 +616,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="20" column="37" lean-forward="true" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+        <state relative-caret-position="365">
+          <caret line="663" column="40" lean-forward="true" selection-start-line="663" selection-start-column="40" selection-end-line="663" selection-end-column="40" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+        <state relative-caret-position="342">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>

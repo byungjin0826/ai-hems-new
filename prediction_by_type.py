@@ -19,8 +19,6 @@ print(get_table_from_db(sql))
 
 device_type = input('Appliance_type: ')
 
-
-
 if os.path.exists(f'./sample_data/{device_type}.joblib') == False:
     model = prediction_status_model_by_type(device_type)
     dump(model, f'./sample_data/{device_type}.joblib')
