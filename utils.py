@@ -358,7 +358,7 @@ def test_prediction_status_by_type(appliance_type):
 
     device_list = get_table_from_db(sql)
 
-    model = load('./sample_data/H0.joblib')
+    model = load(f'./sample_data/{appliance_type}.joblib')
 
     for device_id, gateway_id in device_list.loc[:, ['device_id', 'gateway_id']].values:
         sql = f"""
