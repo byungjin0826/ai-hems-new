@@ -1,6 +1,7 @@
 from utils import *
 import datetime
 
+
 class Home:
     def __init__(self, name):
         self.name = name
@@ -10,6 +11,7 @@ class Home:
         self.approval_using_auto_control = False
         self.approval_real_time_monitoring = False
         self.approval_adr = False
+        # self.daily_usage_prediction_model = load(filename)
 
     def auto_control(self):
         for device_id in self.device_list:
@@ -17,7 +19,7 @@ class Home:
 
         return 0
 
-    def real_time_monitoring(self):
+    def real_time_monitoring(self): # 누진 구간
         return 0
 
     def adr(self):
@@ -32,15 +34,18 @@ class Appliance:
         self.connected_date = None
         self.appliance_no = None
 
+
 class Device:
     def __init__(self):
         self.device_id = None
         self.device_type = None
 
+
 class Gateway:
     def __init__(self):
         self.gateway_id = None
         self.house_name_installed = None
+
 
 class Analysis:
     def __init__(self):
