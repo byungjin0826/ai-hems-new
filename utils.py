@@ -31,6 +31,15 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
                   'energy_diff', 'appliance_status', 'create_date']
     return df
 
+def get_device_id(device_name):
+    sql = f"""
+    SELECT device_id
+    FROM ah_device
+    WHERE device_name = '{device_name}'
+    """
+    device_id = get_table_from_db(sql)
+    return device_id.values.item()
+
 def get_appliance_name(appliance_no):
     sql = f"""
     SELECT appliance_name
@@ -388,9 +397,64 @@ def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 �
 
 def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df = df_time_indexing.reset_index()
-    df.loc[:, 'collected_date'] = [x for x in df.date]
-    df.loc[:, 'collected_time'] = [x for x in df.time]
+    df.loc[:, 'collect_date'] = [x for x in df.date]
+    df.loc[:, 'collect_time'] = [x for x in df.time]
     return df
+
+def prediction_status_model_by_type(appliance_type):
+    # 같은 타입의 device list 생성
+
+    appliance_type = 'F0'
+
+    sql = f"""
+    SELECT A.gateway_id, A.device_id, A.appliance_type, A.appliance_name
+    FROM (SELECT p1.gateway_id, p1.DEVICE_ID, p1.appliance_type, p1.APPLIANCE_NAME
+            FROM AH_APPLIANCE_HISTORY p1 LEFT JOIN AH_APPLIANCE_HISTORY p2
+            ON (p1.device_id = p2.device_id AND p1.create_date < p2.create_date)
+    WHERE p2.create_date IS NULL) A
+    LEFT JOIN AH_GATEWAY_INSTALL B
+    ON A.gateway_id = B.gateway_id
+    WHERE 1=1
+    AND A.appliance_type = '{appliance_type}'
+    AND A.gateway_id NOT IN ('ep18270236', 'ep18270363', 'ep18270486')
+    """
+    device_list = get_table_from_db(sql)
+
+    x = []
+    y = []
+    for device_id in device_list.device_id:
+        sql = f"""
+        SELECT *
+        FROM AH_USE_LOG_BYMINUTE_LABELED_cc
+        WHERE 1=1
+        AND device_id = '{device_id}'
+        """
+        # print(device_id)
+        df = get_table_from_db(sql)
+
+        if len(df) == 0:
+            continue
+
+        x_temp, y_temp = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+        x_temp, y_temp = sliding_window_transform(x_temp, y_temp)
+
+        x.append(x_temp)
+        y.append(y_temp)
+        print(device_id, ': ', len(df))
+
+    x = x.pop()
+    y = y.pop()
+    model, params = select_classification_model('random forest')
+    gs = sk.model_selection.GridSearchCV(estimator=model,
+                                         param_grid=params,
+                                         scoring='accuracy',
+                                         n_jobs=-1,
+                                         cv=5)
+
+    y_pred = gs.predict(x)
+    print(sk.metrics.accuracy_score(y, y_pred))
+    gs.fit(x, y)
+    return gs
 
 def select_regression_model(model_name):
     regressions = {
@@ -732,10 +796,9 @@ cols_dic = {
     ],
     'ah_use_log_byminute': [
         'gateway_id'
-        , 'device_address'
-        , 'end_point'
-        , 'collected_date'
-        , 'collected_time'
+        , 'device_id'
+        , 'collect_date'
+        , 'collect_time'
         , 'quality'
         , 'onoff'
         , 'energy'
@@ -768,3 +831,6 @@ cols_dic = {
 # todo: 예전 데이터 DB에 업로드 하기
 
 # todo: 클러스터링
+
+# todo: 모델이 있는지 여부를 저장하는 테이블 필요
+
