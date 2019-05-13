@@ -338,6 +338,48 @@ def set_data_type(df):  # 현재 사용안함
     df_data_type_setted = 1
     return df_data_type_setted
 
+def test_prediction_status_model(model, x, y):
+    accuracy = sk.metrics.accuracy_score(y, model.predict(x))
+    return accuracy
+
+def test_prediction_status_by_type(appliance_type):
+    sql = f"""
+    SELECT A.gateway_id, A.device_id, A.appliance_type, A.appliance_name
+    FROM (SELECT p1.gateway_id, p1.DEVICE_ID, p1.appliance_type, p1.APPLIANCE_NAME
+            FROM AH_APPLIANCE_HISTORY p1 LEFT JOIN AH_APPLIANCE_HISTORY p2
+            ON (p1.device_id = p2.device_id AND p1.create_date < p2.create_date)
+    WHERE p2.create_date IS NULL) A
+    LEFT JOIN AH_GATEWAY_INSTALL B
+    ON A.gateway_id = B.gateway_id
+    WHERE 1=1
+    AND A.appliance_type = '{appliance_type}'
+    AND A.gateway_id NOT IN ('ep18270236', 'ep18270363', 'ep18270486')
+    """
+
+    device_list = get_table_from_db(sql)
+
+    model = load('./sample_data/H0.joblib')
+
+    for device_id, gateway_id in device_list.loc[:, ['device_id', 'gateway_id']].values:
+        sql = f"""
+        SELECT *
+        FROM AH_USE_LOG_BYMINUTE_LABELED_cc
+        WHERE 1=1
+        AND gateway_id = '{gateway_id}'
+        AND device_id = '{device_id}'
+        """
+        df = get_table_from_db(sql)
+
+        if len(df) == 0:
+            continue
+
+        x_temp, y_temp = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+        x_temp, y_temp = sliding_window_transform(x_temp, y_temp, step_size=30, lag=10)
+
+        accuracy = sk.metrics.accuracy_score(y_temp, model.predict(x_temp))
+        print(device_id,': ', accuracy, sep='')
+    return 0
+
 def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으로 변환
     collected_date = pd.to_datetime(collected_date)
     collected_date_transformed = {
@@ -434,8 +476,6 @@ def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
 def prediction_status_model_by_type(appliance_type):
     # 같은 타입의 device list 생성
 
-    appliance_type = 'F0'
-
     sql = f"""
     SELECT A.gateway_id, A.device_id, A.appliance_type, A.appliance_name
     FROM (SELECT p1.gateway_id, p1.DEVICE_ID, p1.appliance_type, p1.APPLIANCE_NAME
@@ -480,9 +520,6 @@ def prediction_status_model_by_type(appliance_type):
                                          scoring='accuracy',
                                          n_jobs=-1,
                                          cv=5)
-
-    y_pred = gs.predict(x)
-    print(sk.metrics.accuracy_score(y, y_pred))
     gs.fit(x, y)
     return gs
 
