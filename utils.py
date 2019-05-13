@@ -208,7 +208,7 @@ def calc_number_of_times(device_id):
 
     return 0
 
-def check_meter(device_list): # todo: 미터가 있는지 학인
+def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
 
 def excel_to_db(names):
@@ -764,3 +764,7 @@ cols_dic = {
 # 전체 데이터가 6초 걸림
 
 # todo: label로 변경
+
+# todo: 예전 데이터 DB에 업로드 하기
+
+# todo: 클러스터링

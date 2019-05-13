@@ -41,3 +41,7 @@ class Gateway:
     def __init__(self):
         self.gateway_id = None
         self.house_name_installed = None
+
+class Analysis:
+    def __init__(self):
+        self.model = None
