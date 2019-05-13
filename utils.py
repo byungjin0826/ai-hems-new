@@ -9,6 +9,7 @@ from joblib import dump, load
 import time
 import sklearn.metrics
 import sklearn.metrics
+import datetime
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -213,12 +214,41 @@ def calc_cbl(house_no, year, month, day, hour):
     cbl = usage_before_5days * (4/5)
     return cbl
 
-def calc_number_of_times(device_id):
+def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
+    sql = f"""
+       SELECT *
+       FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+       WHERE 1=1
+       AND DEVICE_ID = '{device_id}'
+       """
 
-    return 0
+    date = date or datetime.datetime.now().strftime('%Y%m%d')
+
+    dayofweek = datetime.datetime.today().weekday()
+
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
+
+    df = get_table_from_db(sql)
+
+    df = binding_time(df)[:date]
+
+    df_subset = df.loc[df.index.dayofweek == dayofweek, :]  # 요일 필터
+
+    df_hourly_per_15min = df_subset.loc[:, 'appliance_status'].resample('15min').max()
+
+    df_hourly_per_15min[df_hourly_per_15min.isna()] = 0
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]  # DR 발령 시간 필터
+
+    return sum(df_hourly_per_15min_subset.resample('1d').max())
 
 def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
+
+def calc_possible_ready_energy_saving(gateway_id): # todo: 작업 필요
+    saving_erergy = 0
+    return saving_erergy
 
 def excel_to_db(names):
     def load_data(name):

@@ -26,8 +26,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-675">
-              <caret line="402" lean-forward="true" selection-start-line="402" selection-end-line="402" />
+            <state relative-caret-position="418">
+              <caret line="250" column="24" selection-start-line="250" selection-start-column="24" selection-end-line="250" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -291,7 +294,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557706324958</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="model 별 학습 함수 추가">
+      <created>1557726238779</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1557726238779</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView">
@@ -316,8 +326,8 @@
       <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5021075" side_tool="true" weight="0.3264642" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49448732" weight="0.32502595" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" visible="true" weight="0.33160084" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="3" sideWeight="0.49448732" visible="true" weight="0.3243243" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" weight="0.33160084" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49947312" weight="0.324295" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
@@ -409,7 +419,8 @@
     <MESSAGE value="dd" />
     <MESSAGE value="merge" />
     <MESSAGE value="수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="수정" />
+    <MESSAGE value="model 별 학습 함수 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="model 별 학습 함수 추가" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -577,8 +588,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-675">
-          <caret line="402" lean-forward="true" selection-start-line="402" selection-end-line="402" />
+        <state relative-caret-position="418">
+          <caret line="250" column="24" selection-start-line="250" selection-start-column="24" selection-end-line="250" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
