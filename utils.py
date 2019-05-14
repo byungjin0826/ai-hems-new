@@ -359,6 +359,7 @@ def test_prediction_status_by_type(appliance_type):
 
     device_list = get_table_from_db(sql)
 
+
     model = load(f"""./sample_data/{appliance_type}.joblib""")
 
     for device_id, gateway_id in device_list.loc[:, ['device_id', 'gateway_id']].values:
@@ -694,6 +695,11 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+def draw_energy_diff_by_device():
+    return 0
+
+
+
 cols_dic = {
     'ah_appliance': [
         'appliance_no'
@@ -903,4 +909,6 @@ cols_dic = {
 # todo: 클러스터링
 
 # todo: 모델이 있는지 여부를 저장하는 테이블 필요
+
+# todo: python 비동기 테스트
 

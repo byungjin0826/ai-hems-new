@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="joblib 업데이트">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/service_class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prediction_by_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_by_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/A1.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/B2.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/D1.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/F0.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/H0.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/H5.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/J0.joblib" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
@@ -69,11 +76,11 @@
     </splitter>
 =======
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="20" column="37" lean-forward="true" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+            <state relative-caret-position="467">
+              <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -81,14 +88,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+            <state>
+              <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -130,7 +134,7 @@
         <entry file="file://$PROJECT_DIR$/service_class.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="437">
-              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -141,8 +145,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/clustering_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="133">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
@@ -171,8 +175,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>end</find>
-      <find>df1</find>
       <find>df</find>
       <find>predict</find>
       <find>gs</find>
@@ -201,6 +203,8 @@
       <find>get_appli</find>
       <find>prediction_test</find>
       <find>test</find>
+      <find>by_type</find>
+      <find>test_</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -224,10 +228,11 @@
         <option value="$PROJECT_DIR$/10_upload.py" />
         <option value="$PROJECT_DIR$/labeling_model_test_automation.py" />
         <option value="$PROJECT_DIR$/aa_test.py" />
-        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/service_class.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/prediction_by_type.py" />
         <option value="$PROJECT_DIR$/clustering_test.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
       </list>
     </option>
   </component>
@@ -371,7 +376,49 @@
       <option name="project" value="LOCAL" />
       <updated>1557726473886</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="type 별 모델 생성 및 테스트">
+      <created>1557734415716</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734415716</updated>
+    </task>
+    <task id="LOCAL-00012" summary="type 별 테스트">
+      <created>1557734450109</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734450109</updated>
+    </task>
+    <task id="LOCAL-00013" summary="joblib 파일 업로드">
+      <created>1557734596189</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734596189</updated>
+    </task>
+    <task id="LOCAL-00014" summary="공백제거">
+      <created>1557735041213</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1557735041213</updated>
+    </task>
+    <task id="LOCAL-00015" summary="joblib 경로 수정">
+      <created>1557735429035</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1557735429035</updated>
+    </task>
+    <task id="LOCAL-00016" summary="joblib 업데이트">
+      <created>1557793746084</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1557793746084</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TodoView">
@@ -400,13 +447,13 @@
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49448732" weight="0.3243243" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" visible="true" weight="0.33160084" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" weight="0.33160084" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49947312" weight="0.32328483" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="10" weight="0.32952183" />
+      <window_info active="true" anchor="bottom" id="TODO" order="10" visible="true" weight="0.32952183" />
       <window_info anchor="bottom" id="Console" order="11" />
       <window_info anchor="bottom" id="DB Execution Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -494,7 +541,13 @@
     <MESSAGE value="수정" />
     <MESSAGE value="model 별 학습 함수 추가" />
     <MESSAGE value="그전에 만들었던 것 복구" />
-    <option name="LAST_COMMIT_MESSAGE" value="그전에 만들었던 것 복구" />
+    <MESSAGE value="type 별 모델 생성 및 테스트" />
+    <MESSAGE value="type 별 테스트" />
+    <MESSAGE value="joblib 파일 업로드" />
+    <MESSAGE value="공백제거" />
+    <MESSAGE value="joblib 경로 수정" />
+    <MESSAGE value="joblib 업데이트" />
+    <option name="LAST_COMMIT_MESSAGE" value="joblib 업데이트" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
@@ -668,22 +721,23 @@
     <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="437">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/clustering_test.py">
+    <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        <state>
+          <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
+    <entry file="file://$PROJECT_DIR$/clustering_test.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
 <<<<<<< HEAD
         <state relative-caret-position="-117">
           <caret line="51" column="32" selection-start-line="51" selection-start-column="32" selection-end-line="51" selection-end-column="32" />
@@ -695,11 +749,16 @@
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
+=======
+        <state relative-caret-position="133">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+>>>>>>> 59aae3ada8def49a5327a4fbc688adac8b953748
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         <state>
@@ -711,8 +770,12 @@
         <state relative-caret-position="361">
           <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
 >>>>>>> 7a23d740925baf9f11236cf18545fabbd6aafdd3
+=======
+        <state relative-caret-position="467">
+          <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
+>>>>>>> 59aae3ada8def49a5327a4fbc688adac8b953748
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
