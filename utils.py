@@ -10,6 +10,7 @@ import time
 import sklearn.metrics
 import sklearn.metrics
 import datetime
+import sys
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -358,7 +359,7 @@ def test_prediction_status_by_type(appliance_type):
 
     device_list = get_table_from_db(sql)
 
-    model = load('./sample_data/H0.joblib')
+    model = load(f"""./sample_data/{appliance_type}.joblib""")
 
     for device_id, gateway_id in device_list.loc[:, ['device_id', 'gateway_id']].values:
         sql = f"""
@@ -504,14 +505,16 @@ def prediction_status_model_by_type(appliance_type):
 
         if len(df) == 0:
             continue
-
+        if df.empty:
+            continue
         x_temp, y_temp = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
-        x_temp, y_temp = sliding_window_transform(x_temp, y_temp)
+        x_temp, y_temp = sliding_window_transform(x_temp, y_temp, step_size=30, lag=10)
 
         x.append(x_temp)
         y.append(y_temp)
         print(device_id, ': ', len(df))
-
+    if df.empty:
+        print("dataframe is empty")
     x = x.pop()
     y = y.pop()
     model, params = select_classification_model('random forest')
