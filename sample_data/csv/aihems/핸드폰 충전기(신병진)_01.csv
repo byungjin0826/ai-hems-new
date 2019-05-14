@@ -1,4 +1,3 @@
-"0 : 사용 x, 1 : 완충, 2 : 충전중",,,,,,,,,
 member_name,member_id,gateway_id,device_address,collected_date,collected_time,onoff,energy,energy_diff,
 신병진,byungjin0826,ep1747-isuxepba-0200,00158D000151B20E,20190124,0,0,0.93,,0
 신병진,byungjin0826,ep1747-isuxepba-0200,00158D000151B20E,20190124,1,0,0.931,0.000999987,2

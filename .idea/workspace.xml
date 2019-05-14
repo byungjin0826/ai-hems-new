@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="함수 추가">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="joblib 업데이트">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/service_class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prediction_by_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_by_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/A1.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/B2.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/D1.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/F0.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/H0.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/H5.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/J0.joblib" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
     <ignored path="venv/" />
     <ignored path="sample_data/csv/household_power_consumption.txt" />
-    <ignored path=".idea/workspace.xml" />
+    <ignored mask="*test.py" />
+    <ignored path="sample_data/csv/db_data_09/" />
+    <ignored path="sample_data/csv/db_data_10/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,136 +27,86 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="547">
-              <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
+            <state relative-caret-position="467">
+              <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
-                <element signature="e#350#1065#0" />
-                <element signature="e#1109#1296#0" />
-                <element signature="e#1328#1498#0" />
-                <element signature="e#1537#1737#0" />
-                <element signature="e#1776#2081#0" />
-                <element signature="e#2195#2569#0" />
-                <element signature="e#2607#2638#0" />
-                <element signature="e#2676#2852#0" />
-                <element signature="e#2888#3054#0" />
-                <element signature="e#3096#3229#0" />
-                <element signature="e#3291#4256#0" />
-                <element signature="e#4308#4466#0" />
-                <element signature="e#4563#5394#0" />
-                <element signature="e#5492#6229#0" />
-                <element signature="e#6285#6534#0" />
-                <element signature="e#6588#6775#0" />
-                <element signature="e#6819#6827#0" />
-                <element signature="e#6882#6958#0" />
-                <element signature="e#6988#7563#0" />
-                <element signature="e#7611#7789#0" />
-                <element signature="e#7845#8377#0" />
-                <element signature="e#8477#8880#0" />
-                <element signature="e#8951#9298#0" />
-                <element signature="e#9338#9602#0" />
-                <element signature="e#9682#9847#0" />
-                <element signature="e#9901#10458#0" />
-                <element signature="e#10560#11472#0" />
-                <element signature="e#11577#12152#0" />
-                <element signature="e#12226#12551#0" />
-                <element signature="e#12614#12773#0" />
-                <element signature="e#12820#15088#0" />
-                <element signature="e#12834#14984#0" />
-                <element signature="e#15165#18014#0" />
-                <element signature="e#15183#17902#0" />
-                <element signature="e#18008#22360#0" />
-                <element signature="e#18049#18344#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/9_upload.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="646">
+              <caret line="35" column="41" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/10_upload.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="779">
+              <caret line="42" column="17" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sample_code/python_class_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="209">
+              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/service_class.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test_bed.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="22" selection-start-line="22" selection-end-line="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prediction_schedule.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="10" selection-start-line="10" selection-end-line="10" />
+            <state relative-caret-position="437">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
-                <element signature="e#19#61#0" expanded="true" />
+                <element signature="e#0#19#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.py">
+        <entry file="file://$PROJECT_DIR$/clustering_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="8" column="122" selection-start-line="8" selection-start-column="122" selection-end-line="8" selection-end-column="122" />
+            <state relative-caret-position="133">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
+        <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prediction_status_to_db_3_4.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sample_code/multioutput_gridsearch.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#33#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sample_code/oneclassSVM.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-              <folding>
-                <element signature="e#16#34#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/schedule_onoff.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1235">
-              <caret line="67" column="2" selection-start-line="67" selection-start-column="2" selection-end-line="67" selection-end-column="2" />
+            <state relative-caret-position="114">
+              <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -166,9 +125,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>read</find>
-      <find>end</find>
-      <find>df1</find>
       <find>df</find>
       <find>predict</find>
       <find>gs</find>
@@ -184,45 +140,56 @@
       <find>read_db</find>
       <find>ravel</find>
       <find>select_</find>
-      <find>cbl</find>
-      <find>AH_house</find>
-      <find>hourly</find>
-      <find>cols_dic</find>
-      <find>frequency</find>
-      <find>number_f</find>
+      <find>labled</find>
+      <find>labeled</find>
+      <find>get_table_from_db</find>
       <find>write_db</find>
-      <find>get_appliance_en</find>
-      <find>write</find>
-      <find>check</find>
-      <find>week</find>
-      <find>lable</find>
+      <find>binding_time</find>
+      <find>unpack</find>
+      <find>get_raw</find>
+      <find>predic</find>
+      <find>model</find>
+      <find>calc</find>
+      <find>get_appli</find>
+      <find>prediction_test</find>
+      <find>test</find>
+      <find>by_type</find>
+      <find>test_</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
-    <option name="RESET_MODE" value="MIXED" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/db_connect_test.py" />
         <option value="$PROJECT_DIR$/db_connect_test_cu.py" />
-        <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/test_bed.py" />
-        <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/cu_rename.py" />
+        <option value="$PROJECT_DIR$/prediction_appliance_status.py" />
+        <option value="$PROJECT_DIR$/excel_input.py" />
+        <option value="$PROJECT_DIR$/prediction_status_to_db_3_4.py" />
+        <option value="$PROJECT_DIR$/prediction_status_to_db.py" />
+        <option value="$PROJECT_DIR$/sample_code/class_test.py" />
+        <option value="$PROJECT_DIR$/sample_code/python_class_test.py" />
+        <option value="$PROJECT_DIR$/../class_test/class_test.py" />
+        <option value="$PROJECT_DIR$/9_10_upload.py" />
+        <option value="$PROJECT_DIR$/9_upload.py" />
+        <option value="$PROJECT_DIR$/10_upload.py" />
+        <option value="$PROJECT_DIR$/labeling_model_test_automation.py" />
+        <option value="$PROJECT_DIR$/aa_test.py" />
         <option value="$PROJECT_DIR$/service_class.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/prediction_by_type.py" />
+        <option value="$PROJECT_DIR$/clustering_test.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="984" />
-    <option name="width" value="943" />
-    <option name="height" value="1087" />
+    <option name="x" value="-7" />
+    <option name="width" value="1752" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -239,6 +206,16 @@
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
+              <item name="sample_code" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
+              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -248,8 +225,8 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.idea/workspace.xml" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/sample_data/csv/db_data_10" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Ignored.Files" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -295,63 +272,98 @@
       <option name="project" value="LOCAL" />
       <updated>1556862181370</updated>
     </task>
-    <task id="LOCAL-00004" summary="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;utils.py">
-      <created>1557187252082</created>
+    <task id="LOCAL-00004" summary="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
+      <created>1557201802313</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1557187252082</updated>
+      <updated>1557201802313</updated>
     </task>
-    <task id="LOCAL-00005" summary="Revert &quot;update&quot;&#10;&#10;This reverts commit b6cfabcc">
-      <created>1557187337021</created>
+    <task id="LOCAL-00005" summary="dd">
+      <created>1557469692124</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1557187337021</updated>
+      <updated>1557469692124</updated>
     </task>
-    <task id="LOCAL-00006" summary="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;utils.py">
-      <created>1557187561219</created>
+    <task id="LOCAL-00006" summary="merge">
+      <created>1557469970409</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
-      <updated>1557187561219</updated>
+      <updated>1557469970409</updated>
     </task>
-    <task id="LOCAL-00007" summary="update">
-      <created>1557191593037</created>
+    <task id="LOCAL-00007" summary="merge">
+      <created>1557470003755</created>
       <option name="number" value="00007" />
       <option name="presentableId" value="LOCAL-00007" />
       <option name="project" value="LOCAL" />
-      <updated>1557191593037</updated>
+      <updated>1557470003755</updated>
     </task>
-    <task id="LOCAL-00008" summary="함수 추가">
-      <created>1557201961560</created>
+    <task id="LOCAL-00008" summary="수정">
+      <created>1557706324957</created>
       <option name="number" value="00008" />
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
-      <updated>1557201961560</updated>
+      <updated>1557706324958</updated>
     </task>
-    <task id="LOCAL-00009" summary="update">
-      <created>1557213552170</created>
+    <task id="LOCAL-00009" summary="model 별 학습 함수 추가">
+      <created>1557726238779</created>
       <option name="number" value="00009" />
       <option name="presentableId" value="LOCAL-00009" />
       <option name="project" value="LOCAL" />
-      <updated>1557213552171</updated>
+      <updated>1557726238779</updated>
     </task>
-    <task id="LOCAL-00010" summary="함수 추가">
-      <created>1557220831841</created>
+    <task id="LOCAL-00010" summary="그전에 만들었던 것 복구">
+      <created>1557726473886</created>
       <option name="number" value="00010" />
       <option name="presentableId" value="LOCAL-00010" />
       <option name="project" value="LOCAL" />
-      <updated>1557220831841</updated>
+      <updated>1557726473886</updated>
     </task>
-    <task id="LOCAL-00011" summary="함수 추가">
-      <created>1557275737885</created>
+    <task id="LOCAL-00011" summary="type 별 모델 생성 및 테스트">
+      <created>1557734415716</created>
       <option name="number" value="00011" />
       <option name="presentableId" value="LOCAL-00011" />
       <option name="project" value="LOCAL" />
-      <updated>1557275737885</updated>
+      <updated>1557734415716</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="type 별 테스트">
+      <created>1557734450109</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734450109</updated>
+    </task>
+    <task id="LOCAL-00013" summary="joblib 파일 업로드">
+      <created>1557734596189</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1557734596189</updated>
+    </task>
+    <task id="LOCAL-00014" summary="공백제거">
+      <created>1557735041213</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1557735041213</updated>
+    </task>
+    <task id="LOCAL-00015" summary="joblib 경로 수정">
+      <created>1557735429035</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1557735429035</updated>
+    </task>
+    <task id="LOCAL-00016" summary="joblib 업데이트">
+      <created>1557793746084</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1557793746084</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TodoView">
@@ -368,22 +380,22 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.14222713" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.15214995" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
       <window_info id="Job Explorer" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5033076" side_tool="true" weight="0.3004158" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5021075" side_tool="true" weight="0.3264642" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49724367" weight="0.3253638" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="4" sideWeight="0.4950386" visible="true" weight="0.3004158" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49944875" weight="0.32848233" />
+      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49448732" weight="0.3243243" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" weight="0.33160084" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49947312" weight="0.32328483" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="10" sideWeight="0.4983462" weight="0.32952183" />
+      <window_info active="true" anchor="bottom" id="TODO" order="10" visible="true" weight="0.32952183" />
       <window_info anchor="bottom" id="Console" order="11" />
       <window_info anchor="bottom" id="DB Execution Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -393,6 +405,33 @@
       <window_info anchor="right" id="R Graphics" order="3" />
       <window_info anchor="right" id="R Packages" order="4" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1264489" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info id="Project Explorer" order="3" />
+      <window_info id="DB Browser" order="4" />
+      <window_info id="Job Explorer" order="5" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50137895" side_tool="true" weight="0.32848233" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49862108" weight="0.3253796" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49862108" weight="0.3264642" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="5" visible="true" weight="0.32719395" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
+      <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
+      <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="10" />
+      <window_info anchor="bottom" id="Console" order="11" />
+      <window_info anchor="bottom" id="DB Execution Console" order="12" />
+      <window_info anchor="bottom" id="Messages" order="13" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="R Graphics" order="3" />
+      <window_info anchor="right" id="R Packages" order="4" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -437,151 +476,187 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="init" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/byungjin0826/ai-hems-new&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;__pycache__/utils.cpython-37.pyc" />
+    <MESSAGE value="dd" />
+    <MESSAGE value="merge" />
     <MESSAGE value="수정" />
-    <MESSAGE value="Revert &quot;update&quot;&#10;&#10;This reverts commit b6cfabcc" />
-    <MESSAGE value="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;utils.py" />
-    <MESSAGE value="update" />
-    <MESSAGE value="함수 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="함수 추가" />
+    <MESSAGE value="model 별 학습 함수 추가" />
+    <MESSAGE value="그전에 만들었던 것 복구" />
+    <MESSAGE value="type 별 모델 생성 및 테스트" />
+    <MESSAGE value="type 별 테스트" />
+    <MESSAGE value="joblib 파일 업로드" />
+    <MESSAGE value="공백제거" />
+    <MESSAGE value="joblib 경로 수정" />
+    <MESSAGE value="joblib 업데이트" />
+    <option name="LAST_COMMIT_MESSAGE" value="joblib 업데이트" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/frame.py" />
-    <entry file="file://$PROJECT_DIR$/daily_elec.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="46" column="15" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/daily_elec.py" />
     <entry file="file://$PROJECT_DIR$/find_status.py" />
     <entry file="file://$PROJECT_DIR$/test.txt" />
     <entry file="file://$USER_HOME$/Anaconda3/envs/env_test/Lib/site-packages/pandas/core/indexing.py" />
     <entry file="file://$PROJECT_DIR$/../untitled/db_connect_test.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_schedule.py" />
     <entry file="file://$PROJECT_DIR$/sample_data/csv/household_power_consumption.txt" />
     <entry file="file://$PROJECT_DIR$/db_connect.py" />
     <entry file="file://$PROJECT_DIR$/multioutput_gridsearch.py" />
     <entry file="file://$PROJECT_DIR$/oneclassSVM.py" />
     <entry file="file://$PROJECT_DIR$/db_connect_test.py" />
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/laundary.py" />
-    <entry file="file://$PROJECT_DIR$/excel_input.py" />
     <entry file="file://$PROJECT_DIR$/db_connect_test_cu.py" />
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="482">
+          <caret line="26" column="25" lean-forward="true" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cu_rename.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" column="27" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/excel_input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="194" column="17" lean-forward="true" selection-start-line="194" selection-start-column="17" selection-end-line="194" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/querys.py" />
     <entry file="file://$PROJECT_DIR$/test_bed.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_schedule.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-          <folding>
-            <element signature="e#19#61#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="8" column="122" selection-start-line="8" selection-start-column="122" selection-end-line="8" selection-end-column="122" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/schedule_onoff.py" />
     <entry file="file://$PROJECT_DIR$/prediction_status_to_db_3_4.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sample_code/multioutput_gridsearch.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-875">
+          <caret line="12" column="26" lean-forward="true" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sample_code/oneclassSVM.py">
+    <entry file="file://$PROJECT_DIR$/prediction_status_to_db.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-          <folding>
-            <element signature="e#16#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/schedule_onoff.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1235">
-          <caret line="67" column="2" selection-start-line="67" selection-start-column="2" selection-end-line="67" selection-end-column="2" />
+        <state relative-caret-position="418">
+          <caret line="28" column="12" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="12" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
+    <entry file="file://$PROJECT_DIR$/sample_code/class_test.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/all_data_load_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="547">
-          <caret line="568" column="12" selection-start-line="568" selection-start-column="12" selection-end-line="568" selection-end-column="12" />
+        <state relative-caret-position="228">
+          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="46" column="48" selection-start-line="46" selection-start-column="48" selection-end-line="46" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/number_of_time_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="41" column="54" selection-start-line="41" selection-start-column="54" selection-end-line="41" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/-243795719/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="787" column="8" selection-start-line="787" selection-start-column="8" selection-end-line="787" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../class_test/class_test.py" />
+    <entry file="file://$PROJECT_DIR$/aa_test.py" />
+    <entry file="file://$PROJECT_DIR$/9_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="646">
+          <caret line="35" column="41" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
           <folding>
-            <element signature="e#0#14#0" expanded="true" />
-            <element signature="e#350#1065#0" />
-            <element signature="e#1109#1296#0" />
-            <element signature="e#1328#1498#0" />
-            <element signature="e#1537#1737#0" />
-            <element signature="e#1776#2081#0" />
-            <element signature="e#2195#2569#0" />
-            <element signature="e#2607#2638#0" />
-            <element signature="e#2676#2852#0" />
-            <element signature="e#2888#3054#0" />
-            <element signature="e#3096#3229#0" />
-            <element signature="e#3291#4256#0" />
-            <element signature="e#4308#4466#0" />
-            <element signature="e#4563#5394#0" />
-            <element signature="e#5492#6229#0" />
-            <element signature="e#6285#6534#0" />
-            <element signature="e#6588#6775#0" />
-            <element signature="e#6819#6827#0" />
-            <element signature="e#6882#6958#0" />
-            <element signature="e#6988#7563#0" />
-            <element signature="e#7611#7789#0" />
-            <element signature="e#7845#8377#0" />
-            <element signature="e#8477#8880#0" />
-            <element signature="e#8951#9298#0" />
-            <element signature="e#9338#9602#0" />
-            <element signature="e#9682#9847#0" />
-            <element signature="e#9901#10458#0" />
-            <element signature="e#10560#11472#0" />
-            <element signature="e#11577#12152#0" />
-            <element signature="e#12226#12551#0" />
-            <element signature="e#12614#12773#0" />
-            <element signature="e#12820#15088#0" />
-            <element signature="e#12834#14984#0" />
-            <element signature="e#15165#18014#0" />
-            <element signature="e#15183#17902#0" />
-            <element signature="e#18008#22360#0" />
-            <element signature="e#18049#18344#0" />
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/10_upload.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="779">
+          <caret line="42" column="17" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/python_class_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
+        <state relative-caret-position="437">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/clustering_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="467">
+          <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
