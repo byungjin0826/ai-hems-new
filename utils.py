@@ -8,8 +8,10 @@ from sqlalchemy import create_engine
 from joblib import dump, load
 import time
 import sklearn.metrics
-import sklearn.metrics
 import datetime
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
+
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -316,7 +318,10 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     y = [x for x in y]
     x = [0] * (step_size - 1) + x
     x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1 - lag) if i > step_size - 1]
-    y_transformed = y[:-lag]
+    if lag == 0:
+        y_transformed = y
+    else:
+        y_transformed = y[:-lag]
     return x_transformed, y_transformed  #
 
 def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
@@ -474,9 +479,9 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기�
     return 0
 
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
-    df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
-    df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
+    df.loc[:, 'collect_date'] = [str(x) for x in df.collect_date]
+    df.loc[:, 'collect_time'] = [str(x) for x in df.collect_time]
+    df.loc[:, 'time'] = pd.to_datetime(df.collect_date + " " + df.collect_time, format='%Y%m%d %H:%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
@@ -578,12 +583,12 @@ def select_regression_model(model_name):
         'ridge regression': [
             sk.linear_model.Ridge(),
             {
-                'alpha': []
-                , 'fit_intercept': []
-                , 'normalize': [False]
+                # 'alpha': []
+                # , 'fit_intercept': []
+                 'normalize': [False]
                 , 'copy_X': [True]
-                , 'max_iter': []
-                , 'tol': []
+                # , 'max_iter': []
+                # , 'tol': []
                 , 'solver': ['auto']
                 , 'random_state': [None]
             }
@@ -934,3 +939,12 @@ def calc_remain_days(check_date):
 
     start, end = 0, 0
     return start, end
+
+
+def draw_line_graph(list):
+    fig = plt.figure()
+    ax = plt.axes()
+    x = [x for x in range(len(list))]
+
+    ax.plot(x, list);
+    return 0
