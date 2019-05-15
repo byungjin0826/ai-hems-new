@@ -81,22 +81,35 @@ def get_device_list(gateway_id):
     device_list = get_table_from_db(sql)
     return device_list
 
-def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
-    sql = f"""
-    SELECT *
-    FROM {table_name}
-    WHERE 1=1
-    """
+def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
+                 sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
+    start = start or (datetime.datetime.now() - datetime.timedelta(30)).strftime('%Y%m%d')
+    end = end or datetime.datetime.now().strftime('%Y%m%d')
+    months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
 
-    if gateway_id != None:
-        sql += f"""AND gateway_id = '{gateway_id}'\n"""
+    df = pd.DataFrame()
+    for month in months:
+        sql = f"""
+        SELECT *
+        FROM {table_name}_{month}
+        WHERE 1=1
+        AND COLLECT_DATE >= {start}
+        AND COLLECT_DATE <= {end}
+        """
 
-    if device_id != None:
-        if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
-            device_id = device_id[:-1]
-        sql += f"""AND device_id = '{device_id}'\n"""
+        if gateway_id != None:
+            sql += f"""AND gateway_id = '{gateway_id}'\n"""
 
-    df = get_table_from_db(sql)
+        if device_id != None:
+            sql += f"""AND device_id = '{device_id}'\n"""
+
+        temp = get_table_from_db(sql)
+        df = df.append(temp)
+        if month_print:
+            print(month)
+
+        if sql_print:
+            print(sql)
     return df
 
 def select_device(device_list):
@@ -691,10 +704,12 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
-def draw_energy_diff_by_device():
+def draw_energy_diff_by_device(df):
+
     return 0
 
-def draw_energy_diff_by_
+def draw_energy_diff_by_home():
+    return 0
 
 cols_dic = {
     'ah_appliance': [
@@ -908,3 +923,14 @@ cols_dic = {
 
 # todo: python 비동기 테스트
 
+
+
+
+def calc_remain_days(check_date):
+    #
+    today = datetime.datetime.today()
+
+
+
+    start, end = 0, 0
+    return start, end

@@ -1,16 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="joblib 업데이트">
+    <list default="true" id="f683489b-b999-4245-b394-ba648d5e9bda" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/progressive_level_predict.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sample_code/dtw_using_bitcoin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ai-hems-new.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ai-hems-new.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prediction_by_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/prediction_by_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/A1.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/B2.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/D1.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/F0.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/H0.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/H5.joblib" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_data/J0.joblib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F000E4B03C61_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F000E4B03C61_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F000F745CBD1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F000F745CBD1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F000F7463451_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F000F7463451_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012574B891_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012574B891_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012574FB71_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012574FB71_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125756521_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125756521_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125756D71_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125756D71_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257586D1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257586D1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012575F601_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012575F601_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012575F801_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012575F801_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125765B21_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125765B21_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125772121_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125772121_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125774611_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125774611_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F00125779001_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F00125779001_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257791D1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257791D1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257796C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257796C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012577B441_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012577B441_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012577C7C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012577C7C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012577D401_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012577D401_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F0012577D5D1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F0012577D5D1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257D76F1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257D76F1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257D8BA1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257D8BA1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257E2981_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257E2981_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/000D6F001257E60C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/000D6F001257E60C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B1F91_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B1F91_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B1FB1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B1FB1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B20E1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B20E1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B20F1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B20F1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B2131_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B2131_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B2181_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B2181_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B21A1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B21A1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B31C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B31C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B4441_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B4441_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B46A1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B46A1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B4751_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B4751_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D000151B47C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D000151B47C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001524AF71_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001524AF71_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A41FCF1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A41FCF1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A420161_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A420161_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A422111_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A422111_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A427D81_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A427D81_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A428F01_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A428F01_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A42DA51_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A42DA51_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A42F2F1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A42F2F1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A42F8A1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A42F8A1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A4308C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A4308C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A43D6F1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A43D6F1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A43DE81_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A43DE81_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A43EFD1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A43EFD1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A446381_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A446381_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A44A901_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A44A901_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A44BC51_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A44BC51_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A454CE1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A454CE1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A454F81_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A454F81_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A455141_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A455141_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A455631_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A455631_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A458F31_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A458F31_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A4590E1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A4590E1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A459C11_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A459C11_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A459CF1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A459CF1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A45C8F1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A45C8F1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A462461_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A462461_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A46D971_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A46D971_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A471A41_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A471A41_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A4777C1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A4777C1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A47ABF1_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A47ABF1_labeling.joblib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_data/joblib/00158D0001A47B601_labeling.joblib" beforeDir="false" afterPath="$PROJECT_DIR$/sample_data/joblib/by_device/00158D0001A47B601_labeling.joblib" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <ignored path=".idea/" />
@@ -30,8 +93,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="467">
-              <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
+            <state relative-caret-position="530">
+              <caret line="112" column="13" selection-start-line="112" selection-start-column="13" selection-end-line="112" selection-end-column="13" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
               </folding>
@@ -40,76 +103,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
+        <entry file="file://$PROJECT_DIR$/progressive_level_predict.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/9_upload.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
-              <caret line="35" column="41" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/10_upload.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="779">
-              <caret line="42" column="17" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="17" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sample_code/python_class_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
-              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service_class.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="23" selection-start-line="23" selection-end-line="23" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/clustering_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
-              <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="266">
+              <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -125,7 +122,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>df</find>
       <find>predict</find>
       <find>gs</find>
       <find>input</find>
@@ -155,6 +151,7 @@
       <find>test</find>
       <find>by_type</find>
       <find>test_</find>
+      <find>get_ra</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -179,17 +176,22 @@
         <option value="$PROJECT_DIR$/labeling_model_test_automation.py" />
         <option value="$PROJECT_DIR$/aa_test.py" />
         <option value="$PROJECT_DIR$/service_class.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/prediction_by_type.py" />
         <option value="$PROJECT_DIR$/clustering_test.py" />
+        <option value="$PROJECT_DIR$/dtw_test.py" />
+        <option value="$PROJECT_DIR$/dtw_using_bitcoin.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/home_assistant_test.py" />
+        <option value="$PROJECT_DIR$/sample_data/joblib/by_device/total_elec_by_home.py" />
+        <option value="$PROJECT_DIR$/progressive_level_predict.py" />
         <option value="$PROJECT_DIR$/utils.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-7" />
-    <option name="width" value="1752" />
-    <option name="height" value="1047" />
+    <option name="x" value="984" />
+    <option name="width" value="943" />
+    <option name="height" value="1087" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -209,12 +211,13 @@
             <path>
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
-              <item name="sample_code" type="462c0819:PsiDirectoryNode" />
+              <item name="sample_data" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
               <item name="sample_data" type="462c0819:PsiDirectoryNode" />
+              <item name="joblib" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -225,8 +228,14 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/sample_data/csv/db_data_10" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Ignored.Files" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="terminal" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\cslee\PycharmProjects\ai-hems-new\sample_data\joblib\by_device" />
+      <recent name="C:\Users\cslee\PycharmProjects\ai-hems-new\sample_code" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -363,7 +372,14 @@
       <option name="project" value="LOCAL" />
       <updated>1557793746084</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="joblib 업데이트">
+      <created>1557798848917</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1557798848917</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TodoView">
@@ -380,22 +396,22 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.15214995" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.16041896" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
       <window_info id="Job Explorer" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5021075" side_tool="true" weight="0.3264642" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50441015" side_tool="true" weight="0.32016632" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49448732" weight="0.3243243" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" weight="0.33160084" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49947312" weight="0.32328483" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="3" sideWeight="0.49393606" visible="true" weight="0.32328483" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" weight="0.33783785" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49558985" weight="0.3170478" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info active="true" anchor="bottom" id="TODO" order="10" visible="true" weight="0.32952183" />
+      <window_info anchor="bottom" id="TODO" order="10" sideWeight="0.4983462" weight="0.32848233" />
       <window_info anchor="bottom" id="Console" order="11" />
       <window_info anchor="bottom" id="DB Execution Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -407,22 +423,22 @@
     </layout>
     <layout-to-restore>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1264489" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.31257078" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
       <window_info id="Job Explorer" order="5" />
-      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50137895" side_tool="true" weight="0.32848233" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.50385886" side_tool="true" weight="0.32328483" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49862108" weight="0.3253796" />
-      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49862108" weight="0.3264642" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="5" visible="true" weight="0.32719395" />
+      <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49393606" weight="0.3243243" />
+      <window_info anchor="bottom" id="Python Console" order="4" sideWeight="0.49789253" visible="true" weight="0.3347324" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49614114" weight="0.32328483" />
       <window_info anchor="bottom" id="Run" order="6" weight="0.3286334" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="10" />
+      <window_info anchor="bottom" id="TODO" order="10" sideWeight="0.4983462" weight="0.32952183" />
       <window_info anchor="bottom" id="Console" order="11" />
       <window_info anchor="bottom" id="DB Execution Console" order="12" />
       <window_info anchor="bottom" id="Messages" order="13" />
@@ -580,13 +596,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/-243795719/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="787" column="8" selection-start-line="787" selection-start-column="8" selection-end-line="787" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2019.1/system/python_stubs/-243795719/builtins.py" />
     <entry file="file://$PROJECT_DIR$/../class_test/class_test.py" />
     <entry file="file://$PROJECT_DIR$/aa_test.py" />
     <entry file="file://$PROJECT_DIR$/9_upload.py">
@@ -609,23 +619,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sample_code/python_class_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/service_class.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="437">
@@ -636,24 +629,80 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
+    <entry file="file://$PROJECT_DIR$/sample_code/python_class_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="19" lean-forward="true" selection-start-column="19" selection-end-column="19" />
+        <state relative-caret-position="209">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/clustering_test.py">
+    <entry file="file://$PROJECT_DIR$/labeling_model_test_automation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="19">
+          <caret line="7" column="16" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prediction_by_type.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/dtw_using_bitcoin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/dtw_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="26" column="27" lean-forward="true" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/clustering_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_code/home_assistant_test.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_data/joblib/by_device/total_elec_by_home.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/progressive_level_predict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
+        <state relative-caret-position="530">
+          <caret line="112" column="13" selection-start-line="112" selection-start-column="13" selection-end-line="112" selection-end-column="13" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
