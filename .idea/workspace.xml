@@ -26,6 +26,55 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
+<<<<<<< HEAD
+    <splitter split-orientation="horizontal" split-proportion="0.51930034">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/prediction_status_to_db.py">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/utils.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2584">
+                  <caret line="387" column="7" selection-start-line="387" selection-start-column="7" selection-end-line="387" selection-end-column="7" />
+                  <folding>
+                    <element signature="e#0#14#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/test_bed.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="380">
+                  <caret line="20" column="1" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/service_class.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <folding>
+                    <element signature="e#0#19#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+=======
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils.py">
@@ -115,6 +164,7 @@
         </entry>
       </file>
     </leaf>
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -203,6 +253,10 @@
         <subPane>
           <expand>
             <path>
+<<<<<<< HEAD
+              <item name="aihems" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aihems" type="462c0819:PsiDirectoryNode" />
+=======
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
             </path>
@@ -215,6 +269,7 @@
               <item name="ai-hems-new" type="b2602c69:ProjectViewProjectNode" />
               <item name="ai-hems-new" type="462c0819:PsiDirectoryNode" />
               <item name="sample_data" type="462c0819:PsiDirectoryNode" />
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
             </path>
           </expand>
           <select />
@@ -376,11 +431,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="54" y="-8" width="1874" height="1096" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
+<<<<<<< HEAD
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1264489" />
+=======
       <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.15214995" />
+>>>>>>> 7a23d740925baf9f11236cf18545fabbd6aafdd3
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info id="Project Explorer" order="3" />
       <window_info id="DB Browser" order="4" />
@@ -506,7 +564,21 @@
     <entry file="file://$PROJECT_DIR$/db_connect_test.py" />
     <entry file="file://$PROJECT_DIR$/laundary.py" />
     <entry file="file://$PROJECT_DIR$/db_connect_test_cu.py" />
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/daily_elec.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_schedule.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_schedule1.py" />
+    <entry file="file://$PROJECT_DIR$/prediction_status_to_db.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/prediction_status_to_db_3_4.py" />
+    <entry file="file://$PROJECT_DIR$/querys.py" />
+    <entry file="file://$PROJECT_DIR$/schedule_onoff.py" />
+    <entry file="file://$PROJECT_DIR$/sample_code/oneclassSVM.py">
+=======
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="482">
           <caret line="26" column="25" lean-forward="true" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
@@ -533,8 +605,13 @@
     <entry file="file://$PROJECT_DIR$/querys.py" />
     <entry file="file://$PROJECT_DIR$/test_bed.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="380">
+          <caret line="20" column="1" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
+=======
         <state relative-caret-position="418">
           <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
         </state>
       </provider>
     </entry>
@@ -556,6 +633,20 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
+<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/test_test.py" />
+    <entry file="file://$PROJECT_DIR$/update_test.py" />
+    <entry file="file://$PROJECT_DIR$/tv_all_model_test.py" />
+    <entry file="file://$PROJECT_DIR$/all_data_load_test.py" />
+    <entry file="file://$PROJECT_DIR$/number_of_time_test.py" />
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2584">
+          <caret line="387" column="7" selection-start-line="387" selection-start-column="7" selection-end-line="387" selection-end-column="7" />
+=======
+    <entry file="file://$PROJECT_DIR$/schedule_onoff.py" />
+=======
     <entry file="file://$PROJECT_DIR$/sample_code/class_test.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -566,6 +657,7 @@
         </state>
       </provider>
     </entry>
+>>>>>>> 7a23d740925baf9f11236cf18545fabbd6aafdd3
     <entry file="file://$PROJECT_DIR$/prediction_appliance_status.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="295">
@@ -645,15 +737,43 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/clustering_test.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state relative-caret-position="-117">
+          <caret line="51" column="32" selection-start-line="51" selection-start-column="32" selection-end-line="51" selection-end-column="32" />
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
+=======
+        <state relative-caret-position="380">
+          <caret line="20" column="37" lean-forward="true" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+>>>>>>> 7a23d740925baf9f11236cf18545fabbd6aafdd3
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+=======
         <state relative-caret-position="133">
           <caret line="7" selection-start-line="7" selection-end-line="7" />
+>>>>>>> 59aae3ada8def49a5327a4fbc688adac8b953748
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state>
+=======
+        <state relative-caret-position="418">
+          <caret line="28" column="12" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="12" />
+>>>>>>> 22ada655d07ab000aa31c6dfd23d83df0c87c94b
+=======
+        <state relative-caret-position="361">
+          <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+>>>>>>> 7a23d740925baf9f11236cf18545fabbd6aafdd3
+=======
         <state relative-caret-position="467">
           <caret line="708" column="28" lean-forward="true" selection-start-line="708" selection-start-column="28" selection-end-line="708" selection-end-column="28" />
+>>>>>>> 59aae3ada8def49a5327a4fbc688adac8b953748
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
