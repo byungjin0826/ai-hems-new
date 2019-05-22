@@ -8,10 +8,11 @@ from sqlalchemy import create_engine
 from joblib import dump, load
 import time
 import sklearn.metrics
+import sklearn.metrics
 import datetime
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
-
+import sys
 
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
@@ -522,14 +523,16 @@ def prediction_status_model_by_type(appliance_type):
 
         if len(df) == 0:
             continue
-
+        if df.empty:
+            continue
         x_temp, y_temp = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
-        x_temp, y_temp = sliding_window_transform(x_temp, y_temp)
+        x_temp, y_temp = sliding_window_transform(x_temp, y_temp, step_size=30, lag=10)
 
         x.append(x_temp)
         y.append(y_temp)
         print(device_id, ': ', len(df))
-
+    if df.empty:
+        print("dataframe is empty")
     x = x.pop()
     y = y.pop()
     model, params = select_classification_model('random forest')
@@ -709,8 +712,7 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
-def draw_energy_diff_by_device(df):
-
+def draw_energy_diff_by_device():
     return 0
 
 def draw_energy_diff_by_home():
@@ -916,7 +918,6 @@ cols_dic = {
 # todo: 검침일 적용
 
 # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-# 전체 데이터가 6초 걸림
 
 # todo: label로 변경
 
@@ -927,8 +928,6 @@ cols_dic = {
 # todo: 모델이 있는지 여부를 저장하는 테이블 필요
 
 # todo: python 비동기 테스트
-
-
 
 
 def calc_remain_days(check_date):
@@ -947,4 +946,9 @@ def draw_line_graph(list):
     x = [x for x in range(len(list))]
 
     ax.plot(x, list);
+    return 0
+
+
+def update_data_frame(df, table_name = ''):
+
     return 0
