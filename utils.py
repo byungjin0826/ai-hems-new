@@ -459,7 +459,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
-def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
+def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_cc'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
     """
     python DataFrame을 Database에 업로드
     :param df: 업로드 하고자 하는 DataFrame
