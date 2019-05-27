@@ -10,6 +10,8 @@ import time
 import sklearn.metrics
 import sklearn.metrics
 import datetime
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
 import sys
 
 # 변환없이 원본 가져오는 건 get
@@ -82,22 +84,35 @@ def get_device_list(gateway_id):
     device_list = get_table_from_db(sql)
     return device_list
 
-def get_raw_data(device_id = None, gateway_id = None, table_name = 'AH_USE_LOG_BYMINUTE'): # todo: 날짜 조회 추가
-    sql = f"""
-    SELECT *
-    FROM {table_name}
-    WHERE 1=1
-    """
+def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
+                 sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
+    start = start or (datetime.datetime.now() - datetime.timedelta(30)).strftime('%Y%m%d')
+    end = end or datetime.datetime.now().strftime('%Y%m%d')
+    months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
 
-    if gateway_id != None:
-        sql += f"""AND gateway_id = '{gateway_id}'\n"""
+    df = pd.DataFrame()
+    for month in months:
+        sql = f"""
+        SELECT *
+        FROM {table_name}_{month}
+        WHERE 1=1
+        AND COLLECT_DATE >= {start}
+        AND COLLECT_DATE <= {end}
+        """
 
-    if device_id != None:
-        if table_name == 'AH_USE_LOG_BYMINUTE_LABELED':
-            device_id = device_id[:-1]
-        sql += f"""AND device_id = '{device_id}'\n"""
+        if gateway_id != None:
+            sql += f"""AND gateway_id = '{gateway_id}'\n"""
 
-    df = get_table_from_db(sql)
+        if device_id != None:
+            sql += f"""AND device_id = '{device_id}'\n"""
+
+        temp = get_table_from_db(sql)
+        df = df.append(temp)
+        if month_print:
+            print(month)
+
+        if sql_print:
+            print(sql)
     return df
 
 def select_device(device_list):
@@ -304,7 +319,10 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     y = [x for x in y]
     x = [0] * (step_size - 1) + x
     x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1 - lag) if i > step_size - 1]
-    y_transformed = y[:-lag]
+    if lag == 0:
+        y_transformed = y
+    else:
+        y_transformed = y[:-lag]
     return x_transformed, y_transformed  #
 
 def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
@@ -359,8 +377,7 @@ def test_prediction_status_by_type(appliance_type):
 
     device_list = get_table_from_db(sql)
 
-
-    model = load(f"""./sample_data/{appliance_type}.joblib""")
+    model = load(f'./sample_data/{appliance_type}.joblib')
 
     for device_id, gateway_id in device_list.loc[:, ['device_id', 'gateway_id']].values:
         sql = f"""
@@ -463,9 +480,9 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_cc'): # todo: update �
     return 0
 
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
-    df.loc[:, 'collected_date'] = [str(x) for x in df.collected_date]
-    df.loc[:, 'collected_time'] = [str(x) for x in df.collected_time]
-    df.loc[:, 'time'] = pd.to_datetime(df.collected_date + " " + df.collected_time, format='%Y%m%d %H:%M')
+    df.loc[:, 'collect_date'] = [str(x) for x in df.collect_date]
+    df.loc[:, 'collect_time'] = [str(x) for x in df.collect_time]
+    df.loc[:, 'time'] = pd.to_datetime(df.collect_date + " " + df.collect_time, format='%Y%m%d %H:%M')
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
@@ -569,12 +586,12 @@ def select_regression_model(model_name):
         'ridge regression': [
             sk.linear_model.Ridge(),
             {
-                'alpha': []
-                , 'fit_intercept': []
-                , 'normalize': [False]
+                # 'alpha': []
+                # , 'fit_intercept': []
+                 'normalize': [False]
                 , 'copy_X': [True]
-                , 'max_iter': []
-                , 'tol': []
+                # , 'max_iter': []
+                # , 'tol': []
                 , 'solver': ['auto']
                 , 'random_state': [None]
             }
@@ -698,7 +715,8 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
 def draw_energy_diff_by_device():
     return 0
 
-
+def draw_energy_diff_by_home():
+    return 0
 
 cols_dic = {
     'ah_appliance': [
@@ -900,7 +918,6 @@ cols_dic = {
 # todo: 검침일 적용
 
 # todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-# 전체 데이터가 6초 걸림
 
 # todo: label로 변경
 
@@ -912,3 +929,26 @@ cols_dic = {
 
 # todo: python 비동기 테스트
 
+
+def calc_remain_days(check_date):
+    #
+    today = datetime.datetime.today()
+
+
+
+    start, end = 0, 0
+    return start, end
+
+
+def draw_line_graph(list):
+    fig = plt.figure()
+    ax = plt.axes()
+    x = [x for x in range(len(list))]
+
+    ax.plot(x, list);
+    return 0
+
+
+def update_data_frame(df, table_name = ''):
+
+    return 0
