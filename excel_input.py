@@ -2,23 +2,23 @@ import pymysql
 from sqlalchemy import create_engine
 import pandas as pd
 import os
-
+test_bed = ['안채', '별채', '사랑채']
 
 def data_load(member_name, appliance_name):
-    # if member_name != '안채' or member_name != '별채' or member_name != '사랑채':
-    #     months = get_month(member_name,appliance_name)
-    #     encoding = 'euc-kr'
-    #     df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
-    #                       encoding=encoding)
-    #     if months != 1:
-    #         df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
-    #                           encoding=encoding)
-    #         df1 = pd.concat([df1, df2], ignore_index=True)
-    # else:
-    encoding = 'euc-kr'
-    df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ').csv',
+    months = get_month(member_name, appliance_name)
+    if member_name in test_bed:
+        encoding = 'euc-kr'
+        df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ').csv',
                           encoding=encoding)
-    df1 = df1.loc[df1.energy != '\\N', :].copy()
+        df1 = df1.loc[df1.energy != '\\N', :].copy()
+    else:
+        encoding = 'euc-kr'
+        df1 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_01.csv',
+                          encoding=encoding)
+        if months != 1:
+            df2 = pd.read_csv('./sample_data/csv/aihems/' + appliance_name + '(' + member_name + ')_02.csv',
+                              encoding=encoding)
+            df1 = pd.concat([df1, df2], ignore_index=True)
     df1.columns.values[-1] = 'appliance_status'  # excel에 컬럼값 입력 안됨
     return(df1)
 
@@ -98,7 +98,7 @@ def write_db(df):
     engine = create_engine("mysql+mysqldb://"+user+":" + passwd +"@"+addr+":"+port+"/"+db_name,
                            encoding='utf-8')
     # conn = engine.connect()
-    df.to_sql('AH_USE_LOG_BYMINUTE_LABELED_copy', con=engine, if_exists='append', index=False)
+    df.to_sql('AH_USE_LOG_BYMINUTE_LABELED_cc', con=engine, if_exists='append', index=False)
     return(0)
 
 def get_month(member_name,appliance_name):
@@ -155,50 +155,50 @@ member_list = [
                 # , ['이철희','프린터']
                 # , ['신병진','핸드폰 충전기']
                 # , ['김이래','헤어드라이기']
-                 ['별채','별채 방2 전기방판']
-                , ['별채','별채 전열기구']
-                , ['별채','별채TV']
-                , ['별채','별채모니터']
-                , ['별채','별채에어프라이어']
-                , ['별채','별채전기밥솥']
-                , ['별채','별채전자피아노']
-                , ['별채','별채컴퓨터']
-                , ['별채','별채헤어드라이']
-                , ['사랑채','사랑채 스탠드']
-                , ['사랑채','사랑채 전기장판']
-                , ['사랑채','사랑채 헤어드라이']
-                , ['사랑채','사랑채TV']
-                , ['사랑채','사랑채세탁기']
-                , ['사랑채','사랑채전자렌지']
-                , ['사랑채','사랑채청소기']
-                , ['사랑채','사랑채커피포트']
-                , ['안채','안채TV']
-                , ['안채','안채방1전기장판']
-                , ['안채','안채방2전기장판']
-                , ['안채','안채보일러1']
-                , ['안채','안채보일러2']
-                , ['안채','안채세탁기']
-                , ['안채','안채전자렌지']
+                #  ['별채','별채 방2 전기방판']
+                # , ['별채','별채 전열기구']
+                # , ['별채','별채TV']
+                # , ['별채','별채모니터']
+                # , ['별채','별채에어프라이어']
+                # , ['별채','별채전기밥솥']
+                # , ['별채','별채전자피아노']
+                # , ['별채','별채컴퓨터']
+                # , ['별채','별채헤어드라이']
+                # , ['사랑채','사랑채 스탠드']
+                # , ['사랑채','사랑채 전기장판']
+                # , ['사랑채','사랑채 헤어드라이']
+                # , ['사랑채','사랑채TV']
+                # , ['사랑채','사랑채세탁기']
+                # , ['사랑채','사랑채전자렌지']
+                # , ['사랑채','사랑채청소기']
+                # , ['사랑채','사랑채커피포트']
+                # , ['안채','안채TV']
+                # , ['안채','안채방1전기장판']
+                # , ['안채','안채방2전기장판']
+                # , ['안채','안채보일러1']
+                # , ['안채','안채보일러2']
+                # , ['안채','안채세탁기']
+                # , ['안채','안채전자렌지']
 ]
 
-# member_name = input('사용자 이름: ')
-# appliance_name = input('가전기기 이름: ')
+member_name = input('사용자 이름: ')
+appliance_name = input('가전기기 이름: ')
 
-for i in member_list:
-    member_name = i[0]
-    appliance_name = i[1]
-    df = data_load(member_name = member_name, appliance_name = appliance_name)
-    df = set_data(df, source = 'excel')
-    df1 = transform_data(df)
-    print(get_month(member_name, appliance_name))
-    print(member_name + '|' + appliance_name)
-    write_db(df1)
+# for i in member_list:
+#     member_name = i[0]
+#     appliance_name = i[1]
+#     df = data_load(member_name = member_name, appliance_name = appliance_name)
+#     df = set_data(df, source = 'excel')
+#     df1 = transform_data(df)
+#     print(get_month(member_name, appliance_name))
+#     print(member_name + '|' + appliance_name)
+#     write_db(df1)
 
-# #member_name = i[0]
-# #appliance_name = i[1]
-# df = data_load(member_name = member_name, appliance_name = appliance_name)
-# df = set_data(df, source = 'excel')
-# df1 = transform_data(df)
-# print(get_month(member_name,appliance_name))
-# print(member_name+'|'+appliance_name)
-# # write_db(df1)
+#member_name = i[0]
+#appliance_name = i[1]
+df = data_load(member_name = member_name, appliance_name = appliance_name)
+df = set_data(df, source = 'excel')
+df1 = transform_data(df)
+print(get_month(member_name,appliance_name))
+print(member_name+'|'+appliance_name)
+write_db(df1)

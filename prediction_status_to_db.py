@@ -3,8 +3,10 @@ from datetime import date, timedelta
 import os
 #하루 전 날짜 계산
 
-yesterday = date.today() - timedelta(1)
+yesterday = date.today() - timedelta(1)     #하루 전 날짜 계산
 yesterday = yesterday.strftime('%Y%m%d')
+
+
 print(yesterday)
 #하루 전 날짜 뽑아오는 쿼리
 # sql = """
@@ -25,7 +27,7 @@ device_id_list = get_table_from_db(sql)
 cnt = 0
 for device_id in device_id_list.device_id:
     file_path = Path + device_id + '_labeling.joblib'
-    if os.path.isfile(file_path): #model load / 없을경우 continue
+    if os.path.isfile(file_path):            #model load / 없을경우 continue
         gs = load(file_path)
     else:
         print("no model : "+device_id)
@@ -45,19 +47,20 @@ for device_id in device_id_list.device_id:
     df = get_table_from_db(sql)
     df['appliance_status'] = 0
 
-    if df.empty: #데이터가 없을경우 continue
+    if df.empty:                            #데이터가 없을경우 continue
         print('empty : '+ device_id)
         continue
 
     lag = 10
 
     x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
-
     x, y = sliding_window_transform(x, y, lag=lag, step_size=30)
-
     df = df.iloc[:-lag]
-
     df['appliance_status'] = gs.predict(x)
+
+    # write_db(df, table_name='AH_USE_LOG_BYMINUTE')      #DB UPDATE
+
+
 
 
 #todo : 전체 device 목록을 불러와서 모델이 있는경우를 검사 os 모듈 사용                     #완료
