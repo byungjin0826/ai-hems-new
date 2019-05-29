@@ -915,13 +915,6 @@ cols_dic = {
     ]
 }
 
-# todo: 검침일 적용
-
-# todo: 정시에 발령되지 않는 상황 고려(15분 단위)
-
-# todo: label로 변경
-
-# todo: 예전 데이터 DB에 업로드 하기
 
 # todo: 클러스터링
 
@@ -950,5 +943,12 @@ def draw_line_graph(list):
 
 
 def update_data_frame(df, table_name = ''):
+    # for
+    sql = f"""
+    UPDATE {table_name}
+    SET name = 'Willy'
+    WHERE 1=1
+    AND id = 1;
+    """
 
     return 0
