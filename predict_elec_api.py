@@ -8,6 +8,7 @@ from joblib import load
 # 뭔가 일관성이 있으면 좋을듯...
 # house_no: 20190325000001
 # gateway_id: ep18270236
+# 기준일자 추가
 
 1. 실행하면 한 달 치 전력 예측값을 update?
     - 
@@ -24,6 +25,8 @@ from joblib import load
     
 """
 
+
+# todo: 기준일자 추가
 app = Flask(__name__)
 api = Api(app)
 
@@ -32,38 +35,38 @@ class PredictElec(Resource):
     def post(self):
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('house_name', type=str)
-            # parser.add_argument('month', type=str)
+            parser.add_argument('house_no', type=str)
+            parser.add_argument('date', type=str)
             args = parser.parse_args()
 
-            house_name = args['house_name']
+            house_no = args['house_no']
+            date = args['date']
             # month = args['month']
-            
-            house_no = utils.get_house_no(house_name)
-            gateway_id = utils.get_gateway_id(house_name)
 
             sql = f"""
-            SELECT *
-            FROM AH_USAGE_DAILY_PREDICT_test
-            WHERE 1=1
-            AND house_no = '{house_no}'
+            SELECT   * 
+            FROM      AH_USAGE_DAILY_PREDICT
+            WHERE      HOUSE_NO = '{house_no}'
+             AND      USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
+             AND      USE_DATE < '{date}'
+            ORDER BY USE_DATE
             """
 
             df = utils.get_table_from_db(sql)
 
             elec = [x for x in df.use_energy.values[-7:]]
 
-            model = load(f'./sample_data/{gateway_id}.joblib')
+            model = load(f'./sample_data/{house_no}.joblib')
 
-            y = utils.iter_predict(x=elec, n_iter=30, model=model)
+            y = utils.iter_predict(x=elec, n_iter=31, model=model)
 
-            return {'PREDICT_USE_ENERGY': y}
+            return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
 
         except Exception as e:
-            return {'error': str(e)}
+            return {'flag_success': False, 'error': str(e)}
 
 
 api.add_resource(PredictElec, '/elec')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host = '0.0.0.0', port=5000, debug=True)
