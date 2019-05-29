@@ -305,6 +305,7 @@ def get_table_from_db(sql, db = 'aihems_api_db'):
                                                 charset='utf8')
     df = pd.read_sql(sql, aihems_service_db_connect)
     df = df.rename(str.lower, axis='columns')
+    aihems_service_db_connect.close()
     return df
 
 def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
