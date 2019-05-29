@@ -924,18 +924,6 @@ cols_dic = {
 
 # todo: 모델이 있는지 여부를 저장하는 테이블 필요
 
-# todo: python 비동기 테스트
-
-
-def calc_remain_days(check_date):
-    #
-    today = datetime.datetime.today()
-
-
-
-    start, end = 0, 0
-    return start, end
-
 
 def draw_line_graph(list):
     fig = plt.figure()
@@ -957,9 +945,6 @@ def update_data_frame(df, table_name = ''):
 
     return 0
 
-def calc_target_length(check_date):
-    n_iter = 0
-    return n_iter
 
 def iter_predict(x, n_iter, model):
     y = []
