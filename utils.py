@@ -308,6 +308,9 @@ def get_table_from_db(sql, db = 'aihems_api_db'):
     aihems_service_db_connect.close()
     return df
 
+def execute_sql(sql):
+    return 0
+
 def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
     """
     상태 판별 예측을 위한 입력 데이터 변환
@@ -953,3 +956,17 @@ def update_data_frame(df, table_name = ''):
     """
 
     return 0
+
+def calc_target_length(check_date):
+    n_iter = 0
+    return n_iter
+
+def iter_predict(x, n_iter, model):
+    y = []
+    for i in range(n_iter):
+        y_temp = model.predict([x]).item()
+        y.append(y_temp)
+        x_temp = x[1:]
+        x_temp.append(y_temp)
+        x = x_temp
+    return y
