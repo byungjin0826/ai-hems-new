@@ -218,17 +218,26 @@ def calc_weekly_schedule(device_id): # todo: 수정 중
     schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
     return schedule
 
-def calc_cbl(house_no, year, month, day, hour):
+def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'):
     sql = f"""
     SELECT *
-    FROM ah_usage_hourly
-    WHERE 1=1
-    
-    """
+    FROM AH_USE_LOG_BYMINUTE_LABELED_copy
+    WHERE gateway_id = '{gateway_id}' 
+    """  # table 향후 변경 필요
     df = get_table_from_db(sql)
-    usage_before_5days = df
-    cbl = usage_before_5days * (4/5)
-    return cbl
+    df = binding_time(df)[:date]
+
+    start_time = datetime.time(int(start[:2]), int(start[-2:]))
+    end_time = datetime.time(int(end[:2]), int(end[-2:]))
+
+    df_hourly_per_15min = df.loc[:, 'energy_diff'].resample('15min').sum()
+
+    df_hourly_per_15min_subset = df_hourly_per_15min[start_time:end_time]
+
+    cbl_list = [x for x in df_hourly_per_15min_subset.resample('1d').sum()[-6:-1]]
+    cbl_list.sort()
+    print(cbl_list)
+    return sum(cbl_list[1:])/4 # 최대 4일의 평균
 
 def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
     sql = f"""
