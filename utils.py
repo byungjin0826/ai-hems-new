@@ -86,6 +86,17 @@ def get_device_list(gateway_id):
 
 def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
                  sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
+    """
+    device_id와 .... 가져옴..
+    :param device_id:
+    :param gateway_id:
+    :param start:
+    :param end:
+    :param month_print:
+    :param sql_print:
+    :param table_name:
+    :return:
+    """
     start = start or (datetime.datetime.now() - datetime.timedelta(30)).strftime('%Y%m%d')
     end = end or datetime.datetime.now().strftime('%Y%m%d')
     months = [x.date().strftime('%Y%m') for x in pd.date_range(start, end, freq = 'M')]
@@ -212,18 +223,19 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
-def calc_weekly_schedule(device_id): # todo: 수정 중
-    df = get_raw_data(device_id = device_id, table_name='AH_USE_LOG_BYMINUTE_LABELED')
+def calc_weekly_schedule(device_id):
+    df = get_raw_data(device_id = device_id)
     df = binding_time(df)
     schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
     return schedule
 
-def calc_cbl(gateway_id = 'ep17470141', date = '2018-08-24',start = '00:00', end = '00:45'):
+def calc_cbl(gateway_id = 'ep17470141', date = '20180824',start = '0000', end = '0045'):
     sql = f"""
     SELECT *
     FROM AH_USE_LOG_BYMINUTE_LABELED_copy
     WHERE gateway_id = '{gateway_id}' 
     """  # table 향후 변경 필요
+    date = date[:4]+'-'+date[4:6]+'-'+date[6:]
     df = get_table_from_db(sql)
     df = binding_time(df)[:date]
 

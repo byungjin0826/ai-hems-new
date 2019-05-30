@@ -3,6 +3,8 @@ from flask_restful import Resource, Api, reqparse
 import utils
 import pymysql
 from joblib import load
+import datetime
+import pandas as pd
 
 """
 # 뭔가 일관성이 있으면 좋을듯...
@@ -23,6 +25,63 @@ from joblib import load
     - 한개의 값만 나오게...
     - 현재일로부터 6일전까지 총 7일간의 데이터로 다음날 것을 예측
     
+"""
+
+"""
+# AI control
+input
+    - service
+    - command
+    - house_no
+    - week
+output
+    - service
+    - command
+    - flag_success
+    - message
+    - result
+"""
+
+"""
+Labeling API
+input
+    - gateway_id
+    - device_id
+    - collect_date
+output
+    - flag
+    - appliance_status
+"""
+
+"""
+DR
+input
+    - house_no
+    - 시간
+output
+    - flag
+    - cbl
+    - energy
+    - elec_list: dictionary 형식으로, True가 허용, False가 제한
+        { 'TV': True
+        'Aircon':False}
+"""
+
+"""
+DR_now
+input
+    - 
+output
+    - 
+"""
+
+"""
+DR_change_list
+input
+    - elec_change_list: dictionary 형식으로
+
+output
+    - 
 """
 
 
@@ -65,6 +124,7 @@ class PredictElec(Resource):
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
 
+
 class Labeling(Resource):
     def post(self):
         try:
@@ -101,8 +161,109 @@ class Labeling(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
+class AISchedule(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('gateway_id', type=str)
+            parser.add_argument('device_id', type=str)
+            # parser.add_argument('dayofweek', type=str)
+            args = parser.parse_args()
+
+            gateway_id = args['gateway_id']
+            device_id = args['device_id']
+
+            sql = f"""
+            SELECT *
+            FROM AH_USE_LOG_BYMINUTE_201904
+            WHERE 1=1
+            AND GATEWAY_ID = '{gateway_id}'
+            AND DEVICE_ID = '{device_id}'
+            """
+
+            df = utils.get_table_from_db(sql)
+            df = utils.binding_time(df)
+
+            schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek,
+                                      aggfunc='max')
+
+            schedule = schedule.reset_index()
+
+            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
+
+            schedule_unpivoted.loc[:,
+            'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
+
+            subset = schedule_unpivoted.loc[
+                (schedule_unpivoted.status_change == False), ['date', 'index', 'appliance_status']]
+
+            subset.columns = ['dayofweek', 'time', 'appliance_status']
+
+            subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
+
+            subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
+
+            subset = subset.reset_index(drop=True)
+
+            result = subset.to_dict('index')
+
+            return {
+                'flag_success': True,
+                'device_id':device_id,
+                'result': result
+            }
+
+        except Exception as e:
+            return {'flag_success': False, 'error':str(e)}
+
+class CBL(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('house_no', type=str)
+            parser.add_argument('dr_time', type=str)
+            args = parser.parse_args()
+
+            device_id = args['device_id']
+            gateway_id = args['gateway_id']
+            collect_date = args['collect_date']
+
+            elec_list = utils.calc_number_of_time_use()
+
+            elec_list
+            y = 0
+            return {'flag_success': True, 'aim': y, 'elec_list': elec_list}
+
+        except Exception as e:
+            return {'flag_success': False, 'error': str(e)}
+
+
+class Test(Resource):
+    def post(self):
+        try:
+            import pandas as pd
+            import numpy as np
+
+            arrays = [['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux'],
+                      ['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two']]
+
+            tuples = list(zip(*arrays))
+
+            index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
+
+            s = pd.Series(np.random.randn(8), index=index)
+
+            return {'output': arrays}
+
+        except Exception as e:
+            return {'error':str(e)}
+
+
 api.add_resource(PredictElec, '/elec')
 api.add_resource(Labeling, '/label')
+api.add_resource(CBL, '/dr')
+api.add_resource(AISchedule, '/schedule')
+api.add_resource(Test, '/test')
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port=5000, debug=True)
+    app.run(host = '127.0.0.1', port=5000, debug=True)
