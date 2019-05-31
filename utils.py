@@ -17,6 +17,7 @@ import sys
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
 
+
 def labeling_db_to_db(sql,db='aihems_service_db'):
     df = get_table_from_db(sql, db)
     df = df.dropna()
@@ -35,6 +36,7 @@ def labeling_db_to_db(sql,db='aihems_service_db'):
                   'energy_diff', 'appliance_status', 'create_date']
     return df
 
+
 def get_device_id(device_name):
     sql = f"""
     SELECT device_id
@@ -43,6 +45,7 @@ def get_device_id(device_name):
     """
     device_id = get_table_from_db(sql)
     return device_id.values.item()
+
 
 def get_appliance_name(appliance_no):
     sql = f"""
@@ -53,6 +56,7 @@ def get_appliance_name(appliance_no):
     device_name = get_table_from_db(sql)
     return device_name.values.item()
 
+
 def get_gateway_id(name):
     sql = f"""
     SELECT gateway_id
@@ -61,6 +65,7 @@ def get_gateway_id(name):
     """
     gateway_id = get_table_from_db(sql)
     return gateway_id.values.item()
+
 
 def get_appliance_no(device_id):
     sql = f"""
@@ -71,6 +76,7 @@ def get_appliance_no(device_id):
     """
     appliance_no = get_table_from_db(sql)
     return appliance_no.values.item()
+
 
 def get_device_list(gateway_id):
     sql = f"""
@@ -83,6 +89,7 @@ def get_device_list(gateway_id):
     """
     device_list = get_table_from_db(sql)
     return device_list
+
 
 def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, month_print = False,
                  sql_print = False, table_name = 'AH_USE_LOG_BYMINUTE'):
@@ -126,9 +133,11 @@ def get_raw_data(device_id = None, gateway_id = None, start = None, end = None, 
             print(sql)
     return df
 
+
 def select_device(device_list):
     print(device_list)
     return 0
+
 
 def get_house_name(gateway_id):
     sql = f"""
@@ -139,6 +148,7 @@ def get_house_name(gateway_id):
     house_name = get_table_from_db(sql)
     return house_name.values.item()
 
+
 def get_house_no(house_name):
     sql = f"""
     SELECT house_no
@@ -147,6 +157,7 @@ def get_house_no(house_name):
     """
     house_no = get_table_from_db(sql)
     return house_no.values.item()
+
 
 def search_device_address(member_name, appliance_name):
     member_name = member_name or '박재훈'
@@ -175,6 +186,7 @@ def search_device_address(member_name, appliance_name):
 
     return device_address
 
+
 def calc_payment_month(date_time, meter_day):
     print(date_time)
     month = date_time.month - 1
@@ -184,6 +196,7 @@ def calc_payment_month(date_time, meter_day):
     if month == 0:
         month = 12
     return(month)
+
 
 def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또는 sql 함수로 변경
     sql = f"""
@@ -206,6 +219,7 @@ def calc_appliance_energy_history(device_id): # todo: pivot_table, group by, 또
     energy_history_table = pd.DataFrame(energy_history)
     return energy_history_table
 
+
 def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 미터가 있는 경우 meter 데이터를 활용
     df = get_raw_data(gateway_id='ep17470141', table_name='AH_USE_LOG_BYMINUTE_LABELED')   # table 향후 변경 필요
     df = binding_time(df)
@@ -223,11 +237,13 @@ def calc_usage_energy_hourly(gateway_id): # todo: check meter를 이용해서 �
 
     return df_hourly.loc[:, cols_dic['ah_usage_hourly'][:-2]]
 
+
 def calc_weekly_schedule(device_id):
     df = get_raw_data(device_id = device_id)
     df = binding_time(df)
     schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek, aggfunc='max')
     return schedule
+
 
 def calc_cbl(gateway_id = 'ep17470141', date = '20180824',start = '0000', end = '0045'):
     sql = f"""
@@ -250,6 +266,7 @@ def calc_cbl(gateway_id = 'ep17470141', date = '20180824',start = '0000', end = 
     cbl_list.sort()
     print(cbl_list)
     return sum(cbl_list[1:])/4 # 최대 4일의 평균
+
 
 def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:45'):
     sql = f"""
@@ -280,12 +297,15 @@ def calc_number_of_time_use(device_id, date = None, start = '00:00', end = '00:4
 
     return sum(df_hourly_per_15min_subset.resample('1d').max())
 
+
 def check_meter(device_list):
     return len(device_list.loc[device_list.device_type.isin(['meter']), :]) != 0
+
 
 def calc_possible_ready_energy_saving(gateway_id): # todo: 작업 필요
     saving_erergy = 0
     return saving_erergy
+
 
 def excel_to_db(names):
     def load_data(name):
@@ -304,6 +324,7 @@ def excel_to_db(names):
         print(name)
     return df
 
+
 def progressive_level(cumulative_energy):
     if cumulative_energy >= 400:
         progressive_level = 3
@@ -311,6 +332,7 @@ def progressive_level(cumulative_energy):
         progressive_level = 2
     progressive_level = 1
     return(progressive_level)
+
 
 def get_table_from_db(sql, db = 'aihems_api_db'):
     """
@@ -329,8 +351,10 @@ def get_table_from_db(sql, db = 'aihems_api_db'):
     aihems_service_db_connect.close()
     return df
 
+
 def execute_sql(sql):
     return 0
+
 
 def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
     """
@@ -350,6 +374,7 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
         y_transformed = y[:-lag]
     return x_transformed, y_transformed  #
 
+
 def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
     """
     학습에 사용할 DataFrame 에서 X와 Y를 분리
@@ -368,6 +393,7 @@ def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
     y = df.loc[:, y_col].values
     return x, y
 
+
 def set_data_type(df):  # 현재 사용안함
     data_type_list = {
         'energy':float
@@ -382,9 +408,11 @@ def set_data_type(df):  # 현재 사용안함
     df_data_type_setted = 1
     return df_data_type_setted
 
+
 def test_prediction_status_model(model, x, y):
     accuracy = sk.metrics.accuracy_score(y, model.predict(x))
     return accuracy
+
 
 def test_prediction_status_by_type(appliance_type):
     sql = f"""
@@ -424,12 +452,14 @@ def test_prediction_status_by_type(appliance_type):
         print(device_id,': ', accuracy, sep='')
     return 0
 
+
 def transform_collected_date(collected_date): # todo: 날짜를 sin 과 cos 으로 변환
     collected_date = pd.to_datetime(collected_date)
     collected_date_transformed = {
         'month_x':collected_date.month
     }
     return collected_date_transformed
+
 
 def make_usage_daily_predict_model(gateway_id):
     df = get_raw_data(device_id=gateway_id)
@@ -444,6 +474,7 @@ def make_usage_daily_predict_model(gateway_id):
     accuracy = sk.metrics.r2_score(y, model.predict(x))
     print(accuracy)
     return model
+
 
 def make_prediction_model(member_name=None, appliance_name=None, save=None, model_name = None):
     """
@@ -484,6 +515,7 @@ def make_prediction_model(member_name=None, appliance_name=None, save=None, mode
 
     return gs
 
+
 def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_cc'): # todo: update 기능 구현, 기존에 데이터가 존재하는 경우
     """
     python DataFrame을 Database에 업로드
@@ -504,6 +536,7 @@ def write_db(df, table_name='AH_USE_LOG_BYMINUTE_LABELED_cc'): # todo: update �
 
     return 0
 
+
 def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 데이터로 활용하기 위해 필요
     df.loc[:, 'collect_date'] = [str(x) for x in df.collect_date]
     df.loc[:, 'collect_time'] = [str(x) for x in df.collect_time]
@@ -511,11 +544,13 @@ def binding_time(df): # DB 에서 불러온 데이터를 pandas 의 시계열 �
     df_time_indexing = df.set_index('time', drop=True)
     return df_time_indexing
 
+
 def unpacking_time(df_time_indexing): # DB 에 있는 포맷으로 재변환
     df = df_time_indexing.reset_index()
     df.loc[:, 'collect_date'] = [x for x in df.date]
     df.loc[:, 'collect_time'] = [x for x in df.time]
     return df
+
 
 def prediction_status_model_by_type(appliance_type):
     # 같은 타입의 device list 생성
@@ -568,6 +603,7 @@ def prediction_status_model_by_type(appliance_type):
                                          cv=5)
     gs.fit(x, y)
     return gs
+
 
 def select_regression_model(model_name):
     regressions = {
@@ -644,6 +680,7 @@ def select_regression_model(model_name):
     model = regressions[model_name][0]
     params = regressions[model_name][1]
     return model, params
+
 
 def select_classification_model(model_name): # todo: 다른 모델들 파라미터 정리 필요
     classifications = {
@@ -737,11 +774,14 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     params = classifications[model_name][1]
     return model, params
 
+
 def draw_energy_diff_by_device():
     return 0
 
+
 def draw_energy_diff_by_home():
     return 0
+
 
 cols_dic = {
     'ah_appliance': [
