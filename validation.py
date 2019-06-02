@@ -3,7 +3,7 @@ import utils
 # A: device_id, accuracy
 # B: appliance_no, gateway_id, device_id, appliance_type, appliance_name
 
-a =
+# a =
 
 
 sql_b = f"""
