@@ -161,6 +161,16 @@ class Labeling(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
+class MakePredictionModel(Resource):
+    def post(self):
+        try:
+
+            return {'flag_success': True}
+
+        except Exception as e:
+            return {'flag_success': False, 'error': str(e)}
+
+
 class AISchedule(Resource):
     def post(self):
         try:
