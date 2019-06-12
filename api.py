@@ -85,7 +85,6 @@ output
 """
 
 
-# todo: 기준일자 추가
 app = Flask(__name__)
 api = Api(app)
 
@@ -115,9 +114,11 @@ class PredictElec(Resource):
 
             elec = [x for x in df.use_energy.values[-7:]]
 
-            model = load(f'./sample_data/{house_no}.joblib')
+            model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib')
 
-            y = utils.iter_predict(x=elec, n_iter=31, model=model)
+            x = [3031.2502, 2854.9709, 3115.7338, 4878.9978, 4113.0371, 4156.0059, 5398.0103]
+
+            y = utils.iter_predict(x=x, n_iter=31, model=model)
 
             return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
 
@@ -138,24 +139,34 @@ class Labeling(Resource):
             gateway_id = args['gateway_id']
             collect_date = args['collect_date']
 
+            start = collect_date + '0000'
+            end = collect_date + '2359'
+
             sql = f"""
             SELECT    *
             FROM      AH_USE_LOG_BYMINUTE
             WHERE      1=1
                AND   GATEWAY_ID = '{gateway_id}'
                AND   DEVICE_ID = '{device_id}'
-               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) > DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{collect_date}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
-                 AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{collect_date}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
+               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) > DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+                 AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
             ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
+
             df = utils.get_table_from_db(sql)
+
+            x, y = utils.split_x_y(df, x_col='energy_diff')
+
+            x, y = utils.sliding_window_transform(x, y, step_size=30, lag = 10)
 
             model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
 
-            y = model.predict([df.energy_diff.values])
+            y = model.predict(x)
 
-            return {'flag_success': True, 'predicted_status': y.item()}
+            y = [int(x) for x in y]
+
+            return {'flag_success': True, 'predicted_status': y}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
@@ -269,6 +280,9 @@ class Test(Resource):
             return {'error':str(e)}
 
 
+
+
+
 api.add_resource(PredictElec, '/elec')
 api.add_resource(Labeling, '/label')
 api.add_resource(CBL, '/dr')
@@ -276,4 +290,5 @@ api.add_resource(AISchedule, '/schedule')
 api.add_resource(Test, '/test')
 
 if __name__ == '__main__':
-    app.run(host = '127.0.0.1', port=5000, debug=True)
+    app.run(host = '0.0.0.0', port=5000, debug=True)
+    # app.run(host = '127.0.0.1', port=5000, debug=True)
