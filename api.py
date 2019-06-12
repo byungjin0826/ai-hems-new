@@ -148,23 +148,30 @@ class Labeling(Resource):
             WHERE      1=1
                AND   GATEWAY_ID = '{gateway_id}'
                AND   DEVICE_ID = '{device_id}'
-               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) > DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
                  AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
             ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
-
             df = utils.get_table_from_db(sql)
+
+            print('df:', len(df))
 
             x, y = utils.split_x_y(df, x_col='energy_diff')
 
-            x, y = utils.sliding_window_transform(x, y, step_size=30, lag = 10)
+            pre = 20
+            post = 10
+            length = post + pre
+
+            x = [x[i:i + length] for i in range(len(x) - (pre + post))]
 
             model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
 
             y = model.predict(x)
 
             y = [int(x) for x in y]
+
+            print(len(y))
 
             return {'flag_success': True, 'predicted_status': y}
 
@@ -180,6 +187,7 @@ class MakePredictionModel(Resource):
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
+
 
 
 class AISchedule(Resource):
@@ -290,5 +298,5 @@ api.add_resource(AISchedule, '/schedule')
 api.add_resource(Test, '/test')
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port=5000, debug=True)
-    # app.run(host = '127.0.0.1', port=5000, debug=True)
+    # app.run(host = '0.0.0.0', port=5000, debug=True)
+    app.run(host = '127.0.0.1', port=5000, debug=True)

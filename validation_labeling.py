@@ -1,5 +1,4 @@
 import utils
-import utils
 import os
 from joblib import load
 import pandas as pd
@@ -24,13 +23,19 @@ dic = {'device_id':device_list, 'score':model_score_list}
 df = pd.DataFrame(dic)
 
 sql_b = f"""
-SELECT a.APPLIANCE_NO, a.GATEWAY_ID, a.DEVICE_ID, b.APPLIANCE_TYPE, b.APPLIANCE_NAME
+SELECT a.APPLIANCE_NO, a.GATEWAY_ID, a.DEVICE_ID, b.APPLIANCE_TYPE, b.APPLIANCE_NAME, c.APPLIANCE_TYPE_NAME
 FROM AH_APPLIANCE_CONNECT a
 LEFT JOIN (	SELECT *
 			FROM AH_APPLIANCE
 			WHERE 1=1
 			AND FLAG_DELETE = 'n') b
 ON a.APPLIANCE_NO = b.APPLIANCE_NO
+LEFT JOIN AH_APPLIANCE_TYPE c
+ON b.APPLIANCE_TYPE = c.APPLIANCE_TYPE
 """
 
 b = utils.get_table_from_db(sql_b)
+
+df_merged = pd.merge(df,b, on = 'device_id')
+
+df_merged.to_csv('./labeling_result.csv', encoding = 'euc-kr')

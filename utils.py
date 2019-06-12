@@ -364,6 +364,7 @@ def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러
     :param lag: 숫자만큼 지연
     :return:
     """
+    # todo: lag가 - 값이여도 동작하게 만들기
     x = [x for x in x]
     y = [x for x in y]
     x = [0] * (step_size - 1) + x
@@ -608,7 +609,7 @@ def prediction_status_model_by_type(appliance_type):
 def select_regression_model(model_name):
     regressions = {
         'random forest': [
-            sk.ensemble.RandomForestClassifier(),
+            sk.ensemble.RandomForestRegressor(),
             {
                 'n_estimator': [10]
                 , 'criterion': ['gini']
@@ -660,15 +661,15 @@ def select_regression_model(model_name):
         'lasso regression': [
             sk.linear_model.Lasso(),
             {
-                'alpha': []
-                , 'fit_intercept': [True]
+                # 'alpha': []
+                 'fit_intercept': [True]
                 , 'normalize': [False]
                 , 'precompute': [False]
                 , 'copy_X': [True]
-                , 'max_iter': []
-                , 'tol': []
-                , 'warm_start': []
-                , 'positive': []
+                # , 'max_iter': []
+                # , 'tol': []
+                # , 'warm_start': []
+                # , 'positive': []
                 , 'random_state': [None]
                 , 'selection': ['cyclic']
             }
@@ -1011,8 +1012,28 @@ def iter_predict(x, n_iter, model):
     y = []
     for i in range(n_iter):
         y_temp = model.predict([x]).item()
+        if y_temp < 0:
+            y_temp = y_temp * -1
         y.append(y_temp)
         x_temp = x[1:]
         x_temp.append(y_temp)
         x = x_temp
     return y
+
+
+#
+# if __name__ == "__main__":
+#     gateway =""
+#     date = ""
+#     start = ""
+#     end = ""
+#     cbl = calc_cbl()
+
+if __name__ == "__main__":
+    x = [x for x in range(40)]
+    pre = 20
+    post = 10
+    length = post+pre
+    index = []
+    transformed_x = [x[:i+length] for i in range(len(x)-(pre+post))]
+    y = [x[pre+i] for i in range(len(x)-(pre+post))]

@@ -1,5 +1,5 @@
 from utils import *
-
+from joblib import dump
 # progressive_level_predict
 
 # 누진 구간 예측 절차
@@ -10,28 +10,26 @@ from utils import *
 # gateway_id: ''
 #
 
-def make_model(name):
-    gateway_id = get_gateway_id(name)
-    device_list = get_device_list(gateway_id)
+def make_model(house_no):
+    sql = f"""
+    SELECT *
+    FROM AH_USAGE_DAILY_PREDICT
+    WHERE 1=1
+    AND HOUSE_NO = '{house_no}'
+    """
 
-    df = get_raw_data(gateway_id=gateway_id, start = '20180801')
+    df = get_table_from_db(sql)
 
-    df = binding_time(df)
+    x, y = split_x_y(df, x_col='use_energy_daily', y_col='use_energy_daily')
 
-    df_daily_sum = df.loc[:, ['energy_diff']].resample('1d').sum()
+    x, y = sliding_window_transform(x, y, step_size=7, lag=0)
 
-    df_daily_sum.loc[:, 'dayofweek'] = [x for x in df_daily_sum.index.dayofweek]
-
-    x, y = split_x_y(df_daily_sum, x_col='energy_diff', y_col='energy_diff')
-    x, y = sliding_window_transform(x, y, step_size=8, lag=0)
-
-    x = x[7:]
-    x = [x[:-1] for x in x]
+    x = x[6:-1]
     y = y[7:]
 
-    # x = [[x] for x in x]
+    # x, y = sliding_window_transform(x, y, step_size=7, lag=0) # todo: 과적합 해결
 
-    model, params = select_regression_model('ridge regression')
+    model, params = select_regression_model('lasso regression')
 
     gs = sk.model_selection.GridSearchCV(estimator=model,
                                          param_grid=params,
@@ -39,6 +37,10 @@ def make_model(name):
                                          cv=5)
 
     gs.fit(x, y)
-    return gs
+    dump(gs, f'./sample_data/joblib/usage_daily/{house_no}.joblib')
+    return gs, x, y
 
 
+if __name__ == '__main__':
+    gs, x, y = make_model('20190325000001')
+    print(gs.best_score_)
