@@ -6,83 +6,9 @@ from joblib import load
 import datetime
 import pandas as pd
 
-"""
-# 뭔가 일관성이 있으면 좋을듯...
-# house_no: 20190325000001
-# gateway_id: ep18270236
-# 기준일자 추가
-
-1. 실행하면 한 달 치 전력 예측값을 update?
-    - 
-2. 실행하면 한 달 치 전력 값이 list 형태로 반환되게?
-    - 입력 받을 값: gateway_id, month
-    - model 7일치...
-    - 전달 7일치를 포함하는 데이터를 로드
-    - 없는 경우에는 예측 값을 사용하고 있는 경우에는...
-3. 입력한 날짜의 데이터만 한 개 나오게?
-4. 매일 하루에 한번씩 사용하는 것을 가정
-    - 날짜랑 house_no를 인풋으로 받아서
-    - 한개의 값만 나오게...
-    - 현재일로부터 6일전까지 총 7일간의 데이터로 다음날 것을 예측
-    
-"""
-
-"""
-# AI control
-input
-    - service
-    - command
-    - house_no
-    - week
-output
-    - service
-    - command
-    - flag_success
-    - message
-    - result
-"""
-
-"""
-Labeling API
-input
-    - gateway_id
-    - device_id
-    - collect_date
-output
-    - flag
-    - appliance_status
-"""
-
-"""
-DR
-input
-    - house_no
-    - 시간
-output
-    - flag
-    - cbl
-    - energy
-    - elec_list: dictionary 형식으로, True가 허용, False가 제한
-        { 'TV': True
-        'Aircon':False}
-"""
-
-"""
-DR_now
-input
-    - 
-output
-    - 
-"""
-
-"""
-DR_change_list
-input
-    - elec_change_list: dictionary 형식으로
-
-output
-    - 
-"""
+# todo: 전력 예측 '-값' 나오는 거 모델 해결하기
+# todo: DR 개발
+# todo:
 
 
 app = Flask(__name__)
