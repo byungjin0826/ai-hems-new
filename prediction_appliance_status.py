@@ -1,35 +1,25 @@
 from utils import *
 
-# query = """
-# SELECT distinct(device_id)
-# FROM AH_USE_LOG_BYMINUTE_LABELED_cc
-# """
-# device_address_list = get_table_from_db(query, db='aihems_api_db')
 
-# 일단 모델을 로컬에 저장
-member_name = input('member name : ')
-appliance_name = input('appliance name : ')
-# device_address = input('device_address:')
 
-device_address = search_device_address(member_name, appliance_name)
-
-print(device_address)
-
-# device_address = device_address[:-1]
-# for device_address in device_address_list.device_id:
 lag = 10
 
-sql = """
+device_id = '00158D000151B3061'
+# 00158D000151B4441: 공기청정기
+# 00158D0001524BC71 : 셋톱
+
+
+sql = f"""
 SELECT *
 FROM AH_USE_LOG_BYMINUTE_LABELED_cc
 WHERE 1=1
+AND GATEWAY_ID = (
+	SELECT GATEWAY_ID
+	FROM AH_GATEWAY
+	WHERE GATEWAY_NAME = '박재훈'
+	)
+AND DEVICE_ID = '{device_id}'
 """
-
-# gateway_id = ""
-device_address_condition = f"AND device_id = '{device_address}'"
-# gateway_id_condition = f"AND gateway_id = {gateway_id}"
-sql += device_address_condition
-# sql += gateway_id_conditon
 
 df = get_table_from_db(sql, db='aihems_api_db')
 
@@ -53,4 +43,5 @@ df = df.iloc[:-lag]
 
 df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
 # df['appliance_status'] = gs.predict(x)
-# dump(gs, './sample_data/joblib/'+device_address+'_labeling.joblib') # 저장
+
+dump(gs, f'./sample_data/joblib/{device_id}_labeling.joblib') # 저장
