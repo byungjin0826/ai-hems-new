@@ -5,18 +5,24 @@ import sklearn.model_selection
 from joblib import dump
 import pandas as pd
 
-house_no = '20190325000001'
+house_no = '20180810000009'
 
 sql = f"""
-SELECT   * 
+SELECT *
 FROM AH_USAGE_DAILY_PREDICT
-WHERE HOUSE_NO = '{house_no}'
-AND USE_DATE != '20190417'
-AND USE_DATE < '20190616'
-ORDER BY USE_DATE
+WHERE 1=1
+AND HOUSE_NO = (
+	SELECT HOUSE_NO
+	FROM AH_HOUSE
+	WHERE 1=1
+	AND HOUSE_NAME = '박재훈'
+	)
+AND USE_DATE > 20190419
 """
 
 df = utils.get_table_from_db(sql)
+
+df.loc[df.use_energy_daily.isnull(), 'use_energy_daily'] = 0
 
 x, y = utils.split_x_y(df, x_col = 'use_energy_daily', y_col='use_energy_daily')
 
@@ -52,3 +58,5 @@ comparison = pd.DataFrame({'y':y, 'pr_y':predicted_y})
 
 
 dump(gs, f'./{house_no}.joblib')
+
+df_predicted = pd.DataFrame({'y':y, 'y_predicted':gs.predict(x)})
