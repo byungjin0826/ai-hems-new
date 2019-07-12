@@ -5,6 +5,7 @@ import pymysql
 from joblib import load
 import datetime
 import pandas as pd
+import numpy as np
 
 # todo: 전력 예측 '-값' 나오는 거 모델 해결하기
 # todo: DR 개발
@@ -38,13 +39,11 @@ class PredictElec(Resource):
 
             df = utils.get_table_from_db(sql)
 
-            elec = [x for x in df.use_energy.values[-7:]]
+            elec = [x for x in df.use_energy_daily.values[-7:]]
 
             model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib')
 
-            x = [3031.2502, 2854.9709, 3115.7338, 4878.9978, 4113.0371, 4156.0059, 5398.0103]
-
-            y = utils.iter_predict(x=x, n_iter=31, model=model)
+            y = utils.iter_predict(x=elec, n_iter=31, model=model)
 
             return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
 
@@ -115,7 +114,6 @@ class MakePredictionModel(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
-
 class AISchedule(Resource):
     def post(self):
         try:
@@ -171,57 +169,69 @@ class AISchedule(Resource):
         except Exception as e:
             return {'flag_success': False, 'error':str(e)}
 
-class CBL(Resource):
+
+class CBL_INFO(Resource):
     def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument('house_no', type=str)
-            parser.add_argument('dr_time', type=str)
+            parser.add_argument('start_date', type=str)
+            parser.add_argument('end_date', type=str)
             args = parser.parse_args()
 
-            device_id = args['device_id']
-            gateway_id = args['gateway_id']
-            collect_date = args['collect_date']
+            house_no = args['house_no']
+            start_date = args['start_date']
+            end_date = args['end_date']
 
-            elec_list = utils.calc_number_of_time_use()
+            sql = f"""
 
-            elec_list
-            y = 0
-            return {'flag_success': True, 'aim': y, 'elec_list': elec_list}
+
+            """
+
+            gateway_id = house_no # todo: 수정 필요
+
+            cbl = utils.calc_cbl(gateway_id=gateway_id, date = start_date[:8], start = start_date[-4:], end = end_date[-4:])
+
+            if cbl <= 500:
+                reduction_energy = cbl * 0.3
+            elif cbl <= 1500:
+                reduction_energy = cbl * 0.15 + 75
+            else:
+                reduction_energy = 300
+
+            return {'flag_success': True, 'cbl': cbl, 'reduction_energy': reduction_energy}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
 
 
-class Test(Resource):
+class DR_RECOMMEND(Resource):
     def post(self):
         try:
-            import pandas as pd
-            import numpy as np
+            parser = reqparse.RequestParser()
+            parser.add_argument('house_no', type=str)
+            parser.add_argument('start_date', type=str)
+            parser.add_argument('end_date', type=str)
 
-            arrays = [['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux'],
-                      ['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two']]
 
-            tuples = list(zip(*arrays))
 
-            index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
+            recommendation = {'first_device_id':'1',
+                              'second_device_id':'0'}
 
-            s = pd.Series(np.random.randn(8), index=index)
-
-            return {'output': arrays}
+            return {'flag_success': True, 'recommendation': recommendation}
 
         except Exception as e:
-            return {'error':str(e)}
+            return {'flag_success': False, 'error': str(e)}
 
-
+# =IF(AS4="절감달성", AR4*1500/1000,0)
 
 
 
 api.add_resource(PredictElec, '/elec')
 api.add_resource(Labeling, '/label')
-api.add_resource(CBL, '/dr')
+api.add_resource(CBL_INFO, '/cbl_info')
 api.add_resource(AISchedule, '/schedule')
-api.add_resource(Test, '/test')
+api.add_resource(DR_RECOMMEND, '/dr_recommendation')
 
 if __name__ == '__main__':
     # app.run(host = '0.0.0.0', port=5000, debug=True)
