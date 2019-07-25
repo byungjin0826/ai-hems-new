@@ -134,19 +134,6 @@ class AISchedule(Resource):
             AND DEVICE_ID = '{device_id}'
             """
 
-            import utils
-
-            gateway_id = 'ep18270363'
-            device_id = '000D6F0012577C7C1'
-
-            sql = f"""
-            SELECT *
-            FROM AH_USE_LOG_BYMINUTE_201904
-            WHERE 1=1
-            AND GATEWAY_ID = '{gateway_id}'
-            AND DEVICE_ID = '{device_id}'
-            """
-
             df = utils.get_table_from_db(sql)
             df = utils.binding_time(df)
 
