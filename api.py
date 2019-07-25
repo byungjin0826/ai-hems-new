@@ -122,16 +122,18 @@ class AISchedule(Resource):
             parser.add_argument('device_id', type=str)
             # parser.add_argument('dayofweek', type=str)
             args = parser.parse_args()
+            date = datetime.datetime.now().date().strftime('%Y%m%d')
 
             gateway_id = args['gateway_id']
             device_id = args['device_id']
 
             sql = f"""
             SELECT *
-            FROM AH_USE_LOG_BYMINUTE_201904
+            FROM AH_USE_LOG_BYMINUTE
             WHERE 1=1
             AND GATEWAY_ID = '{gateway_id}'
             AND DEVICE_ID = '{device_id}'
+            AND COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
             """
 
             df = utils.get_table_from_db(sql)
@@ -144,8 +146,7 @@ class AISchedule(Resource):
 
             schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
 
-            schedule_unpivoted.loc[:,
-            'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
+            schedule_unpivoted.loc[:, 'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
 
             subset = schedule_unpivoted.loc[
                 (schedule_unpivoted.status_change == False), ['date', 'index', 'appliance_status']]
@@ -164,7 +165,7 @@ class AISchedule(Resource):
 
             subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
 
-            subset = subset.loc[(subset.status_change == False), :]
+            subset = subset.loc[(subset.status_change == False), ['dayofweek', 'time', 'appliance_status']]
 
             subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
 

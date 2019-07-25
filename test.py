@@ -1,15 +1,18 @@
 import utils
+import datetime
 
 
 gateway_id = 'ep18270363'
 device_id = '000D6F0012577C7C1'
+date = datetime.datetime.now().date().strftime('%Y%m%d')
 
 sql = f"""
 SELECT *
-FROM AH_USE_LOG_BYMINUTE_201904
+FROM AH_USE_LOG_BYMINUTE
 WHERE 1=1
 AND GATEWAY_ID = '{gateway_id}'
 AND DEVICE_ID = '{device_id}'
+AND      COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
 """
 
 df = utils.get_table_from_db(sql)
