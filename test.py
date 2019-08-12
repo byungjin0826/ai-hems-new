@@ -1,55 +1,46 @@
-import utils
+from utils import *
+
 import datetime
 
-
-gateway_id = 'ep18270363'
-device_id = '000D6F0012577C7C1'
-date = datetime.datetime.now().date().strftime('%Y%m%d')
+lag = 10
 
 sql = f"""
-SELECT *
-FROM AH_USE_LOG_BYMINUTE
-WHERE 1=1
-AND GATEWAY_ID = '{gateway_id}'
-AND DEVICE_ID = '{device_id}'
-AND      COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
+SELECT distinct device_id
+FROM AH_USE_LOG_BYMINUTE_LABELED_sbj
 """
 
-df = utils.get_table_from_db(sql)
-df = utils.binding_time(df)
+df = get_table_from_db(sql)
 
-schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek,
-                          aggfunc='max')
+for i in df.iterrows():
+    device_id = i[1][0]
 
-schedule = schedule.reset_index()
+    print(device_id)
 
-schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
+    sql = f"""
+SELECT *
+FROM AH_USE_LOG_BYMINUTE_LABELED_sbj
+WHERE 1=1
+AND device_id = '{device_id}'
+"""
 
-schedule_unpivoted.loc[:, 'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
+    df = get_table_from_db(sql, db='aihems_api_db')
 
-subset = schedule_unpivoted.loc[
-    (schedule_unpivoted.status_change == False), ['date', 'index', 'appliance_status']]
+    x, y = split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
-subset.columns = ['dayofweek', 'time', 'appliance_status']
+    x, y = sliding_window_transform(x,y,lag=lag,step_size=30)
 
-subset.loc[:, 'minutes'] = [x.hour * 60 + x.minute for x in subset.time]
+    model, params = select_classification_model('random forest')
 
-subset.loc[:, 'minutes'] = subset.dayofweek * 1440 + subset.minutes
+    gs = sk.model_selection.GridSearchCV(estimator=model,
+                                         param_grid=params,
+                                         cv=5,
+                                         scoring='accuracy',
+                                         n_jobs=-1)
 
-subset.loc[:, 'duration'] = subset.minutes - subset.minutes.shift(1)
-subset.loc[:, 'duration'] = subset.minutes.shift(-1) - subset.minutes
+    gs.fit(x, y)
 
-subset = subset.loc[((subset.appliance_status == 0) & (subset.duration < 120)) == False, :]
-# subset = subset.loc[subset.duration > 120, :]
+    print(round(gs.best_score_*100, 2), '%', sep = '')
 
-subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
+    df = df.iloc[:-lag]
 
-subset = subset.loc[(subset.status_change == False), :]
-
-subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
-
-subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
-
-subset = subset.reset_index(drop=True)
-
-result = subset.to_dict('index')
+    dump(gs, f'./sample_data/test/{device_id}_labeling.joblib') # 저장
