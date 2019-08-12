@@ -41,12 +41,13 @@ lasso regression
 """
 
 
-model, param = utils.select_regression_model('linear regression')
+model, param = utils.select_regression_model('ridge regression')
 
 gs = sk.model_selection.GridSearchCV(estimator=model,
                                      param_grid=param,
                                      cv=5,
-                                     n_jobs=-1)
+                                     n_jobs=-1,
+                                     scoring='r2')
 
 gs.fit(x, y)
 
@@ -57,6 +58,5 @@ predicted_y = gs.predict(x)
 comparison = pd.DataFrame({'y':y, 'pr_y':predicted_y})
 
 
-dump(gs, f'./{house_no}.joblib')
 
-df_predicted = pd.DataFrame({'y':y, 'y_predicted':gs.predict(x)})
+dump(gs, f'./{house_no}.joblib')

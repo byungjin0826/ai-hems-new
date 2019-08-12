@@ -1,11 +1,21 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import utils
-import pymysql
-from joblib import load
+from joblib import load, dump
 import datetime
 import pandas as pd
 import numpy as np
+import pymysql
+import sklearn as sk
+import sklearn.ensemble
+import sklearn.linear_model
+from sqlalchemy import create_engine
+import time
+import sklearn.metrics
+import matplotlib.pyplot as plt
+
+plt.style.use('seaborn-whitegrid')
+import sys
 
 # todo: 전력 예측 '-값' 나오는 거 모델 해결하기
 # todo: DR 개발
@@ -146,7 +156,8 @@ class AISchedule(Resource):
 
             schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
 
-            schedule_unpivoted.loc[:, 'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
+            schedule_unpivoted.loc[:,
+            'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
 
             subset = schedule_unpivoted.loc[
                 (schedule_unpivoted.status_change == False), ['date', 'index', 'appliance_status']]
@@ -177,12 +188,12 @@ class AISchedule(Resource):
 
             return {
                 'flag_success': True,
-                'device_id':device_id,
+                'device_id': device_id,
                 'result': result
             }
 
         except Exception as e:
-            return {'flag_success': False, 'error':str(e)}
+            return {'flag_success': False, 'error': str(e)}
 
 
 class CBL_INFO(Resource):
@@ -203,9 +214,9 @@ class CBL_INFO(Resource):
 
             """
 
-            gateway_id = house_no # todo: 수정 필요
+            gateway_id = house_no  # todo: 수정 필요
 
-            cbl = utils.calc_cbl(gateway_id=gateway_id, date = start_date[:8], start = start_date[-4:], end = end_date[-4:])
+            cbl = utils.calc_cbl(gateway_id=gateway_id, date=start_date[:8], start=start_date[-4:], end=end_date[-4:])
 
             if cbl <= 500:
                 reduction_energy = cbl * 0.3
@@ -228,18 +239,91 @@ class DR_RECOMMEND(Resource):
             parser.add_argument('start_date', type=str)
             parser.add_argument('end_date', type=str)
 
-
-
-            recommendation = {'first_device_id':'1',
-                              'second_device_id':'0'}
+            recommendation = {'first_device_id': '1',
+                              'second_device_id': '0'}
 
             return {'flag_success': True, 'recommendation': recommendation}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
 
-# =IF(AS4="절감달성", AR4*1500/1000,0)
 
+class Make_Model_Elec(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('house_no', type=str)
+            args = parser.parse_args()
+
+            house_no = args['house_no']
+            today = datetime.datetime.now().strftime('%Y%m%d')
+
+            sql = f"""
+SELECT *
+FROM AH_USAGE_DAILY_PREDICT
+WHERE 1=1
+AND HOUSE_NO = {house_no}
+AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
+"""
+
+            df = utils.get_table_from_db(sql)
+
+            df.loc[df.use_energy_daily.isnull(), 'use_energy_daily'] = 0
+
+            x, y = utils.split_x_y(df, x_col='use_energy_daily', y_col='use_energy_daily')
+
+            x, y = utils.sliding_window_transform(x, y, step_size=7, lag=0)
+
+            x = x[6:-1]
+
+            y = y[7:]
+
+            """
+            random forest
+            linear regression
+            ridge regression
+            lasso regression
+            """
+
+            model, param = utils.select_regression_model('linear regression')
+
+            gs = sk.model_selection.GridSearchCV(estimator=model,
+                                                 param_grid=param,
+                                                 cv=5,
+                                                 n_jobs=-1)
+
+            gs.fit(x, y)
+
+            print(gs.best_score_)
+
+            dump(gs, f'./sample_data/joblib/usage_daily/{house_no}.joblib')
+
+            return {'flag_success': True, 'best_score': str(gs.best_score_)}
+
+        except Exception as e:
+            return {'flag_success': False, 'error': str(e)}
+
+
+class Make_Model_Status(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+
+            sql = f"""
+SELECT distinct device_id
+FROM AH_USAGE_DAILY_PREDICT
+"""
+
+            list = utils.get_table_from_db(sql)
+
+            gs = 0
+
+            dump(gs, f'./sample_data/joblib/by_device')
+
+            return {'flag_success': True}
+
+        except Exception as e:
+            return {'flag_success': False, 'error': str(e)}
 
 
 api.add_resource(PredictElec, '/elec')
@@ -247,7 +331,9 @@ api.add_resource(Labeling, '/label')
 api.add_resource(CBL_INFO, '/cbl_info')
 api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
+api.add_resource(Make_Model_Elec, '/make_model_status')
+api.add_resource(Make_Model_Status, '/make_model_elec')
 
 if __name__ == '__main__':
     # app.run(host = '0.0.0.0', port=5000, debug=True)
-    app.run(host = '127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

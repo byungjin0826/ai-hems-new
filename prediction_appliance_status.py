@@ -1,7 +1,5 @@
 from utils import *
 
-
-
 lag = 10
 
 device_id = '00158D000151B3061'
