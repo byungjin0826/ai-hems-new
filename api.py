@@ -13,14 +13,9 @@ from sqlalchemy import create_engine
 import time
 import sklearn.metrics
 import matplotlib.pyplot as plt
-
-plt.style.use('seaborn-whitegrid')
 import sys
 
-# todo: 전력 예측 '-값' 나오는 거 모델 해결하기
-# todo: DR 개발
-# todo:
-
+plt.style.use('seaborn-whitegrid')
 
 app = Flask(__name__)
 api = Api(app)
@@ -89,7 +84,7 @@ class Labeling(Resource):
             """
 
             df = utils.get_table_from_db(sql)
-
+            print(df.head())
             print('df:', len(df))
 
             x, y = utils.split_x_y(df, x_col='energy_diff')
@@ -117,7 +112,6 @@ class Labeling(Resource):
 class MakePredictionModel(Resource):
     def post(self):
         try:
-
             return {'flag_success': True}
 
         except Exception as e:
@@ -210,7 +204,6 @@ class CBL_INFO(Resource):
             end_date = args['end_date']
 
             sql = f"""
-
 
             """
 
@@ -319,7 +312,6 @@ FROM AH_USAGE_DAILY_PREDICT
             gs = 0
 
             dump(gs, f'./sample_data/joblib/by_device')
-
             return {'flag_success': True}
 
         except Exception as e:

@@ -1030,10 +1030,39 @@ def iter_predict(x, n_iter, model):
 #     cbl = calc_cbl()
 
 if __name__ == "__main__":
-    x = [x for x in range(40)]
+
+    device_id ='000D6F001257E60C1'
+    gateway_id = 'ep18270363'
+    collect_date = '20190908'
+
+    start = collect_date + '0000'
+    end = collect_date + '2359'
+
+    sql = f"""
+            SELECT    *
+            FROM      AH_USE_LOG_BYMINUTE
+            WHERE      1=1
+               AND   GATEWAY_ID = '{gateway_id}'
+               AND   DEVICE_ID = '{device_id}'
+               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+                 AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
+            ORDER BY COLLECT_DATE, COLLECT_TIME
+    """
+
+    df = get_table_from_db(sql)
+    print(df.head())
+    x, y = split_x_y(df, x_col='energy_diff')
+
     pre = 20
     post = 10
-    length = post+pre
-    index = []
-    transformed_x = [x[:i+length] for i in range(len(x)-(pre+post))]
-    y = [x[pre+i] for i in range(len(x)-(pre+post))]
+    length = post + pre
+
+    x = [x[i:i + length] for i in range(len(x) - (pre + post))]
+
+    model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
+
+    y = model.predict(x)
+
+    y = [int(x) for x in y]
+
+    print(len(y))
