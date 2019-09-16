@@ -323,8 +323,8 @@ api.add_resource(Labeling, '/label')
 api.add_resource(CBL_INFO, '/cbl_info')
 api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
-api.add_resource(Make_Model_Elec, '/make_model_status')
-api.add_resource(Make_Model_Status, '/make_model_elec')
+api.add_resource(Make_Model_Elec, '/make_model_elec')
+api.add_resource(Make_Model_Status, '/make_model_status')
 
 if __name__ == '__main__':
     # app.run(host = '0.0.0.0', port=5000, debug=True)
