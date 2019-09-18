@@ -309,10 +309,35 @@ class Make_Model_Status(Resource):
             device_id = args['device_id']
 
             sql = f"""
-            SELECT *
-            FROM AH_USE_LOG_BYMINUTE_LABELED_sbj
-            WHERE 1=1
-            AND DEVICE_ID = '{device_id}'
+SELECT
+	GATEWAY_ID
+	, DEVICE_ID
+	, COLLECT_DATE
+	, COLLECT_TIME
+	, QUALITY
+	, ONOFF
+	, ENERGY
+	, ENERGY_DIFF
+	, case when APPLIANCE_STATUS is null then 0 else APPLIANCE_STATUS end APPLIANCE_STATUS
+	, CREATE_DATE
+FROM
+	AH_USE_LOG_BYMINUTE_LABELED_sbj
+WHERE
+	1 = 1
+	AND DEVICE_ID = '{device_id}'
+	AND COLLECT_DATE in (
+		SELECT
+			t1.COLLECT_DATE
+		FROM
+			(SELECT
+				COLLECT_DATE
+				, sum(APPLIANCE_STATUS) APPLIANCE_STATUS_SUM
+			FROM 
+				AH_USE_LOG_BYMINUTE_LABELED_sbj
+			GROUP by
+				COLLECT_DATE) t1
+		WHERE 1=1
+		AND t1.APPLIANCE_STATUS_SUM is not null)
             """
 
             df = utils.get_table_from_db(sql, db='aihems_api_db')
