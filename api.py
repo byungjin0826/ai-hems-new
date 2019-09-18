@@ -301,18 +301,50 @@ class Make_Model_Status(Resource):
     def post(self):
         try:
             parser = reqparse.RequestParser()
+            parser.add_argument('device_id', type=str)
+            args = parser.parse_args()
+
+            lag = 10
+
+            device_id = args['device_id']
 
             sql = f"""
-SELECT distinct device_id
-FROM AH_USAGE_DAILY_PREDICT
-"""
+            SELECT *
+            FROM AH_USE_LOG_BYMINUTE_LABELED_sbj
+            WHERE 1=1
+            AND DEVICE_ID = '{device_id}'
+            """
 
-            list = utils.get_table_from_db(sql)
+            df = utils.get_table_from_db(sql, db='aihems_api_db')
 
-            gs = 0
+            x, y = utils.split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
-            dump(gs, f'./sample_data/joblib/by_device')
-            return {'flag_success': True}
+            x, y = utils.sliding_window_transform(x, y, lag=lag, step_size=30)
+
+            model, params = utils.select_classification_model('random forest')
+
+            gs = sk.model_selection.GridSearchCV(estimator=model,
+                                                 param_grid=params,
+                                                 cv=5,
+                                                 scoring='accuracy',
+                                                 n_jobs=-1)
+
+            gs.fit(x, y)
+
+            gs.best_score_
+
+            print(round(gs.best_score_ * 100, 2), '%', sep='')
+
+            df = df.iloc[:-lag]
+
+            df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
+            # df['appliance_status'] = gs.predict(x)
+
+            dump_path = f'./sample_data/joblib/{device_id}_labeling.joblib'
+
+            dump(gs, dump_path)  # 저장
+
+            return {'flag_success': True, 'dump_path': str(dump_path), 'score': str(gs.best_score_)}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
