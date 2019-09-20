@@ -5,7 +5,7 @@ Created on 2019. 8. 20.
 '''
 
 ####### 어제 데이터 갱신하는 파일 ##################3
-from src import data_handler as dh
+import data_handler as dh
 import pandas as pd
 import datetime
 from sqlalchemy import create_engine

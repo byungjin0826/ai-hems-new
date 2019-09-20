@@ -5,7 +5,7 @@ Created on 2019. 8. 20.
 '''
 
 ######## 30분마다 데이터 갱신하는 파일 #############
-from src import data_handler as dh
+import data_handler as dh
 import pandas as pd
 import datetime
 from sqlalchemy import create_engine
