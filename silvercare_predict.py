@@ -31,7 +31,9 @@ x, y = sliding_window_transform(x, y, lag=lag, step_size=10)
 """
 x = 53034
 y = 53034
-"""
+# """
+# x = [[1,1,1,1,1,1,0,0,0,0]]
+
 y = model.predict(x)
 df = df.iloc[:-lag]
 
