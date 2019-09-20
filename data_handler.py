@@ -31,7 +31,7 @@ class GetData:
         GetData.nec_data = self.necessary_data()
         super().__init__()
 
-    def data_road(self):
+    def data_road(self): # todo: road 스펠
         gateway = self._gateway
         engine = create_engine(
             "mysql+pymysql://aihems:" + "#cslee1234" +
@@ -45,7 +45,7 @@ class GetData:
         conn.close()
         return data
 
-    def necessary_data(self):
+    def necessary_data(self): # todo: data_road와 통합 가능(?)
         input_date = self._input_date
         data = GetData.data
         # data road
@@ -66,7 +66,7 @@ class GetData:
 
         nec_data['TIME_BAND'] = nec_data['COLLECT_TIME'].astype(int) + (
                 30 - nec_data['COLLECT_TIME'].astype(int) % 100 % 30).astype(int)  # 30분단위 시간
-        nec_data.loc[nec_data['TIME_BAND'] % 100 >= 60, 'TIME_BAND'] += 40
+        nec_data.loc[nec_data['TIME_BAND'] % 100 >= 60, 'TIME_BAND'] += 40 # todo: 30분을 조정할 수 있도록 수정 필요.
 
 #         for data in nec_data['TIME_BAND']:x
 #             if data % 100 >= 60:
@@ -85,7 +85,7 @@ class GetData:
         using_by_time = nec_data.loc[nec_data['COLLECT_DATE'].astype(int) < int(input_date)]
         using_by_time = using_by_time[['TIME_BAND', 'GIVE_WEIGHT_ONOFF']].groupby(['TIME_BAND']).mean()  # 어제까지의 평균
         # print(using_by_time)
-        using_by_time['GIVE_WEIGHT_ONOFF'] = using_by_time['GIVE_WEIGHT_ONOFF'] / 34.5
+        using_by_time['GIVE_WEIGHT_ONOFF'] = using_by_time['GIVE_WEIGHT_ONOFF'] / 34.5 # todo: 왜 34.5인지 확인 필요.
         return using_by_time
 
     def use_today(self): # 30분마다 갱신
@@ -93,7 +93,7 @@ class GetData:
         nec_data = GetData.nec_data
         using_today = nec_data.loc[nec_data['COLLECT_DATE'].astype(int) == int(input_date)]
         using_today = using_today[['TIME_BAND', 'ONOFF_TV']].groupby(['TIME_BAND']).mean()  # 오늘 사용시간
-        using_today.loc[using_today['ONOFF_TV'] <= 0.1, 'ONOFF_TV'] = 0
+        using_today.loc[using_today['ONOFF_TV'] <= 0.1, 'ONOFF_TV'] = 0 # todo: 기준 확인 필요
         using_today.loc[using_today['ONOFF_TV'] >= 0.9, 'ONOFF_TV'] = 1
         return using_today
 
@@ -102,7 +102,7 @@ class GetData:
         # 최근24시간 사용량 (이탈률 계산을 위해)
         using_24hours = nec_data.iloc[-1440:]
         using_24hours = using_24hours[['TIME_BAND', 'ONOFF_TV']].groupby(['TIME_BAND']).mean()
-        using_24hours.loc[using_24hours['ONOFF_TV'] <= 0.1, 'ONOFF_TV'] = 0
+        using_24hours.loc[using_24hours['ONOFF_TV'] <= 0.1, 'ONOFF_TV'] = 0 # todo: 기준 확인 필요
         using_24hours.loc[using_24hours['ONOFF_TV'] >= 0.9, 'ONOFF_TV'] = 1
         return using_24hours
 
@@ -338,3 +338,4 @@ class CompareBounce:
 # print(g.std_bounce())
 
 if __name__ == '__main__':
+    print('test')
