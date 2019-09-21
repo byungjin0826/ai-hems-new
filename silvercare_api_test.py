@@ -42,6 +42,9 @@ model = load('./sample_data/joblib/silvercare_model.joblib')
 
 y_ = model.predict(x_)
 print(y_) # 5분 전의 데이터 labeling
+y_1 = [int(x) for x in y_]
+print(y_1)
+
 
 
 
