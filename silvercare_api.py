@@ -50,3 +50,40 @@ class SilverCare_Labeling(Resource):
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
 
+
+class SilverCare_test(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('gateway_id', type=str)
+            parser.add_argument('device_id', type=str)
+            parser.add_argument('collect_date', type=str)
+            parser.add_argument('collect_time', type=str)
+            parser.add_argument('data', type=list)
+            args = parser.parse_args()
+
+            gateway_id = args['gateway_id']
+            device_id = args['device_id']
+            collect_date = args['collect_date']
+            collect_time = args['collect_time']
+            data = args['data']
+
+            device_list = ['00158D0001A4590E1', '00158D0001A44CC51', '00158D000151B1E71', '00158D0001A4528D1']
+
+            if device_id == '00158D0001A474EC1':
+                model_name = 'silvercare_model_2'
+            elif device_id in device_list:
+                model_name = 'silvercare_model_1'
+            else:
+                model_name = 'silvercare_model'
+
+            x = [data]
+
+            model = load(f'./sample_data/joblib/{model_name}.joblib')
+            y = model.predict(x)
+            y = [int(x) for x in y]
+
+            return {'flag_success': True, 'predicted_status': y}
+        except Exception as e:
+            return {'flag_success': False, 'error': str(e)}
+
