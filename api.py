@@ -384,6 +384,7 @@ api.add_resource(DR_RECOMMEND, '/dr_recommendation')
 api.add_resource(Make_Model_Elec, '/make_model_elec')
 api.add_resource(Make_Model_Status, '/make_model_status')
 api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
+api.add_resource(silvercare_api.SilverCare_test, '/silver_test')
 
 if __name__ == '__main__':
     # app.run(host = '0.0.0.0', port=5000, debug=True)
