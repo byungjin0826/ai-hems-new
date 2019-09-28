@@ -14,12 +14,7 @@ class SilverCare_Labeling(Resource):
             collect_time = json_data['collect_time']
             data = json_data['data']
 
-            sql = f"""
-                SELECT DEVICE_ID, MODEL_ID
-                FROM AH_DEVICE_MODEL
-                WHERE 1=1
-                    AND DEVICE_ID = {device_id}
-            """
+            sql = f"""SELECT DEVICE_ID, MODEL_ID FROM AH_DEVICE_MODEL WHERE 1=1 AND DEVICE_ID = '{device_id}'"""
             device_name = utils.get_table_from_db(sql)
             model_name = device_name['model_id'][0]
 

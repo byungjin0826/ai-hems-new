@@ -20,5 +20,5 @@ print(round(gs.best_score_*100, 2), '%', sep= '')
 
 df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
 
-dump(gs, './sample_data/joblib/silvercare_model.joblib')
+dump(gs, './sample_data/joblib/00158D000151B2111_labeling.joblib')
 
