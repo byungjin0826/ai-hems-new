@@ -137,7 +137,10 @@ class AISchedule(Resource):
             FROM AH_USE_LOG_BYMINUTE
             WHERE 1=1
             AND GATEWAY_ID = '{gateway_id}'
-            AND DEVICE_ID = '{device_id}'
+            AND DEVICE_ID = (   SELECT SCHEDULE_ID
+                                FROM AH_DEVICE_MODEL
+                                WHERE 1=1
+                                AND DEVICE_ID = '{device_id}')
             AND COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
             """
 
