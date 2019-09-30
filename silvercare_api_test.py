@@ -17,33 +17,52 @@ import datetime
             # collect_date = args['collect_date']
             # collect_time = args['collect_time']
 
-gateway_id = 'ep18270185'
-collect_date = '20190810'
-collect_time = '0800'
-cur_time = collect_date+collect_time
-# collect_time = str(int(collect_time)-10).zfill(4)
-
+# gateway_id = 'ep18270185'
+# collect_date = '20190810'
+# collect_time = '0800'
+# cur_time = collect_date+collect_time
+# # collect_time = str(int(collect_time)-10).zfill(4)
+#
+# sql = f"""
+#     SELECT *
+#     FROM AH_USE_LOG_BYMINUTE
+#     WHERE 1=1
+#         AND GATEWAY_ID = '{gateway_id}'
+#         AND CONCAT( COLLECT_DATE, COLLECT_TIME) > DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{cur_time}', '%Y%m%d%H%i'), INTERVAL -10 MINUTE), '%Y%m%d%H%i')
+#     ORDER BY COLLECT_DATE, COLLECT_TIME
+#     LIMIT 0, 10
+# """
+#
+# df = utils.get_table_from_db(sql)
+device_id = '00158D0001A44A651'
 sql = f"""
-    SELECT *
-    FROM AH_USE_LOG_BYMINUTE
+    SELECT DEVICE_ID, MODEL_ID
+    FROM AH_DEVICE_MODEL
     WHERE 1=1
-        AND GATEWAY_ID = '{gateway_id}'
-        AND CONCAT( COLLECT_DATE, COLLECT_TIME) > DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{cur_time}', '%Y%m%d%H%i'), INTERVAL -10 MINUTE), '%Y%m%d%H%i')
-    ORDER BY COLLECT_DATE, COLLECT_TIME
-    LIMIT 0, 10
+        AND DEVICE_ID = '{device_id}'
 """
+device_name = utils.get_table_from_db(sql)
+model_name = device_name['model_id'][0]
 
-df = utils.get_table_from_db(sql)
+print(model_name)
 
-x, y = utils.split_x_y(df, x_col='energy_diff')
-x_ = [[i for i in x]]
+# x, y = utils.split_x_y(df, x_col='energy_diff')
+# x_ = [[i for i in x]]
 
-model = load('./sample_data/joblib/silvercare_model.joblib')
+# device_list = ['00158D0001A4590E1', '00158D0001A44CC51', '00158D000151B1E71', '00158D0001A4528D1']
+# if device_id == '00158D0001A474EC1':  # 204호
+#     model_name = 'silvercare_model_2'
+# elif device_id in device_list:
+#     model_name = 'silvercare_model_1'  # 106호,104호, 206호, 111호,
+# else:
+#     model_name = 'silvercare_model'  # 205호
 
-y_ = model.predict(x_)
-print(y_) # 5분 전의 데이터 labeling
-y_1 = [int(x) for x in y_]
-print(y_1)
+model = load(f'./sample_data/joblib/silvercare/{model_name}_labeling.joblib')
+
+# y_ = model.predict(x_)
+# print(y_) # 5분 전의 데이터 labeling
+# y_1 = [int(x) for x in y_]
+# print(y_1)
 
 
 

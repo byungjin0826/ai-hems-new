@@ -14,18 +14,13 @@ class SilverCare_Labeling(Resource):
             collect_time = json_data['collect_time']
             data = json_data['data']
 
-            device_list = ['00158D0001A4590E1', '00158D0001A44CC51', '00158D000151B1E71', '00158D0001A4528D1']
-
-            if device_id == '00158D0001A474EC1':
-                model_name = 'silvercare_model_2'
-            elif device_id in device_list:
-                model_name = 'silvercare_model_1'
-            else:
-                model_name = 'silvercare_model'
+            sql = f"""SELECT DEVICE_ID, MODEL_ID FROM AH_DEVICE_MODEL WHERE 1=1 AND DEVICE_ID = '{device_id}'"""
+            device_name = utils.get_table_from_db(sql)
+            model_name = device_name['model_id'][0]
 
             x = [data]
 
-            model = load(f'./sample_data/joblib/silvercare/{model_name}.joblib')
+            model = load(f'./sample_data/joblib/silvercare/{model_name}_labeling.joblib')
             y = model.predict(x)
             y = str(y[0])
 

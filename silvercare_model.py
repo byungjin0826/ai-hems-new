@@ -1,6 +1,6 @@
 from utils import *
 
-df = pd.read_csv('D:/rowdata/204.csv')
+df = pd.read_csv('D:/rowdata/205.csv')
 # df['ENERGY_DIFF'] = df['ENERGY_DIFF'] * 1000
 lag=4
 x, y = split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
@@ -20,5 +20,5 @@ print(round(gs.best_score_*100, 2), '%', sep= '')
 
 df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
 
-dump(gs, './sample_data/joblib/silvercare_model_2.joblib')
+dump(gs, './sample_data/joblib/00158D000151B2111_labeling.joblib')
 
