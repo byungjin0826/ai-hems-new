@@ -155,7 +155,7 @@ class AISchedule(Resource):
 
             schedule = schedule.reset_index()
 
-            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
+            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status') # todo: sql 문으로 처리할 수 있도록 수정
 
             schedule_unpivoted.loc[:,
             'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
