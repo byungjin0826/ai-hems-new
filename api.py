@@ -3,18 +3,9 @@ from flask_restful import Resource, Api, reqparse
 import utils
 from joblib import load, dump
 import datetime
-import pandas as pd
-import numpy as np
-import pymysql
 import sklearn as sk
-import sklearn.ensemble
-import sklearn.linear_model
-from sqlalchemy import create_engine
-import time
-import sklearn.metrics
 import matplotlib.pyplot as plt
-import sys
-import silvercare_api
+from silvercare import silvercare_api
 
 plt.style.use('seaborn-whitegrid')
 
