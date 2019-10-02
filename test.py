@@ -1,79 +1,61 @@
-from utils import *
-
-import datetime
 import utils
 
 
-# device_id = args['device_id']
-
-device_id = '000D6F000E4B27B81'
-lag = 10
+device_id = '00158D000151B4721'
+gateway_id = 'ep17470201'
+date = '20190929'
 
 sql = f"""
-SELECT
-	GATEWAY_ID
-	, DEVICE_ID
-	, COLLECT_DATE
-	, COLLECT_TIME
-	, QUALITY
-	, ONOFF
-	, ENERGY
-	, ENERGY_DIFF
-	, case when APPLIANCE_STATUS is null then 0 else APPLIANCE_STATUS end APPLIANCE_STATUS
-	, CREATE_DATE
-FROM
-	AH_USE_LOG_BYMINUTE_LABELED_sbj
-WHERE
-	1 = 1
--- 	AND GATEWAY_ID = 'ep18270363'
-	AND DEVICE_ID = '000D6F000E4B27B81'
-	AND COLLECT_DATE in (
-		SELECT
-			t1.COLLECT_DATE
-		FROM
-			(SELECT
-				COLLECT_DATE
-				, sum(APPLIANCE_STATUS) APPLIANCE_STATUS_SUM
-			FROM 
-				AH_USE_LOG_BYMINUTE_LABELED_sbj
-			GROUP by
-				COLLECT_DATE) t1
-		WHERE 1=1
-		AND t1.APPLIANCE_STATUS_SUM is not null)
--- 	AND CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '201909110000', '%Y%m%d%H%i'), INTERVAL -20 MINUTE), '%Y%m%d%H%i')
--- 	AND CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '201909112359', '%Y%m%d%H%i'), INTERVAL 10 MINUTE), '%Y%m%d%H%i')
--- ORDER BY
--- 	COLLECT_DATE,
--- 	COLLECT_TIME
+SELECT *
+FROM AH_USE_LOG_BYMINUTE
+WHERE 1=1
+AND GATEWAY_ID = '{gateway_id}'
+AND DEVICE_ID = case when (   SELECT SCHEDULE_ID
+FROM AH_DEVICE_MODEL
+WHERE 1=1
+AND DEVICE_ID = '{device_id}') is null then '{device_id}' else (   SELECT SCHEDULE_ID
+FROM AH_DEVICE_MODEL
+WHERE 1=1
+AND DEVICE_ID = '{device_id}') end
+AND COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
 """
 
-df = utils.get_table_from_db(sql, db='aihems_api_db')
+df = utils.get_table_from_db(sql)
+df = utils.binding_time(df)
 
+schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek,
+aggfunc='max')
 
+schedule = schedule.reset_index()
 
-x, y = utils.split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status') # todo: sql 문으로 처리할 수 있도록 수정
 
-x, y = utils.sliding_window_transform(x, y, lag=lag, step_size=30)
+schedule_unpivoted.loc[:,'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
 
-model, params = utils.select_classification_model('random forest')
+# schedule_unpivoted.columns = ['time', 'date','time', 'appliance_status', 'status_change']
 
-gs = sk.model_selection.GridSearchCV(estimator=model,
-                                     param_grid=params,
-                                     cv=5,
-                                     scoring='accuracy',
-                                     n_jobs=-1)
+subset = schedule_unpivoted.loc[(schedule_unpivoted.status_change == False) | (schedule_unpivoted.index % 1440 == 0), ['date', 'index', 'appliance_status']]
 
-gs.fit(x, y)
+subset.columns = ['dayofweek', 'time', 'appliance_status']
 
-gs.best_score_
+subset.loc[:, 'minutes'] = [x.hour * 60 + x.minute for x in subset.time]
 
-print(round(gs.best_score_ * 100, 2), '%', sep='')
+subset.loc[:, 'minutes'] = subset.dayofweek * 1440 + subset.minutes
 
-df = df.iloc[:-lag]
+subset.loc[:, 'duration'] = subset.minutes - subset.minutes.shift(1)
+subset.loc[:, 'duration'] = subset.minutes.shift(-1) - subset.minutes
 
-df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
-# df['appliance_status'] = gs.predict(x)
+subset = subset.loc[((subset.appliance_status == 0) & (subset.duration < 120)|(subset.time=='00:00:00')) == False, :]
+# subset = subset.loc[subset.duration > 120, :]
 
-dump_path = f'./sample_data/joblib/{device_id}_labeling.joblib'
+subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
 
-dump(gs, dump_path)  # 저장
+# subset = subset.loc[(subset.status_change == False), ['dayofweek', 'time', 'appliance_status']]
+
+subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
+
+subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
+
+subset = subset.reset_index(drop=True)
+
+result = subset.to_dict('index')
