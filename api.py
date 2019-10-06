@@ -3,18 +3,9 @@ from flask_restful import Resource, Api, reqparse
 import utils
 from joblib import load, dump
 import datetime
-import pandas as pd
-import numpy as np
-import pymysql
 import sklearn as sk
-import sklearn.ensemble
-import sklearn.linear_model
-from sqlalchemy import create_engine
-import time
-import sklearn.metrics
 import matplotlib.pyplot as plt
-import sys
-import silvercare_api
+from silvercare import silvercare_api
 
 plt.style.use('seaborn-whitegrid')
 
@@ -137,7 +128,13 @@ class AISchedule(Resource):
             FROM AH_USE_LOG_BYMINUTE
             WHERE 1=1
             AND GATEWAY_ID = '{gateway_id}'
-            AND DEVICE_ID = '{device_id}'
+            AND DEVICE_ID = case when (   SELECT SCHEDULE_ID
+            FROM AH_DEVICE_MODEL
+            WHERE 1=1
+            AND DEVICE_ID = '{device_id}') is null then '{device_id}' else (   SELECT SCHEDULE_ID
+            FROM AH_DEVICE_MODEL
+            WHERE 1=1
+            AND DEVICE_ID = '{device_id}') end
             AND COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
             """
 
@@ -149,13 +146,17 @@ class AISchedule(Resource):
 
             schedule = schedule.reset_index()
 
-            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date', value_name='appliance_status')
+            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date',
+                                               value_name='appliance_status')  # todo: sql 문으로 처리할 수 있도록 수정
 
             schedule_unpivoted.loc[:,
             'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
 
+            # schedule_unpivoted.columns = ['time', 'date','time', 'appliance_status', 'status_change']
+
             subset = schedule_unpivoted.loc[
-                (schedule_unpivoted.status_change == False), ['date', 'index', 'appliance_status']]
+                (schedule_unpivoted.status_change == False) | (schedule_unpivoted.index % 1440 == 0), ['date', 'index',
+                                                                                                       'appliance_status']]
 
             subset.columns = ['dayofweek', 'time', 'appliance_status']
 
@@ -166,12 +167,13 @@ class AISchedule(Resource):
             subset.loc[:, 'duration'] = subset.minutes - subset.minutes.shift(1)
             subset.loc[:, 'duration'] = subset.minutes.shift(-1) - subset.minutes
 
-            subset = subset.loc[((subset.appliance_status == 0) & (subset.duration < 120)) == False, :]
+            subset = subset.loc[
+                     ((subset.appliance_status == 0) & (subset.duration < 120) | (subset.time == '00:00:00')) == False,:]
             # subset = subset.loc[subset.duration > 120, :]
 
             subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
 
-            subset = subset.loc[(subset.status_change == False), ['dayofweek', 'time', 'appliance_status']]
+            # subset = subset.loc[(subset.status_change == False), ['dayofweek', 'time', 'appliance_status']]
 
             subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
 
