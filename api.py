@@ -67,14 +67,14 @@ class Labeling(Resource):
             end = collect_date + '2359'
 
             sql = f"""
-            SELECT    *
-            FROM      AH_USE_LOG_BYMINUTE
-            WHERE      1=1
-               AND   GATEWAY_ID = '{gateway_id}'
-               AND   DEVICE_ID = '{device_id}'
-               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
-                 AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
-            ORDER BY COLLECT_DATE, COLLECT_TIME
+SELECT    *
+FROM      AH_USE_LOG_BYMINUTE
+WHERE      1=1
+   AND   GATEWAY_ID = '{gateway_id}'
+   AND   DEVICE_ID = '{device_id}'
+   AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+     AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
+ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
             df = utils.get_table_from_db(sql)
@@ -103,10 +103,25 @@ class Labeling(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
-class MakePredictionModel(Resource):
+class ModelSelect(Resource): # todo: 오늘 질행할 것.
     def post(self):
         try:
-            return {'flag_success': True}
+            parser = reqparse.RequestParser()
+            parser.add_argument('device_id', type=str)
+            args = parser.parse_args()
+
+            device_id = args['device_id']
+
+            sql = f"""
+SELECT *
+FROM 
+WHERE 1=1
+AND 
+"""
+
+            model_id = 0
+
+            return {'flag_success': True, 'model_id': model_id}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
@@ -247,7 +262,7 @@ class CBL_INFO(Resource):
             else:
                 reduction_energy = 300
 
-            conn.close
+            conn.close()
 
             return {'flag_success': True, 'cbl': cbl, 'reduction_energy': reduction_energy}
 
@@ -295,7 +310,7 @@ class DR_RECOMMEND(Resource):
             					COLLECT_DATE) t1
             		WHERE 1=1
             		ORDER BY s desc
-            		limit 4) t2
+            		limit 4) t2d
             """
 
             cbl = pd.read_sql(sql, con=conn).iloc[0, 0]
@@ -414,7 +429,8 @@ ORDER BY
             status['USE_MAX'] = cbl - reduction_energy
             status['PERMISSION'] = [x < cbl - reduction_energy for x in status.ENERGY_CUMSUM]
 
-            subset = status.loc[:, ['DEVICE_ID', 'PERMISSION']]
+            subset = status.loc[:, ['DEVICE_ID', 'ENERGY_SUM','PERMISSION']]
+            subset.ENERGY_SUM = [str(x) for x in subset.ENERGY_SUM]
 
             ix = max(status.loc[status.FLAG_USE_AI == 0,].index)
             dr_success = subset.iloc[ix, 1]
@@ -590,6 +606,7 @@ api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
 api.add_resource(Make_Model_Elec, '/make_model_elec')
 api.add_resource(Make_Model_Status, '/make_model_status')
+# api.add_resource(DEVICE_SELECT, '')
 # api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
 
 
