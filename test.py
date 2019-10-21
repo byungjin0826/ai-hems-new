@@ -58,4 +58,6 @@ subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
 
 subset = subset.reset_index(drop=True)
 
+subset = subset.loc[subset.appliance_status.notna(),:]
+
 result = subset.to_dict('index')

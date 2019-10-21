@@ -5,7 +5,7 @@ from joblib import load, dump
 import datetime
 import sklearn as sk
 import matplotlib.pyplot as plt
-from silvercare import silvercare_api
+# from silvercare import silvercare_api
 
 plt.style.use('seaborn-whitegrid')
 
@@ -168,7 +168,8 @@ class AISchedule(Resource):
             subset.loc[:, 'duration'] = subset.minutes.shift(-1) - subset.minutes
 
             subset = subset.loc[
-                     ((subset.appliance_status == 0) & (subset.duration < 120) | (subset.time == '00:00:00')) == False,:]
+                     ((subset.appliance_status == 0) & (subset.duration < 120) | (subset.time == '00:00:00')) == False,
+                     :]
             # subset = subset.loc[subset.duration > 120, :]
 
             subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
@@ -180,6 +181,8 @@ class AISchedule(Resource):
             subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
 
             subset = subset.reset_index(drop=True)
+
+            subset = subset.loc[subset.appliance_status.notna(), :]
 
             result = subset.to_dict('index')
 
@@ -306,9 +309,7 @@ class Make_Model_Status(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('device_id', type=str)
             args = parser.parse_args()
-
             lag = 10
-
             device_id = args['device_id']
 
             sql = f"""
@@ -385,9 +386,9 @@ api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
 api.add_resource(Make_Model_Elec, '/make_model_elec')
 api.add_resource(Make_Model_Status, '/make_model_status')
-api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
+# api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
 
 
 if __name__ == '__main__':
-    # app.run(host = '0.0.0.0', port=5000, debug=True)
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host = '0.0.0.0', port=5000, debug=True)
+    # app.run(host='127.0.0.1', port=5000, debug=True)
