@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 # from silvercare import silvercare_api
 import pymysql
 import pandas as pd
+import numpy as np
 
 plt.style.use('seaborn-whitegrid')
 
@@ -103,10 +104,96 @@ class Labeling(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
-class MakePredictionModel(Resource):
+class DeviceMatching(Resource):
     def post(self):
         try:
-            return {'flag_success': True}
+            parser = reqparse.RequestParser()
+            parser.add_argument('device_id', type=str)
+            args = parser.parse_args()
+
+            device_id = args['device_id']
+
+            db = 'aihems_api_db'
+
+            conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                   port=3306, user='aihems', passwd='#cslee1234', db=db,
+                                   charset='utf8')
+
+            sql = f"""
+            SELECT
+            	DEVICE_ID
+            	, avg(ENERGY_DIFF) * 60 ENERGY_DIFF_PER_HOUR
+            FROM 
+            (SELECT
+            	DEVICE_ID
+            	, COLLECT_DATE
+            	, SUBSTR(COLLECT_TIME, 1, 2) HH
+            	, case when POWER >= 5 then 1 else 0 end APPLIANCE_STATUS
+            	, ENERGY_DIFF
+            FROM 
+            	AH_USE_LOG_BYMINUTE
+            WHERE 1=1
+            AND APPLIANCE_STATUS = 1
+            AND COLLECT_DATE >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -14 DAY), '%Y%m%d')
+            AND DEVICE_ID in 	(
+            					SELECT DEVICE_ID
+            					FROM AH_APPLIANCE_CONNECT
+            					WHERE 1=1
+            					AND FLAG_DELETE = 'N'
+            					AND APPLIANCE_NO in 
+            						(SELECT
+            							APPLIANCE_NO
+            						FROM
+            						(SELECT
+            							*
+            						FROM AH_APPLIANCE
+            						WHERE 1=1
+            							) tt
+            						WHERE 1=1
+            						AND APPLIANCE_TYPE = (SELECT APPLIANCE_TYPE
+            FROM AH_APPLIANCE
+            WHERE 1=1
+            AND APPLIANCE_NO = (SELECT
+            	APPLIANCE_NO
+            FROM AH_APPLIANCE_CONNECT
+            WHERE 1=1 
+            AND DEVICE_ID = '{device_id}'
+            AND FLAG_DELETE = 'N')))
+            					)
+            AND DEVICE_ID != '{device_id}'
+            ) t
+            WHERE 1=1
+            AND DEVICE_ID in (SELECT DISTINCT MODEL_ID
+            FROM AH_DEVICE_MODEL
+            WHERE 1=1
+            AND MODEL_ID is not null
+            AND MODEL_ID != '제외')
+            GROUP BY 
+            	DEVICE_ID
+            """
+
+            df = pd.read_sql(sql, con=conn, index_col='DEVICE_ID')
+
+            sql = f"""
+            SELECT 
+            	avg(ENERGY_DIFF) * 60
+            FROM (SELECT
+            	ENERGY_DIFF
+            	, case when POWER > 5 then 1 else 0 end APPLIANCE_STATUS
+            FROM AH_USE_LOG_BYMINUTE
+            WHERE 1=1
+            AND DEVICE_ID = '{device_id}'
+            AND COLLECT_DATE >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -14 DAY), '%Y%m%d')) t
+            WHERE APPLIANCE_STATUS = 1
+            GROUP BY APPLIANCE_STATUS
+            """
+
+            energy_diff = pd.read_sql(sql, con=conn).iloc[0, 0]
+            df['diff1'] = np.abs(df.ENERGY_DIFF_PER_HOUR - energy_diff)
+            model_id = df.loc[df.diff1 == df.diff1.min(), :].index[0]
+
+            return {'flag_success': True,
+                    'model_id': str(model_id)}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
@@ -585,6 +672,7 @@ WHERE
 
 api.add_resource(PredictElec, '/elec')
 api.add_resource(Labeling, '/label')
+api.add_resource(DeviceMatching, '/device_matching')
 api.add_resource(CBL_INFO, '/cbl_info')
 api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
