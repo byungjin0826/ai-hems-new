@@ -14,9 +14,57 @@ import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 import sys
 
+from mizani.breaks import date_breaks
+from mizani.formatters import date_format
+
+import tslearn
+import sklearn
+
+from plotnine import *
+from utils import *
+
+import numpy
+import matplotlib.pyplot as plt
+
+from tslearn.clustering import TimeSeriesKMeans
+from tslearn.datasets import CachedDatasets
+from tslearn.preprocessing import TimeSeriesScalerMeanVariance, \
+    TimeSeriesResampler
+from tslearn.svm import TimeSeriesSVC
+
 # 변환없이 원본 가져오는 건 get
 # 조금이라도 계산하는 건 calc
 
+def one_day_graph(collect_date = '20191015', gateway_id = 'ep18270334'):
+    db = 'aihems_api_db'
+
+    # db = 'aihems_service_db'
+    conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                                port=3306, user='aihems', passwd='#cslee1234',
+                                               db=db,
+                                                charset='utf8')
+
+    sql = f"""
+    SELECT
+        COLLECT_DATE
+        , COLLECT_TIME
+        , ONOFF
+        , case when POWER > 20 then 1 else 0 end POWER
+--        , POWER
+        , ENERGY_DIFF
+    FROM AH_USE_LOG_BYMINUTE
+    WHERE 1=1 
+    AND GATEWAY_ID = '{gateway_id}'
+    AND COLLECT_DATE = '{collect_date}'
+    """
+
+    df = pd.read_sql(sql, con= conn)
+    df['date'] = df.COLLECT_DATE + ' ' + df.COLLECT_TIME
+#     print(sql)
+    df.date = pd.to_datetime(df.date)
+    print(collect_date)
+    return(ggplot(df, aes(x = 'date', y = 'POWER'))+geom_line()+\
+        scale_x_datetime(breaks=date_breaks('2 hours'),labels=date_format('%H')))
 
 def labeling_db_to_db(sql,db='aihems_service_db'):
     df = get_table_from_db(sql, db)
