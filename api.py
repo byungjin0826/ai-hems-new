@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 # from silvercare import silvercare_api
 import pymysql
 import pandas as pd
-import numpy as np
 
 plt.style.use('seaborn-whitegrid')
 
@@ -68,14 +67,14 @@ class Labeling(Resource):
             end = collect_date + '2359'
 
             sql = f"""
-            SELECT    *
-            FROM      AH_USE_LOG_BYMINUTE
-            WHERE      1=1
-               AND   GATEWAY_ID = '{gateway_id}'
-               AND   DEVICE_ID = '{device_id}'
-               AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
-                 AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
-            ORDER BY COLLECT_DATE, COLLECT_TIME
+SELECT    *
+FROM      AH_USE_LOG_BYMINUTE
+WHERE      1=1
+   AND   GATEWAY_ID = '{gateway_id}'
+   AND   DEVICE_ID = '{device_id}'
+   AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+     AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
+ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
             df = utils.get_table_from_db(sql)
@@ -104,7 +103,7 @@ class Labeling(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
-class DeviceMatching(Resource):
+class ModelSelect(Resource): # todo: 오늘 질행할 것.
     def post(self):
         try:
             parser = reqparse.RequestParser()
@@ -113,87 +112,16 @@ class DeviceMatching(Resource):
 
             device_id = args['device_id']
 
-            db = 'aihems_api_db'
-
-            conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                                   port=3306, user='aihems', passwd='#cslee1234', db=db,
-                                   charset='utf8')
-
             sql = f"""
-            SELECT
-            	DEVICE_ID
-            	, avg(ENERGY_DIFF) * 60 ENERGY_DIFF_PER_HOUR
-            FROM 
-            (SELECT
-            	DEVICE_ID
-            	, COLLECT_DATE
-            	, SUBSTR(COLLECT_TIME, 1, 2) HH
-            	, case when POWER >= 5 then 1 else 0 end APPLIANCE_STATUS
-            	, ENERGY_DIFF
-            FROM 
-            	AH_USE_LOG_BYMINUTE
-            WHERE 1=1
-            AND APPLIANCE_STATUS = 1
-            AND COLLECT_DATE >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -14 DAY), '%Y%m%d')
-            AND DEVICE_ID in 	(
-            					SELECT DEVICE_ID
-            					FROM AH_APPLIANCE_CONNECT
-            					WHERE 1=1
-            					AND FLAG_DELETE = 'N'
-            					AND APPLIANCE_NO in 
-            						(SELECT
-            							APPLIANCE_NO
-            						FROM
-            						(SELECT
-            							*
-            						FROM AH_APPLIANCE
-            						WHERE 1=1
-            							) tt
-            						WHERE 1=1
-            						AND APPLIANCE_TYPE = (SELECT APPLIANCE_TYPE
-            FROM AH_APPLIANCE
-            WHERE 1=1
-            AND APPLIANCE_NO = (SELECT
-            	APPLIANCE_NO
-            FROM AH_APPLIANCE_CONNECT
-            WHERE 1=1 
-            AND DEVICE_ID = '{device_id}'
-            AND FLAG_DELETE = 'N')))
-            					)
-            AND DEVICE_ID != '{device_id}'
-            ) t
-            WHERE 1=1
-            AND DEVICE_ID in (SELECT DISTINCT MODEL_ID
-            FROM AH_DEVICE_MODEL
-            WHERE 1=1
-            AND MODEL_ID is not null
-            AND MODEL_ID != '제외')
-            GROUP BY 
-            	DEVICE_ID
-            """
+SELECT *
+FROM 
+WHERE 1=1
+AND 
+"""
 
-            df = pd.read_sql(sql, con=conn, index_col='DEVICE_ID')
+            model_id = 0
 
-            sql = f"""
-            SELECT 
-            	avg(ENERGY_DIFF) * 60
-            FROM (SELECT
-            	ENERGY_DIFF
-            	, case when POWER > 5 then 1 else 0 end APPLIANCE_STATUS
-            FROM AH_USE_LOG_BYMINUTE
-            WHERE 1=1
-            AND DEVICE_ID = '{device_id}'
-            AND COLLECT_DATE >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -14 DAY), '%Y%m%d')) t
-            WHERE APPLIANCE_STATUS = 1
-            GROUP BY APPLIANCE_STATUS
-            """
-
-            energy_diff = pd.read_sql(sql, con=conn).iloc[0, 0]
-            df['diff1'] = np.abs(df.ENERGY_DIFF_PER_HOUR - energy_diff)
-            model_id = df.loc[df.diff1 == df.diff1.min(), :].index[0]
-
-            return {'flag_success': True,
-                    'model_id': str(model_id)}
+            return {'flag_success': True, 'model_id': model_id}
 
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
@@ -334,7 +262,7 @@ class CBL_INFO(Resource):
             else:
                 reduction_energy = 300
 
-            conn.close
+            conn.close()
 
             return {'flag_success': True, 'cbl': cbl, 'reduction_energy': reduction_energy}
 
@@ -382,7 +310,7 @@ class DR_RECOMMEND(Resource):
             					COLLECT_DATE) t1
             		WHERE 1=1
             		ORDER BY s desc
-            		limit 4) t2
+            		limit 4) t2d
             """
 
             cbl = pd.read_sql(sql, con=conn).iloc[0, 0]
@@ -501,19 +429,22 @@ ORDER BY
             status['USE_MAX'] = cbl - reduction_energy
             status['PERMISSION'] = [x < cbl - reduction_energy for x in status.ENERGY_CUMSUM]
 
-            subset = status.loc[:, ['DEVICE_ID', 'PERMISSION']]
+            subset = status.loc[:, ['DEVICE_ID', 'ENERGY_SUM','PERMISSION']]
+            subset.ENERGY_SUM = [str(x) for x in subset.ENERGY_SUM]
 
             ix = max(status.loc[status.FLAG_USE_AI == 0,].index)
-            dr_success = subset.iloc[ix, 1]
+            dr_success = subset.iloc[ix, 2]
 
             if dr_success:
                 recommendation = subset.to_dict('index')
+                dr_success = True
 
             else:
                 recommendation = 0
+                dr_success = False
 
             return {'flag_success': True,
-                    'dr_success': str(dr_success),
+                    'dr_success': dr_success,
                     'cbl': str(cbl),
                     'reduction_energy': str(reduction_energy),
                     'recommendation': recommendation}
@@ -672,12 +603,12 @@ WHERE
 
 api.add_resource(PredictElec, '/elec')
 api.add_resource(Labeling, '/label')
-api.add_resource(DeviceMatching, '/device_matching')
 api.add_resource(CBL_INFO, '/cbl_info')
 api.add_resource(AISchedule, '/schedule')
 api.add_resource(DR_RECOMMEND, '/dr_recommendation')
 api.add_resource(Make_Model_Elec, '/make_model_elec')
 api.add_resource(Make_Model_Status, '/make_model_status')
+# api.add_resource(DEVICE_SELECT, '')
 # api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
 
 
