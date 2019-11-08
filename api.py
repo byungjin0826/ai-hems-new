@@ -425,6 +425,8 @@ ORDER BY
 
             status = pd.read_sql(sql, con=conn)
             conn.close()
+            status['ENERGY_SUM'] = [max([x[1][0], x[1][1]]) for x in
+                                    status.loc[:, ['ENERGY_SUM_WAIT', 'ENERGY_SUM_USE']].iterrows()]
             status['ENERGY_CUMSUM'] = status.ENERGY_SUM.cumsum()
             status['USE_MAX'] = cbl - reduction_energy
             status['PERMISSION'] = [x < cbl - reduction_energy for x in status.ENERGY_CUMSUM]
