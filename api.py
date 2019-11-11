@@ -333,7 +333,8 @@ SELECT
 	, STATUS
 	, ONOFF
 	, ENERGY
-	, USE_ENERGY_AVG * (SELECT TIMESTAMPDIFF(MINUTE, START_DATE, END_DATE) FROM AH_DR_REQUEST WHERE REQUEST_DR_NO = '{request_dr_no}') as ENERGY_SUM
+	, USE_ENERGY_AVG * (SELECT TIMESTAMPDIFF(MINUTE, START_DATE, END_DATE) FROM AH_DR_REQUEST WHERE REQUEST_DR_NO = '{request_dr_no}') as ENERGY_SUM_USE
+    , WAIT_ENERGY_AVG * (SELECT TIMESTAMPDIFF(MINUTE, START_DATE, END_DATE) FROM AH_DR_REQUEST WHERE REQUEST_DR_NO = '{request_dr_no}') as ENERGY_SUM_WAIT
 FROM
 (SELECT
 	FR.DEVICE_ID
@@ -415,6 +416,8 @@ FROM (
 			, FLAG_USE_AI
 		FROM AH_DEVICE) QQ ON FR.DEVICE_ID = QQ.DEVICE_ID
 	) FF
+WHERE 1=1 
+AND FLAG_USE_AI != 0
 ORDER BY
     FLAG_USE_AI asc
 	, STATUS desc
@@ -434,8 +437,7 @@ ORDER BY
             subset = status.loc[:, ['DEVICE_ID', 'ENERGY_SUM','PERMISSION']]
             subset.ENERGY_SUM = [str(x) for x in subset.ENERGY_SUM]
 
-            ix = max(status.loc[status.FLAG_USE_AI == 0,].index)
-            dr_success = subset.iloc[ix, 2]
+            dr_success = subset.iloc[0, 2]
 
             if dr_success:
                 recommendation = subset.to_dict('index')
@@ -444,6 +446,8 @@ ORDER BY
             else:
                 recommendation = 0
                 dr_success = False
+
+            print(subset)
 
             return {'flag_success': True,
                     'dr_success': dr_success,
