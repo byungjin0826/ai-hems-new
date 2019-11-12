@@ -250,7 +250,26 @@ class AISchedule(Resource):
             gateway_id = args['gateway_id']
             device_id = args['device_id']
 
-            df = get_history(gateway_id=gateway_id, device_id=device_id)
+            sql = f"""
+SELECT SCHEDULE_ID
+FROM AH_DEVICE_MODEL
+WHERE 1=1
+AND DEVICE_ID = '{device_id}'
+"""
+
+            db = 'aihems_api_db'
+
+            conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                                   port=3306, user='aihems', passwd='#cslee1234', db=db,
+                                   charset='utf8')
+
+            schedule_id = device_id
+            if pd.read_sql(sql, con=conn).values[0][0] is not None:
+                schedule_id = pd.read_sql(sql, con=conn).values[0][0]
+
+
+
+            df = get_history(gateway_id=gateway_id, device_id=schedule_id)
             df = remove_particle(df)
             df = make_daily_schedule(df)
 
