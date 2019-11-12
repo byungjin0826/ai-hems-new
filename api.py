@@ -15,6 +15,116 @@ app = Flask(__name__)
 api = Api(app)
 
 
+def get_history(gateway_id='ep18270185', device_id = '00158D000151B4721'):
+    db = 'aihems_api_db'
+
+    conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
+                           port=3306, user='aihems', passwd='#cslee1234', db=db,
+                           charset='utf8')
+
+    sql = f"""
+SELECT
+	DOW
+	, COLLECT_TIME
+    , STR_TO_DATE(COLLECT_TIME, '%H%i'), DATETIME
+-- 	, MAX(APPLIANCE_STATUS)
+	, case when AVG(APPLIANCE_STATUS) > 0.05 then 1 else 0 end APPLIANCE_STATUS
+FROM (	SELECT
+		    STR_TO_DATE(CONCAT(COLLECT_DATE, COLLECT_TIME), '%Y%m%d%H%i') DATETIME
+		    , DAYOFWEEK(COLLECT_DATE) DOW
+		-- 	, COLLECT_DATE
+			, COLLECT_TIME
+		--     , POWER
+		    , ENERGY_DIFF
+		--     , ONOFF
+		    , APPLIANCE_STATUS
+		FROM AH_USE_LOG_BYMINUTE
+		WHERE 1=1
+		-- AND GATEWAY_ID = '{gateway_id}'
+		AND DEVICE_ID = '{device_id}'
+		AND COLLECT_DATE >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -28 DAY), '%Y%m%d')) t
+WHERE 1=1
+-- AND DOW = 1
+GROUP BY 
+	DOW
+	, COLLECT_TIME    
+"""
+
+    df = pd.read_sql(sql, con=conn)
+
+    df['APPLIANCE_STATUS_LAG'] = df.APPLIANCE_STATUS.shift(1).fillna(0)
+    df['APPLIANCE_STATUS_LAG'] = [int(x) for x in df.APPLIANCE_STATUS_LAG]
+    df['APPLIANCE_STATUS'] = df.APPLIANCE_STATUS.fillna(0)
+    df['APPLIANCE_STATUS'] = [int(x) for x in df.APPLIANCE_STATUS]
+
+    df_change = df.loc[df.APPLIANCE_STATUS != df.APPLIANCE_STATUS_LAG, :]
+    df_change = df_change.reset_index()
+    df_change['DATETIME_LAG'] = df_change.DATETIME.shift(1).fillna(0)
+    df_change['duration'] = df_change.DATETIME - df_change.DATETIME.shift(1)
+    df_change['duration'] = [x.seconds / 60 for x in df_change.duration if x != 'NaT']
+
+    history = df_change.loc[:, ['DATETIME_LAG', 'DATETIME', 'duration', 'APPLIANCE_STATUS_LAG']]
+
+    #     df_change.columns = ['DATETIME', 'POWER', 'ENERGY_DIFF', 'ONOFF', 'STATUS_NOW', 'STATUS_BEFORE', 'DATETIME_LAG','DURATION']
+
+    history.columns = ['START', 'END', 'DURATION', 'STATUS']
+    #     history = history.loc[history.STATUS == 1, :].reset_index(drop = True)
+    history = history.loc[:, :].reset_index(drop=True)
+    #     print(sql)
+    return (history.iloc[1:].reset_index(drop=True))
+
+
+def remove_particle(df):
+    drop_list = []
+    for i in range(len(df) - 1):
+        mx = len(df) - 1  # index가 0부터 시작.
+        if i != 1:
+            if ((df.iloc[i, 2] < 120) & (df.iloc[i, 3] == 0)) | ((df.iloc[i, 2] < 15) & (df.iloc[i, 3] == 1)):
+                start = df.iloc[i - 1, 0]
+                df.iloc[i - 1, 1] = df.iloc[i + 1, 1]
+                df.iloc[i - 1, 2] = df.iloc[i - 1, 2] + df.iloc[i, 2] + df.iloc[i + 1, 2]
+                drop_list.append(i)
+                drop_list.append(i + 1)
+
+    df = df.drop(index=drop_list).reset_index(drop=True)
+    return (df)
+
+
+def make_daily_schedule(df):
+    a = 0
+    for i in range(len(df) - 1):
+        i = i + a
+        if df.iloc[i, 0].date() != df.iloc[i + 1, 0].date():
+            start1 = df.iloc[i, 0]
+            start2 = pd.to_datetime((df.iloc[i, 0] + pd.Timedelta(days=1)).strftime('%Y-%m-%d') + ' 00:00')
+            end1 = pd.to_datetime(df.iloc[i, 0].strftime('%Y-%m-%d') + ' 23:59')
+            end2 = df.iloc[i + 1, 0]
+            duration1 = (end1 - start1).seconds / 60
+            duration2 = (end2 - start2).seconds / 60
+            status = df.iloc[i, 3]
+
+            df.iloc[i, 1] = end1
+            df.iloc[i, 2] = duration1
+
+            temp = pd.DataFrame({'START': start2, 'END': end2, 'DURATION': duration2, 'STATUS': status}, index=[0])
+
+            df = pd.concat([df.iloc[:i + 1], temp, df.iloc[i + 1:]]).reset_index(drop=True)
+            a += 1
+            print(i)
+
+    if df.iloc[-1, 1].strftime('%H%M') != '2359':
+        start = df.iloc[-1, 1]
+        end = pd.to_datetime(df.iloc[-1, 0].strftime('%Y-%m-%d') + ' 23:59')
+        temp = pd.DataFrame({'START': start,
+                             'END': end,
+                             'DURATION': (end - start).seconds / 60,
+                             'STATUS': df.iloc[-1, 3]}, index=[0])
+        df = df.append(temp).reset_index(drop=True)
+        df['DAYOFWEEK'] = [x.dayofweek for x in df.START]
+        df['MINUTE'] = [x.minute + 60 * x.hour for x in df.START]
+        df = df.sort_values(['DAYOFWEEK', 'MINUTE']).reset_index(drop=True)
+    return (df)
+
 class PredictElec(Resource):
     def post(self):
         try:
@@ -140,65 +250,16 @@ class AISchedule(Resource):
             gateway_id = args['gateway_id']
             device_id = args['device_id']
 
-            sql = f"""
-            SELECT *
-            FROM AH_USE_LOG_BYMINUTE
-            WHERE 1=1
-            AND GATEWAY_ID = '{gateway_id}'
-            AND DEVICE_ID = case when (   SELECT SCHEDULE_ID
-            FROM AH_DEVICE_MODEL
-            WHERE 1=1
-            AND DEVICE_ID = '{device_id}') is null then '{device_id}' else (   SELECT SCHEDULE_ID
-            FROM AH_DEVICE_MODEL
-            WHERE 1=1
-            AND DEVICE_ID = '{device_id}') end
-            AND COLLECT_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
-            """
+            df = get_history(gateway_id=gateway_id, device_id=device_id)
+            df = remove_particle(df)
+            df = make_daily_schedule(df)
 
-            df = utils.get_table_from_db(sql)
-            df = utils.binding_time(df)
+            df.columns = ['time', 'end', 'duration', 'appliance_status', 'dayofweek', 'minute']
+            df['time'] = [x.strftime('%H:%M:%S') for x in df.time]
+            # result['time'] = [x.strftime('%H:%M:%S') for x in result.time]
 
-            schedule = df.pivot_table(values='appliance_status', index=df.index.time, columns=df.index.dayofweek,
-                                      aggfunc='max')
+            result = df.loc[:, ['dayofweek', 'time', 'appliance_status', 'duration']].to_dict('index')
 
-            schedule = schedule.reset_index()
-
-            schedule_unpivoted = schedule.melt(id_vars=['index'], var_name='date',
-                                               value_name='appliance_status')  # todo: sql 문으로 처리할 수 있도록 수정
-
-            schedule_unpivoted.loc[:,
-            'status_change'] = schedule_unpivoted.appliance_status == schedule_unpivoted.appliance_status.shift(1)
-
-            # schedule_unpivoted.columns = ['time', 'date','time', 'appliance_status', 'status_change']
-
-            subset = schedule_unpivoted.loc[
-                (schedule_unpivoted.status_change == False) | (schedule_unpivoted.index % 1440 == 0), ['date', 'index',
-                                                                                                       'appliance_status']]
-
-            subset.columns = ['dayofweek', 'time', 'appliance_status']
-
-            subset.loc[:, 'minutes'] = [x.hour * 60 + x.minute for x in subset.time]
-
-            subset.loc[:, 'minutes'] = subset.dayofweek * 1440 + subset.minutes
-
-            subset.loc[:, 'duration'] = subset.minutes - subset.minutes.shift(1)
-            subset.loc[:, 'duration'] = subset.minutes.shift(-1) - subset.minutes
-
-            subset = subset.loc[
-                     ((subset.appliance_status == 0) & (subset.duration < 120) | (subset.time == '00:00:00')) == False,:]
-            # subset = subset.loc[subset.duration > 120, :]
-
-            subset.loc[:, 'status_change'] = subset.appliance_status == subset.appliance_status.shift(1)
-
-            # subset = subset.loc[(subset.status_change == False), ['dayofweek', 'time', 'appliance_status']]
-
-            subset.loc[:, 'dayofweek'] = [str(x) for x in subset.loc[:, 'dayofweek']]
-
-            subset.loc[:, 'time'] = [str(x) for x in subset.loc[:, 'time']]
-
-            subset = subset.reset_index(drop=True)
-
-            result = subset.to_dict('index')
 
             return {
                 'flag_success': True,
@@ -619,5 +680,5 @@ api.add_resource(Make_Model_Status, '/make_model_status')
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port=5000, debug=True)
-    # app.run(host='127.0.0.1', port=5000, debug=True)
+    # app.run(host = '0.0.0.0', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
