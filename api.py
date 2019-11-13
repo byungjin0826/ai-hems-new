@@ -78,8 +78,7 @@ def get_one_day_schedule(device_id = '000D6F000F74413A1', gateway_id = 'ep182702
 
         df = history
 
-
-        df = df.loc[(df.index == 0)|((df.DURATION >= 60) & (df.STATUS == 0))|(df.STATUS == 1), : ].reset_index(drop = True)
+        df = df.loc[(df.index == 0)|((df.DURATION >= 60) & (df.STATUS == 0))|((df.DURATION >= 30) & (df.STATUS == 1)), : ].reset_index(drop = True)
 
         status_temp = None
         for one_row in df.iterrows():
