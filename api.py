@@ -14,116 +14,121 @@ plt.style.use('seaborn-whitegrid')
 app = Flask(__name__)
 api = Api(app)
 
-
-def get_history(gateway_id='ep18270185', device_id = '00158D000151B4721'):
+def get_one_day_schedule(device_id = '000D6F000F74413A1', gateway_id = 'ep18270236', dayofweek = 1):
     db = 'aihems_api_db'
-
     conn = pymysql.connect(host='aihems-service-db.cnz3sewvscki.ap-northeast-2.rds.amazonaws.com',
-                           port=3306, user='aihems', passwd='#cslee1234', db=db,
-                           charset='utf8')
+                                                port=3306, user='aihems', passwd='#cslee1234', db=db,
+                                                charset='utf8')
 
     sql = f"""
-SELECT
-	DOW
-	, COLLECT_TIME
-    , STR_TO_DATE(COLLECT_TIME, '%H%i'), DATETIME
--- 	, MAX(APPLIANCE_STATUS)
-	, case when AVG(APPLIANCE_STATUS) > 0.05 then 1 else 0 end APPLIANCE_STATUS
-FROM (	SELECT
-		    STR_TO_DATE(CONCAT(COLLECT_DATE, COLLECT_TIME), '%Y%m%d%H%i') DATETIME
-		    , DAYOFWEEK(COLLECT_DATE) DOW
-		-- 	, COLLECT_DATE
-			, COLLECT_TIME
-		--     , POWER
-		    , ENERGY_DIFF
-		--     , ONOFF
-		    , APPLIANCE_STATUS
-		FROM AH_USE_LOG_BYMINUTE
-		WHERE 1=1
-		-- AND GATEWAY_ID = '{gateway_id}'
-		AND DEVICE_ID = '{device_id}'
-		AND COLLECT_DATE >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -28 DAY), '%Y%m%d')) t
+    SELECT
+        DOW
+        , COLLECT_TIME
+        , STR_TO_DATE(COLLECT_TIME, '%H%i'), DATETIME
+    -- 	, MAX(APPLIANCE_STATUS)
+        , case when AVG(APPLIANCE_STATUS) > 0.05 then 1 else 0 end APPLIANCE_STATUS
+    FROM (	SELECT
+                STR_TO_DATE(CONCAT(COLLECT_DATE, COLLECT_TIME), '%Y%m%d%H%i') DATETIME
+                , DAYOFWEEK(COLLECT_DATE) DOW
+            -- 	, COLLECT_DATE
+                , COLLECT_TIME
+            --     , POWER
+                , ENERGY_DIFF
+            --     , ONOFF
+                , CASE WHEN POWER >= 5 THEN 1 ELSE 0 END APPLIANCE_STATUS
+            FROM AH_USE_LOG_BYMINUTE
+            WHERE 1=1
+            -- AND GATEWAY_ID = '{gateway_id}'
+            AND DEVICE_ID = '{device_id}'
+            AND COLLECT_DATE >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -28 DAY), '%Y%m%d')) t
+    WHERE 1=1
+    AND DOW = {dayofweek+1}
+    GROUP BY 
+        DOW
+        , COLLECT_TIME
+    """
+    df = pd.read_sql(sql, con = conn)
+
+    if sum(df.APPLIANCE_STATUS) == 0:
+        df = pd.DataFrame({'START': '00:00:00'
+                           , 'END': '23:59:00'
+                           , 'DURATION': '1359'
+                           , 'STATUS': 0
+                          }, index = [0])
+
+    else:
+        df['APPLIANCE_STATUS_LAG'] = df.APPLIANCE_STATUS.shift(1).fillna(0)
+        df['APPLIANCE_STATUS_LAG'] = [int(x) for x in df.APPLIANCE_STATUS_LAG]
+        df['APPLIANCE_STATUS'] = df.APPLIANCE_STATUS.fillna(0)
+        df['APPLIANCE_STATUS'] = [int(x) for x in df.APPLIANCE_STATUS]
+
+        df_change = df.loc[df.APPLIANCE_STATUS != df.APPLIANCE_STATUS_LAG,:]
+        df_change = df_change.reset_index()
+        df_change['DATETIME_LAG'] = df_change.DATETIME.shift(1).fillna(0)
+        df_change.iloc[0,7] = pd.to_datetime(df_change.iloc[0,4].strftime('%Y%m%d'+ ' 00:00'))
+        df_change['duration'] = df_change.DATETIME - df_change.DATETIME.shift(1)
+        df_change['duration'] = [x.seconds/60 for x in df_change.duration if x != 'NaT']
+
+        history = df_change.loc[:,['DATETIME_LAG', 'DATETIME', 'duration', 'APPLIANCE_STATUS_LAG']]
+
+
+        history.columns = ['START', 'END', 'DURATION', 'STATUS']
+        history = history.loc[:, :].reset_index(drop = True)
+        history.iloc[0,2] = (history.iloc[0,1]-history.iloc[0,0]).seconds/60
+
+        df = history
+
+
+        df = df.loc[(df.index == 0)|((df.DURATION >= 60) & (df.STATUS == 0))|(df.STATUS == 1), : ].reset_index(drop = True)
+
+        status_temp = None
+        for one_row in df.iterrows():
+        #     print(one_row[0])
+            if status_temp == one_row[1]['STATUS']:
+                df = df.drop(index = one_row[0])
+            status_temp = one_row[1]['STATUS']
+        start_temp = df.END.iloc[-1] + pd.Timedelta('1 minutes')
+        if status_temp == 1:
+            status_temp = 0
+        else:
+            status_temp = 1
+        df.START = [x.strftime('%H:%M:%S') for x in df.START]
+        df.END = [x.strftime('%H:%M:%S') for x in df.END]
+
+        df = pd.concat([df, pd.DataFrame({'START': start_temp.strftime('%H:%M:%S'),
+                                            'END': '23:59:00',
+                                            'DURATION': 0.0,
+                                            'STATUS': status_temp}, index = [one_row[0] + 1])], ignore_index=True)
+
+        sql = f"""
+SELECT ALWAYS_ON
+FROM AH_DEVICE_MODEL
 WHERE 1=1
--- AND DOW = 1
-GROUP BY 
-	DOW
-	, COLLECT_TIME    
+AND DEVICE_ID = '{device_id}'
 """
 
-    df = pd.read_sql(sql, con=conn)
+        always_on = pd.read_sql(sql, con=conn).iloc[0][0]
+        # "dayofweek": 0,
+        # "time": "00:00:00",
+        # "appliance_status": 0
+        if always_on == 1:
+            dayofweek = [str(dayofweek)]
+            time = ['00:00:00']
+            appliance_status = ['1']
 
-    df['APPLIANCE_STATUS_LAG'] = df.APPLIANCE_STATUS.shift(1).fillna(0)
-    df['APPLIANCE_STATUS_LAG'] = [int(x) for x in df.APPLIANCE_STATUS_LAG]
-    df['APPLIANCE_STATUS'] = df.APPLIANCE_STATUS.fillna(0)
-    df['APPLIANCE_STATUS'] = [int(x) for x in df.APPLIANCE_STATUS]
+            df = pd.DataFrame({'DAYOFWEEK': dayofweek,
+                               'START': time,
+                               'STATUS': appliance_status})
+    print(df)
+    return(df)
 
-    df_change = df.loc[df.APPLIANCE_STATUS != df.APPLIANCE_STATUS_LAG, :]
-    df_change = df_change.reset_index()
-    df_change['DATETIME_LAG'] = df_change.DATETIME.shift(1).fillna(0)
-    df_change['duration'] = df_change.DATETIME - df_change.DATETIME.shift(1)
-    df_change['duration'] = [x.seconds / 60 for x in df_change.duration if x != 'NaT']
-
-    history = df_change.loc[:, ['DATETIME_LAG', 'DATETIME', 'duration', 'APPLIANCE_STATUS_LAG']]
-
-    #     df_change.columns = ['DATETIME', 'POWER', 'ENERGY_DIFF', 'ONOFF', 'STATUS_NOW', 'STATUS_BEFORE', 'DATETIME_LAG','DURATION']
-
-    history.columns = ['START', 'END', 'DURATION', 'STATUS']
-    #     history = history.loc[history.STATUS == 1, :].reset_index(drop = True)
-    history = history.loc[:, :].reset_index(drop=True)
-    #     print(sql)
-    return (history.iloc[1:].reset_index(drop=True))
-
-
-def remove_particle(df):
-    drop_list = []
-    for i in range(len(df) - 1):
-        mx = len(df) - 1  # index가 0부터 시작.
-        if i != 1:
-            if ((df.iloc[i, 2] < 120) & (df.iloc[i, 3] == 0)) | ((df.iloc[i, 2] < 15) & (df.iloc[i, 3] == 1)):
-                start = df.iloc[i - 1, 0]
-                df.iloc[i - 1, 1] = df.iloc[i + 1, 1]
-                df.iloc[i - 1, 2] = df.iloc[i - 1, 2] + df.iloc[i, 2] + df.iloc[i + 1, 2]
-                drop_list.append(i)
-                drop_list.append(i + 1)
-
-    df = df.drop(index=drop_list).reset_index(drop=True)
-    return (df)
-
-
-def make_daily_schedule(df):
-    a = 0
-    for i in range(len(df) - 1):
-        i = i + a
-        if df.iloc[i, 0].date() != df.iloc[i + 1, 0].date():
-            start1 = df.iloc[i, 0]
-            start2 = pd.to_datetime((df.iloc[i, 0] + pd.Timedelta(days=1)).strftime('%Y-%m-%d') + ' 00:00')
-            end1 = pd.to_datetime(df.iloc[i, 0].strftime('%Y-%m-%d') + ' 23:59')
-            end2 = df.iloc[i + 1, 0]
-            duration1 = (end1 - start1).seconds / 60
-            duration2 = (end2 - start2).seconds / 60
-            status = df.iloc[i, 3]
-
-            df.iloc[i, 1] = end1
-            df.iloc[i, 2] = duration1
-
-            temp = pd.DataFrame({'START': start2, 'END': end2, 'DURATION': duration2, 'STATUS': status}, index=[0])
-
-            df = pd.concat([df.iloc[:i + 1], temp, df.iloc[i + 1:]]).reset_index(drop=True)
-            a += 1
-            print(i)
-
-    if df.iloc[-1, 1].strftime('%H%M') != '2359':
-        start = df.iloc[-1, 1]
-        end = pd.to_datetime(df.iloc[-1, 0].strftime('%Y-%m-%d') + ' 23:59')
-        temp = pd.DataFrame({'START': start,
-                             'END': end,
-                             'DURATION': (end - start).seconds / 60,
-                             'STATUS': df.iloc[-1, 3]}, index=[0])
-        df = df.append(temp).reset_index(drop=True)
-        df['DAYOFWEEK'] = [x.dayofweek for x in df.START]
-        df['MINUTE'] = [x.minute + 60 * x.hour for x in df.START]
-        df = df.sort_values(['DAYOFWEEK', 'MINUTE']).reset_index(drop=True)
-    return (df)
+def get_ai_schedule(device_id = '000D6F000F74413A1', gateway_id = 'ep18270236'):
+    df = pd.DataFrame(columns=['DAYOFWEEK', 'START', 'END', 'DURATION', 'STATUS'])
+    for i in range(7):
+        temp = get_one_day_schedule(device_id=device_id, gateway_id=gateway_id, dayofweek=i)
+        temp['DAYOFWEEK'] = i
+        df = pd.concat([df, temp], ignore_index=True)
+    return(df)
 
 class PredictElec(Resource):
     def post(self):
@@ -269,15 +274,12 @@ AND DEVICE_ID = '{device_id}'
 
 
 
-            df = get_history(gateway_id=gateway_id, device_id=schedule_id)
-            df = remove_particle(df)
-            df = make_daily_schedule(df)
+            df = get_ai_schedule(gateway_id=gateway_id, device_id=schedule_id).loc[:, ['DAYOFWEEK','START', 'STATUS']]
 
-            df.columns = ['time', 'end', 'duration', 'appliance_status', 'dayofweek', 'minute']
-            df['time'] = [x.strftime('%H:%M:%S') for x in df.time]
+            df.columns = ['dayofweek', 'time', 'appliance_status']
             # result['time'] = [x.strftime('%H:%M:%S') for x in result.time]
 
-            result = df.loc[:, ['dayofweek', 'time', 'appliance_status', 'duration']].to_dict('index')
+            result = df.loc[:, ['dayofweek', 'time', 'appliance_status']].to_dict('index')
 
 
             return {
