@@ -1,0 +1,14 @@
+import pandas as pd
+import settings
+
+
+def main():
+    return 0
+
+
+def compare():
+    return 0
+
+
+if __name__ == '__main__':
+    main()

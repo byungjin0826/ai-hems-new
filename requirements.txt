@@ -1,0 +1,9 @@
+pandas
+numpy
+flask
+pymysql
+plotnine
+mizani
+flask_restful
+joblib
+sklearn
