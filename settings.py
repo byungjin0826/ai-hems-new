@@ -14,3 +14,5 @@ charset = 'utf8'
 
 conn = pymysql.connect(host=host, port=port, user=user,
                        passwd=passwd, db=db, charset=charset)
+
+curs = conn.cursor()

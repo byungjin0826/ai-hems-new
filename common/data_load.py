@@ -3,7 +3,8 @@ import settings
 
 
 def usage_log(device_id, gateway_id=None, start_date='20191128', end_date=None,
-              start_time='0000', end_time='2359', dayofweek=None, raw_data=False):
+              start_time='0000', end_time='2359', dayofweek=None, raw_data=False,
+              sql_print = False, power = False, threshold = 1):
     """
 
     :param device_id:
@@ -14,6 +15,7 @@ def usage_log(device_id, gateway_id=None, start_date='20191128', end_date=None,
     :param end_time:
     :param dayofweek:
     :param raw_data:
+    :param sql_print:
     :return:
     """
 
@@ -28,6 +30,19 @@ SELECT
 FROM AH_USE_LOG_BYMINUTE
 WHERE 1=1
 AND DEVICE_ID = '{device_id}'"""
+
+        if power:
+            sql = f"""
+SELECT 
+    STR_TO_DATE(CONCAT(COLLECT_DATE, COLLECT_TIME), '%Y%m%d%H%i') DATETIME
+    , POWER
+    , ENERGY_DIFF
+    , ONOFF
+    , CASE WHEN POWER >= {threshold} THEN 1 ELSE 0 END APPLIANCE_STATUS
+FROM AH_USE_LOG_BYMINUTE
+WHERE 1=1
+AND DEVICE_ID = '{device_id}'"""
+
         if gateway_id is not None:
             gateway_id_condition = f"\nAND GATEWAY_ID = '{gateway_id}'"
             sql += gateway_id_condition
@@ -60,7 +75,9 @@ AND DEVICE_ID = '{device_id}'"""
         df_change = df_change.reset_index()
         df_change['DATETIME_LAG'] = df_change.DATETIME.shift(1).fillna(0)
         df_change['duration'] = df_change.DATETIME - df_change.DATETIME.shift(1)
-        df_change['duration'] = [x.seconds / 60 for x in df_change.duration if x != 'NaT']
+
+        print(df_change)
+        df_change['duration'] = [x.days * 1440 + x.seconds / 60 for x in df_change.duration if x != 'NaT']
 
         history = df_change.loc[:, ['DATETIME_LAG', 'DATETIME', 'duration', 'APPLIANCE_STATUS_LAG']]
 
@@ -68,12 +85,16 @@ AND DEVICE_ID = '{device_id}'"""
         history = history.loc[history.STATUS == 1, :].reset_index(drop=True)
         return history
 
+    if sql_print:
+        print(make_sql())
+
     if raw_data:
         result = pd.read_sql(make_sql(), con=settings.conn, index_col='DATETIME')
 
     else:
         result = transform()
 
+    result.to_clipboard()
     # settings.conn.close()
     return result
 
@@ -100,7 +121,7 @@ def status_all_device(gateway_id):
 
 
 # 편리하게 찾을 수 있는 기능 구현...
-def search_info(device_name=None, gateway_id=None, gateway_name=None, house_name=None,
+def device_info(device_name=None, gateway_id=None, gateway_name=None, house_name=None,
                 house_id=None):
     def sql():
         device_info_sql = f"""
@@ -166,7 +187,51 @@ WHERE 1=1"""
     return df
 
 
+def house_info():
+    return 0
+
+
+def label_modify(device_id='000D6F0012577B441', appliance_status=1,
+                 collect_date='20191101', collect_time_range=['0000','2359']):
+
+    sql = f"""
+UPDATE AH_USE_LOG_BYMINUTE
+SET APPLIANCE_STATUS = {appliance_status}
+WHERE 1=1
+AND DEVICE_ID = '{device_id}'
+AND COLLECT_DATE = '{collect_date}'
+AND COLLECT_TIME >= '{collect_time_range[0]}'
+AND COLLECT_TIME <= '{collect_time_range[1]}'
+AND POWER <= 1
+"""
+    settings.curs.execute(sql)
+    settings.conn.commit()
+
+
 if __name__ == '__main__':
-    device_id = search_info(device_name='세탁기', house_name='윤희우').DEVICE_ID[0]
-    log = usage_log(device_id=device_id, start_date='20191101', dayofweek=1)
-    raw = usage_log(device_id=device_id, start_date='20191101', dayofweek=1, raw_data=True)
+    device_id = device_info(device_name='TV', house_name='안채').DEVICE_ID[0]
+    # log = usage_log(device_id=device_id, start_date='20191101', power=True, threshold=1)
+    # raw = usage_log(device_id=device_id, start_date='20191101', dayofweek=2, raw_data=True)
+    # label_modify(device_id=device_id, appliance_status=0, collect_date='20191111', collect_time_range=['2358', '2359'])
+    # log = usage_log(device_id=device_id, start_date='20191101', power=False)
+    list = [['20191108', ['2016', '2017']],
+            ['20191111', ['2358', '2359']],
+            ['20191114', ['2349', '2359']],
+            ['20191115', ['0552', '0555']],
+            ['20191115', ['2357', '2359']],
+            ['20191116', ['2016', '2017']],
+            ['20191117', ['2350', '2359']],
+            ['20191121', ['2245', '2246']],
+            ['20191121', ['2359', '2359']],
+            ['20191124', ['1646', '1653']],
+            ['20191130', ['0000', '0003']],
+            ['20191130', ['1912', '1921']],
+            ['20191203', ['0000', '0003']]]
+
+    for date, time in list:
+        # print(f'date: {date}, time: {time}')
+        label_modify(device_id=device_id, appliance_status=0,
+                     collect_date=date, collect_time_range=time)
+
+
+
