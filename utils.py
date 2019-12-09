@@ -1056,17 +1056,7 @@ def update_data_frame(df, table_name = ''):
     return 0
 
 
-def iter_predict(x, n_iter, model):
-    y = []
-    for i in range(n_iter):
-        y_temp = model.predict([x]).item()
-        if y_temp < 0:
-            y_temp = y_temp * -1
-        y.append(y_temp)
-        x_temp = x[1:]
-        x_temp.append(y_temp)
-        x = x_temp
-    return y
+
 
 
 #

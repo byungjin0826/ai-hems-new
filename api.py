@@ -1,20 +1,18 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-import utils
 from joblib import load, dump
 import datetime
 import sklearn as sk
-import matplotlib.pyplot as plt
-# from silvercare import silvercare_api
 import pymysql
 import pandas as pd
-
-plt.style.use('seaborn-whitegrid')
+import common.data_load as dl
+import settings
 
 app = Flask(__name__)
 api = Api(app)
 
 
+@app.route('//', method = ['POST'])
 class PredictElec(Resource):
     def post(self):
         try:
@@ -28,21 +26,24 @@ class PredictElec(Resource):
             # month = args['month']
 
             sql = f"""
-            SELECT   * 
-            FROM      AH_USAGE_DAILY_PREDICT
-            WHERE      HOUSE_NO = '{house_no}'
-             AND      USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
-             AND      USE_DATE < '{date}'
-            ORDER BY USE_DATE
-            """
+SELECT
+    * 
+FROM
+    AH_USAGE_DAILY_PREDICT
+WHERE 1=1
+    AND HOUSE_NO = '{house_no}'
+    AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
+    AND USE_DATE < '{date}'
+ORDER BY
+    USE_DATE"""
 
-            df = utils.get_table_from_db(sql)
+            df = pd.read_sql(sql, con=settings.conn)
 
             elec = [x for x in df.use_energy_daily.values[-7:]]
 
             model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib')
 
-            y = utils.iter_predict(x=elec, n_iter=31, model=model)
+            y = dl.iter_predict(x=elec, n_iter=31, model=model)
 
             return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
 
@@ -77,7 +78,7 @@ WHERE      1=1
 ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
-            df = utils.get_table_from_db(sql)
+            df = pd.read_sql(sql, con=settings.conn)
             print(df.head())
             print('df:', len(df))
 
@@ -460,7 +461,7 @@ AND HOUSE_NO = {house_no}
 AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')
 """
 
-            df = utils.get_table_from_db(sql)
+            df = pd.read_sql(sql, con=settings.conn)
 
             df.loc[df.use_energy_daily.isnull(), 'use_energy_daily'] = 0
 
@@ -576,13 +577,7 @@ WHERE
             return {'flag_success': False, 'error': str(e)}
 
 
-api.add_resource(PredictElec, '/elec')
-api.add_resource(Labeling, '/label')
-api.add_resource(CBL_INFO, '/cbl_info')
-api.add_resource(AISchedule, '/schedule')
-api.add_resource(DR_RECOMMEND, '/dr_recommendation')
-api.add_resource(Make_Model_Elec, '/make_model_elec')
-api.add_resource(Make_Model_Status, '/make_model_status')
+
 # api.add_resource(DEVICE_SELECT, '')
 # api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
 

@@ -1,5 +1,26 @@
 import pandas as pd
 import settings
+from functools import wraps
+
+
+def pandas_read_sql(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        return pd.read_sql(f(*args, **kwargs), con=settings.conn)
+    return decorated
+
+
+def iter_predict(x, n_iter, model):
+    y = []
+    for i in range(n_iter):
+        y_temp = model.predict([x]).item()
+        if y_temp < 0:
+            y_temp = y_temp * -1
+        y.append(y_temp)
+        x_temp = x[1:]
+        x_temp.append(y_temp)
+        x = x_temp
+    return y
 
 
 def usage_log(device_id, gateway_id=None, start_date='20191128', end_date=None,
@@ -208,30 +229,51 @@ AND POWER <= 1
     settings.conn.commit()
 
 
+def sql_select(sql):
+    return pd.read_sql(sql, con=settings.conn)
+
+
 if __name__ == '__main__':
     device_id = device_info(device_name='TV', house_name='안채').DEVICE_ID[0]
     # log = usage_log(device_id=device_id, start_date='20191101', power=True, threshold=1)
     # raw = usage_log(device_id=device_id, start_date='20191101', dayofweek=2, raw_data=True)
     # label_modify(device_id=device_id, appliance_status=0, collect_date='20191111', collect_time_range=['2358', '2359'])
     # log = usage_log(device_id=device_id, start_date='20191101', power=False)
-    list = [['20191108', ['2016', '2017']],
-            ['20191111', ['2358', '2359']],
-            ['20191114', ['2349', '2359']],
-            ['20191115', ['0552', '0555']],
-            ['20191115', ['2357', '2359']],
-            ['20191116', ['2016', '2017']],
-            ['20191117', ['2350', '2359']],
-            ['20191121', ['2245', '2246']],
-            ['20191121', ['2359', '2359']],
-            ['20191124', ['1646', '1653']],
-            ['20191130', ['0000', '0003']],
-            ['20191130', ['1912', '1921']],
-            ['20191203', ['0000', '0003']]]
-
-    for date, time in list:
-        # print(f'date: {date}, time: {time}')
-        label_modify(device_id=device_id, appliance_status=0,
-                     collect_date=date, collect_time_range=time)
-
-
+    # list = [['20191108', ['2016', '2017']],
+    #         ['20191111', ['2358', '2359']],
+    #         ['20191114', ['2349', '2359']],
+    #         ['20191115', ['0552', '0555']],
+    #         ['20191115', ['2357', '2359']],
+    #         ['20191116', ['2016', '2017']],
+    #         ['20191117', ['2350', '2359']],
+    #         ['20191121', ['2245', '2246']],
+    #         ['20191121', ['2359', '2359']],
+    #         ['20191124', ['1646', '1653']],
+    #         ['20191130', ['0000', '0003']],
+    #         ['20191130', ['1912', '1921']],
+    #         ['20191203', ['0000', '0003']]]
+    #
+    # for date, time in list:
+    #     # print(f'date: {date}, time: {time}')
+    #     label_modify(device_id=device_id, appliance_status=0,
+    #                  collect_date=date, collect_time_range=time)
+#     sql = f"""
+# SELECT
+#     DEVICE_ID
+#     , CASE WHEN APPLIANCE_STATUS = 1 THEN 'ON' ELSE 'OFF' END APPLIANCE_STATUS
+#     , SUM(ENERGY_DIFF) ENERGY
+#     , COUNT(*) DURATION
+# FROM AH_USE_LOG_BYMINUTE
+# WHERE 1=1
+# AND GATEWAY_ID = 'ep18270236'
+# AND COLLECT_DATE = '20191204'
+# AND APPLIANCE_STATUS is not NULL
+# -- AND COLLECT_DATE
+# -- AND
+# GROUP BY
+#     DEVICE_ID
+#     , APPLIANCE_STATUS"""
+#
+#     df = sql_select(sql)
+#     df_pivot = df.pivot_table(columns = 'APPLIANCE_STATUS', index = 'DEVICE_ID', values = 'DURATION')
 

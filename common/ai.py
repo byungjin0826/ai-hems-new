@@ -162,7 +162,7 @@ def ai_simulation(gateway_id='ep18270236'):
     return df
 
 
-def compare_schedule(device_id='000D6F0012577B441', collect_date='20191101'):
+def merge_log_and_schedule(device_id='000D6F0012577B441', collect_date='20191101'):
     sql = f"""
 SELECT 
     COLLECT_TIME
@@ -192,7 +192,8 @@ AND COLLECT_DATE = '{collect_date}'"""
     return df
 
 
-
+def compare_schedule(collect_date='20191101'):
+    return 0
 
 
 if __name__ == '__main__':
@@ -207,22 +208,22 @@ if __name__ == '__main__':
     #
     # print('complete')
     #
-    # dates = ['20191104', '20191111', '20191118', '20191125']
-    # dates = ['20191105', '20191112', '20191119', '20191126']
-    #
-    # for date in dates:
-    #     df = compare_schedule(device_id='000D6F0012577B441', collect_date=date)
-    #     acc = len(df.loc[df.APPLIANCE_STATUS != df.SCHEDULE, :])
-    #     type1 = len(df.loc[(df.APPLIANCE_STATUS==1) & (df.SCHEDULE==0), :])
-    #     type2 = len(df.loc[(df.APPLIANCE_STATUS==0) & (df.SCHEDULE==1), :])
-    #     print(f"\t{date} \n\tacc: {acc}, type1: {type1}, type2: {type2}")
+    dates = ['20191104', '20191111', '20191118', '20191125']
+    dates = ['20191105', '20191112', '20191119', '20191126']
+
+    for date in dates:
+        df = merge_log_and_schedule(device_id='000D6F0012577B441', collect_date=date)
+        acc = len(df.loc[df.APPLIANCE_STATUS != df.SCHEDULE, :])
+        type1 = len(df.loc[(df.APPLIANCE_STATUS==1) & (df.SCHEDULE==0), :])  # 불편
+        type2 = len(df.loc[(df.APPLIANCE_STATUS==0) & (df.SCHEDULE==1), :])  # 에너지 낭비
+        print(f"\t{date} \n\tacc: {acc}, 불편: {type1}, 에너지 낭비: {type2}")
     #
     # df = compare_schedule(device_id='00158D000151B49A1', collect_date='20191112')
 
-    data = ["first", "second", "third"]
-    for name in data:
-        globals()[name] = [x for x in range(3)]
-
-    print('complete')
-
-
+    # data = ["first", "second", "third"]
+    # for name in data:
+    #     globals()[name] = [x for x in range(3)]
+    #
+    # print('complete')
+    # gateway_id = dl.device_info(house_name = '안채').GATEWAY_ID[0]
+    # energy_info = device_energy_info(gateway_id=gateway_id)
