@@ -8,3 +8,5 @@ flask_restful
 joblib
 sklearn
 seaborn # 이건 필요는 없을듯.
+Cython
+tslearn
