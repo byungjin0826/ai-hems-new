@@ -1,6 +1,7 @@
 import pandas as pd
 import settings
 from functools import wraps
+import sklearn as sk
 
 
 def pandas_read_sql(f):
@@ -8,6 +9,215 @@ def pandas_read_sql(f):
     def decorated(*args, **kwargs):
         return pd.read_sql(f(*args, **kwargs), con=settings.conn)
     return decorated
+
+
+def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
+    """
+    학습에 사용할 DataFrame 에서 X와 Y를 분리
+    :param df: python DataFrame
+    :param x_col: 학습에 사용할 x 변수 선택, 기본값: 전력데이터만 사용
+    :param y_col: 가전기기 상태
+    :return:
+    """
+    x_col = x_col or ''
+    y_col = y_col or ''
+
+    x = df.loc[:, x_col].values
+    if len(x_col) == 1:
+        x=x.reshape(-1, 1)
+
+    y = df.loc[:, y_col].values
+    return x, y
+
+
+def sliding_window_transform(x, y, step_size=10, lag=2):  # todo: 1. X가 여러개의 컬럼일 때도 동작할 수 있도록
+    """
+    상태 판별 예측을 위한 입력 데이터 변환
+    :param x: 분 단위 전력 사용량
+    :param step_size: Sliding window 의 사이즈
+    :param lag: 숫자만큼 지연
+    :return:
+    """
+    # todo: lag가 - 값이여도 동작하게 만들기
+    x = [x for x in x]
+    y = [x for x in y]
+    x = [0] * (step_size - 1) + x
+    x_transformed = [x[i - step_size + lag:i + lag] for i in range(len(x) + 1 - lag) if i > step_size - 1]
+    if lag == 0:
+        y_transformed = y
+    else:
+        y_transformed = y[:-lag]
+    return x_transformed, y_transformed  #
+
+
+def select_regression_model(model_name):
+    regressions = {
+        'random forest': [
+            sk.ensemble.RandomForestRegressor(),
+            {
+                'n_estimator': [10]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ["auto"]
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                , 'min_impurity_split': [1e-7]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'vervbse': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'linear regression': [
+            sk.linear_model.LinearRegression(),
+            {
+                'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'copy_X': [True]
+                , 'n_jobs': [None]
+            }
+        ],
+        # 'polynomial regression':[
+        #
+        # ],
+        # 'stepwise regression':[
+        #
+        # ],
+        'ridge regression': [
+            sk.linear_model.Ridge(),
+            {
+                # 'alpha': []
+                # , 'fit_intercept': []
+                 'normalize': [False]
+                , 'copy_X': [True]
+                # , 'max_iter': []
+                # , 'tol': []
+                , 'solver': ['auto']
+                , 'random_state': [None]
+            }
+        ],
+        'lasso regression': [
+            sk.linear_model.Lasso(),
+            {
+                # 'alpha': []
+                 'fit_intercept': [True]
+                , 'normalize': [False]
+                , 'precompute': [False]
+                , 'copy_X': [True]
+                # , 'max_iter': []
+                # , 'tol': []
+                # , 'warm_start': []
+                # , 'positive': []
+                , 'random_state': [None]
+                , 'selection': ['cyclic']
+            }
+        ],
+        # 'elastic net regression':[
+        #
+        # ]
+    }
+    model = regressions[model_name][0]
+    params = regressions[model_name][1]
+    return model, params
+
+
+def select_classification_model(model_name): # todo: 다른 모델들 파라미터 정리 필요
+    classifications = {
+        'logistic regression': [
+            sk.linear_model.LogisticRegression(),
+            {
+                ''
+            }
+        ],
+        # 'naive bayes': [
+        #     sk.naive_bayes.GaussianNB(),
+        #     {
+        #         'var_smoothing':[1e-9]
+        #     }
+        # ],
+        'stochastic gradient descent': [
+            sk.linear_model.SGDClassifier(),
+            {
+                'loss':['hinge']
+                , 'penalty':['l2']
+                , 'alpha':[0.0001]
+                , 'fit_intercept':[True]
+                , 'max_iter':[1000]
+                , 'tol':[1e-3]
+                , 'shuffle':[True]
+                # , 'verbose':[]
+                # , 'epsilon':[]
+                , 'n_jobs':[None]
+                , 'random_state':[None]
+                # , 'learning_rate':[]
+                , 'power_t':[0.5]
+                , 'early_stopping':[False]
+                , 'validation_fraction':[0.1]
+                , 'n_iter_no_change':[5]
+                # , 'class_weight':[]
+                # , 'warm_start':[]
+                # , 'average':[]
+                , 'n_iter':[None]
+            }
+        ],
+        'k-nearest neighbours': [
+
+        ],
+        'decision tree': [
+            sk.tree.DecisionTreeClassifier(),
+            {}
+        ],
+        'random forest': [
+            sk.ensemble.RandomForestClassifier(),
+            {
+                'n_estimators': [10]
+                , 'criterion': ['gini']
+                , 'max_depth': [None]
+                , 'min_samples_split': [2]
+                , 'min_samples_leaf': [1]
+                , 'min_weight_fraction_leaf': [0.]
+                , 'max_features': ['auto']
+                , 'max_leaf_nodes': [None]
+                , 'min_impurity_decrease': [0.]
+                # , 'min_impurity_split': [0]
+                , 'bootstrap': [True]
+                , 'oob_score': [False]
+                , 'n_jobs': [None]
+                , 'random_state': [None]
+                , 'verbose': [0]
+                , 'warm_start': [False]
+                , 'class_weight': [None]
+            }
+        ],
+        'support vector machine': [
+            sk.svm.SVC(),
+            {
+                'C':[1.0]
+                , 'kernel':['rbf']
+                # , 'degree':[3]
+                , 'gamma':['auto']
+                , 'coef0':[0.0]
+                , 'shrinking':[True]
+                , 'probability':[False]
+                , 'tol':[1e-3]
+                , 'cache_size':[]
+                , 'class_weight':[]
+                , 'verbose':[False]
+                , 'max_iter':[-1]
+                , 'decision_function_shape':['ovr']
+                , 'random_state':[None]
+            }
+        ]
+    }
+    model = classifications[model_name][0]
+    params = classifications[model_name][1]
+    return model, params
 
 
 def iter_predict(x, n_iter, model):
@@ -213,7 +423,7 @@ def house_info():
 
 
 def label_modify(device_id='000D6F0012577B441', appliance_status=1,
-                 collect_date='20191101', collect_time_range=['0000','2359']):
+                 collect_date='20191101', collect_time_range=('0000', '2359')):
 
     sql = f"""
 UPDATE AH_USE_LOG_BYMINUTE

@@ -6,6 +6,7 @@ import sklearn as sk
 import pymysql
 import pandas as pd
 import common.data_load as dl
+import common.ai as ai
 import settings
 
 app = Flask(__name__)
@@ -82,7 +83,7 @@ ORDER BY COLLECT_DATE, COLLECT_TIME
             print(df.head())
             print('df:', len(df))
 
-            x, y = utils.split_x_y(df, x_col='energy_diff')
+            x, y = dl.split_x_y(df, x_col='energy_diff')
 
             pre = 20
             post = 10
@@ -160,7 +161,7 @@ AND DEVICE_ID = '{device_id}'
 
 
 
-            df = get_ai_schedule(gateway_id=gateway_id, device_id=schedule_id).loc[:, ['DAYOFWEEK','START', 'STATUS']]
+            df = ai.get_ai_schedule(gateway_id=gateway_id, device_id=schedule_id).loc[:, ['DAYOFWEEK','START', 'STATUS']]
 
             df.columns = ['dayofweek', 'time', 'appliance_status']
             # result['time'] = [x.strftime('%H:%M:%S') for x in result.time]
@@ -465,9 +466,9 @@ AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVA
 
             df.loc[df.use_energy_daily.isnull(), 'use_energy_daily'] = 0
 
-            x, y = utils.split_x_y(df, x_col='use_energy_daily', y_col='use_energy_daily')
+            x, y = dl.split_x_y(df, x_col='use_energy_daily', y_col='use_energy_daily')
 
-            x, y = utils.sliding_window_transform(x, y, step_size=7, lag=0)
+            x, y = dl.sliding_window_transform(x, y, step_size=7, lag=0)
 
             x = x[6:-1]
 
@@ -480,7 +481,7 @@ AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVA
             lasso regression
             """
 
-            model, param = utils.select_regression_model('linear regression')
+            model, param = dl.select_regression_model('linear regression')
 
             gs = sk.model_selection.GridSearchCV(estimator=model,
                                                  param_grid=param,
@@ -542,13 +543,13 @@ WHERE
 		AND t1.APPLIANCE_STATUS_SUM is not null)
             """
 
-            df = utils.get_table_from_db(sql, db='aihems_api_db')
+            df = pd.read_sql(sql, con=settings.conn)
 
-            x, y = utils.split_x_y(df, x_col='energy_diff', y_col='appliance_status')
+            x, y = dl.split_x_y(df, x_col='energy_diff', y_col='appliance_status')
 
-            x, y = utils.sliding_window_transform(x, y, lag=lag, step_size=30)
+            x, y = dl.sliding_window_transform(x, y, lag=lag, step_size=30)
 
-            model, params = utils.select_classification_model('random forest')
+            model, params = dl.select_classification_model('random forest')
 
             gs = sk.model_selection.GridSearchCV(estimator=model,
                                                  param_grid=params,
@@ -558,13 +559,14 @@ WHERE
 
             gs.fit(x, y)
 
-            gs.best_score_
-
-            print(round(gs.best_score_ * 100, 2), '%', sep='')
+            # gs.best_score_
+            #
+            # print(round(gs.best_score_ * 100, 2), '%', sep='')
 
             df = df.iloc[:-lag]
 
             df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
+
             # df['appliance_status'] = gs.predict(x)
 
             dump_path = f'./sample_data/joblib/{device_id}_labeling.joblib'
