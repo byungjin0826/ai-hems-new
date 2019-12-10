@@ -13,7 +13,7 @@ app = Flask(__name__)
 api = Api(app)
 
 
-@app.route('//', method = ['POST'])
+# @app.route('/elec/', methods=['GET', 'POST'])
 class PredictElec(Resource):
     def post(self):
         try:
@@ -27,15 +27,15 @@ class PredictElec(Resource):
             # month = args['month']
 
             sql = f"""
-SELECT
+    SELECT
     * 
-FROM
+    FROM
     AH_USAGE_DAILY_PREDICT
-WHERE 1=1
+    WHERE 1=1
     AND HOUSE_NO = '{house_no}'
     AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
     AND USE_DATE < '{date}'
-ORDER BY
+    ORDER BY
     USE_DATE"""
 
             df = pd.read_sql(sql, con=settings.conn)
@@ -52,6 +52,7 @@ ORDER BY
             return {'flag_success': False, 'error': str(e)}
 
 
+# @app.route('/label/', methods=['GET', 'POST'])
 class Labeling(Resource):
     def post(self):
         try:
@@ -105,6 +106,7 @@ ORDER BY COLLECT_DATE, COLLECT_TIME
             return {'flag_success': False, 'error': str(e)}
 
 
+# @app.route('/model_select/', methods=['GET', 'POST'])
 class ModelSelect(Resource): # todo: 오늘 질행할 것.
     def post(self):
         try:
@@ -129,6 +131,7 @@ AND
             return {'flag_success': False, 'error': str(e)}
 
 
+# @app.route('/schedule/', methods=['GET', 'POST'])
 class AISchedule(Resource):
     def post(self):
         try:
@@ -179,6 +182,7 @@ AND DEVICE_ID = '{device_id}'
             return {'flag_success': False, 'error': str(e)}
 
 
+# @app.route('/cbl_info/', methods=['GET', 'POST'])
 class CBL_INFO(Resource):
     def post(self):
         try:
@@ -239,6 +243,7 @@ class CBL_INFO(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
+# @app.route('/dr_recommend/', methods=['GET', 'POST'])
 class DR_RECOMMEND(Resource):
     def post(self):
         try:
@@ -429,6 +434,7 @@ ORDER BY
         except Exception as e:
             return {'flag_success': False, 'error': str(e)}
 
+
 class DR_DECISION(Resource):
     def post(self):
         try:
@@ -442,8 +448,7 @@ class DR_DECISION(Resource):
             return {'flag_success': False, 'error': str(e)}
 
 
-
-
+# @app.route('/make_model_status/', methods=['GET', 'POST'])
 class Make_Model_Elec(Resource):
     def post(self):
         try:
@@ -579,11 +584,19 @@ WHERE
             return {'flag_success': False, 'error': str(e)}
 
 
-
+api.add_resource(PredictElec, '/elec')
+api.add_resource(Labeling, '/label')
+api.add_resource(CBL_INFO, '/cbl_info')
+api.add_resource(AISchedule, '/schedule')
+api.add_resource(DR_RECOMMEND, '/dr_recommendation')
+api.add_resource(Make_Model_Elec, '/make_model_elec')
+api.add_resource(Make_Model_Status, '/make_model_status')
 # api.add_resource(DEVICE_SELECT, '')
 # api.add_resource(silvercare_api.SilverCare_Labeling, '/silver_label')
 
 
 if __name__ == '__main__':
     # app.run(host = '0.0.0.0', port=5000, debug=True)
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(debug=True)
+    # app.run(host='127.0.0.1', port=5000, debug=True)
+    # print('a')
