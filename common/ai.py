@@ -66,8 +66,8 @@ GROUP BY
 
         df = history
 
-        df = df.loc[(df.index == 0) | ((df.DURATION >= 60) & (df.STATUS == 0)) |
-                    ((df.DURATION >= 30) & (df.STATUS == 1)), :].reset_index(drop=True)
+        # df = df.loc[(df.index == 0) | ((df.DURATION >= 60) & (df.STATUS == 0)) |
+        #             ((df.DURATION >= 30) & (df.STATUS == 1)), :].reset_index(drop=True)
 
         status_temp = None
         for one_row in df.iterrows():
@@ -208,21 +208,21 @@ if __name__ == '__main__':
     #
     # print('complete')
     #
-
-    acc_table = pd.DataFrame(columns=['device_id', 'date', 'acc', 'type1', 'type2'])
-    devices = dl.device_info().DEVICE_ID
-    dates = [20191101 + x for x in range(31)]
-    i = 1
-    for device in devices:
-        print(f'{i}/{len(devices)}')
-        for date in dates:
-            df = merge_log_and_schedule(device_id=device, collect_date=date)
-            acc = len(df.loc[df.APPLIANCE_STATUS != df.SCHEDULE, :])
-            type1 = len(df.loc[(df.APPLIANCE_STATUS==1) & (df.SCHEDULE==0), :])  # 불편
-            type2 = len(df.loc[(df.APPLIANCE_STATUS==0) & (df.SCHEDULE==1), :])  # 에너지 낭비
-            # print(f"\t{date} \n\tacc: {acc}, 불편: {type1}, 에너지 낭비: {type2}")
-            acc_table = acc_table.append({'device_id':device, 'date':date, 'acc':acc, 'type1':type1, 'type2':type2}, ignore_index=True)
-        i+=1
+## 작업중.
+    # acc_table = pd.DataFrame(columns=['device_id', 'date', 'acc', 'type1', 'type2'])
+    # devices = dl.device_info().DEVICE_ID
+    # dates = [20191101 + x for x in range(31)]
+    # i = 1
+    # for device in devices:
+    #     print(f'{i}/{len(devices)}')
+    #     for date in dates:
+    #         df = merge_log_and_schedule(device_id=device, collect_date=date)
+    #         acc = len(df.loc[df.APPLIANCE_STATUS != df.SCHEDULE, :])
+    #         type1 = len(df.loc[(df.APPLIANCE_STATUS==1) & (df.SCHEDULE==0), :])  # 불편
+    #         type2 = len(df.loc[(df.APPLIANCE_STATUS==0) & (df.SCHEDULE==1), :])  # 에너지 낭비
+    #         # print(f"\t{date} \n\tacc: {acc}, 불편: {type1}, 에너지 낭비: {type2}")
+    #         acc_table = acc_table.append({'device_id':device, 'date':date, 'acc':acc, 'type1':type1, 'type2':type2}, ignore_index=True)
+    #     i+=1
     #
     # df = compare_schedule(device_id='00158D000151B49A1', collect_date='20191112')
 
@@ -233,3 +233,5 @@ if __name__ == '__main__':
     # print('complete')
     # gateway_id = dl.device_info(house_name = '안채').GATEWAY_ID[0]
     # energy_info = device_energy_info(gateway_id=gateway_id)
+
+    schedule1 = get_one_day_schedule(device_id = '00158D0001A481ED1', collect_date='20191101')

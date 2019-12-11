@@ -422,21 +422,36 @@ def house_info():
     return 0
 
 
-def label_modify(device_id='000D6F0012577B441', appliance_status=1,
-                 collect_date='20191101', collect_time_range=('0000', '2359')):
-
-    sql = f"""
+def label_modify(device_id='000D6F0012577B441', threshold = 1,
+                 collect_date_range=('20191101', '20191130'), collect_time_range=('0000', '2359')):
+    label0 = f"""
 UPDATE AH_USE_LOG_BYMINUTE
-SET APPLIANCE_STATUS = {appliance_status}
+SET APPLIANCE_STATUS = 0
 WHERE 1=1
 AND DEVICE_ID = '{device_id}'
-AND COLLECT_DATE = '{collect_date}'
+AND COLLECT_DATE >= '{collect_date_range[0]}'
+AND COLLECT_DATE <= '{collect_date_range[1]}'
 AND COLLECT_TIME >= '{collect_time_range[0]}'
 AND COLLECT_TIME <= '{collect_time_range[1]}'
-AND POWER <= 1
+AND POWER < {threshold}
 """
-    settings.curs.execute(sql)
+    settings.curs.execute(label0)
+
+    label1 = f"""
+UPDATE AH_USE_LOG_BYMINUTE
+SET APPLIANCE_STATUS = 1
+WHERE 1=1
+AND DEVICE_ID = '{device_id}'
+AND COLLECT_DATE >= '{collect_date_range[0]}'
+AND COLLECT_DATE <= '{collect_date_range[1]}'
+AND COLLECT_TIME >= '{collect_time_range[0]}'
+AND COLLECT_TIME <= '{collect_time_range[1]}'
+AND POWER >= {threshold}
+    """
+    settings.curs.execute(label1)
     settings.conn.commit()
+    settings.conn.close()
+    settings.conn.connect()
 
 
 def sql_select(sql):
@@ -444,7 +459,7 @@ def sql_select(sql):
 
 
 if __name__ == '__main__':
-    device_id = device_info(device_name='TV', house_name='안채').DEVICE_ID[0]
+    # device_id = device_info(device_name='TV', house_name='안채').DEVICE_ID[0]
     # log = usage_log(device_id=device_id, start_date='20191101', power=True, threshold=1)
     # raw = usage_log(device_id=device_id, start_date='20191101', dayofweek=2, raw_data=True)
     # label_modify(device_id=device_id, appliance_status=0, collect_date='20191111', collect_time_range=['2358', '2359'])
@@ -486,4 +501,5 @@ if __name__ == '__main__':
 #
 #     df = sql_select(sql)
 #     df_pivot = df.pivot_table(columns = 'APPLIANCE_STATUS', index = 'DEVICE_ID', values = 'DURATION')
+    label_modify(device_id='00158D0001A42DA51', collect_date_range=('20191101', '20191209'), threshold=2)
 
