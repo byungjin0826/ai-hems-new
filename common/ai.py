@@ -66,8 +66,9 @@ GROUP BY
 
         df = history
 
-        # df = df.loc[(df.index == 0) | ((df.DURATION >= 60) & (df.STATUS == 0)) |
-        #             ((df.DURATION >= 30) & (df.STATUS == 1)), :].reset_index(drop=True)
+        # 시간 짧은 경우 제거하는 코드
+        df = df.loc[(df.index == 0) | ((df.DURATION >= 60) & (df.STATUS == 0)) |
+                    ((df.DURATION >= 30) & (df.STATUS == 1)), :].reset_index(drop=True)
 
         status_temp = None
         for one_row in df.iterrows():
@@ -79,6 +80,7 @@ GROUP BY
             status_temp = 0
         else:
             status_temp = 1
+
         df.START = [x.strftime('%H:%M:%S') for x in df.START]
         df.END = [x.strftime('%H:%M:%S') for x in df.END]
 
