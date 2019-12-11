@@ -325,7 +325,7 @@ AND DEVICE_ID = '{device_id}'"""
     else:
         result = transform()
 
-    result.to_clipboard()
+    # result.to_clipboard()
     # settings.conn.close()
     return result
 

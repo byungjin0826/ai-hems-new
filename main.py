@@ -6,9 +6,9 @@ import pandas as pd
 
 
 if __name__ == '__main__':
-    device_id = '00158D0001A459CF1'
+    device_id = '00158D00015095171'
     # updat
-    # dl.label_modify(device_id=device_id, collect_date_range=('20191101', '20191209'), threshold=5)
+    dl.label_modify(device_id=device_id, collect_date_range=('20191101', '20191209'), threshold=2)
     df = dl.usage_log(device_id=device_id, start_date='20191123', raw_data=True)
 
     # df = ai.merge_log_and_schedule(device_id = device_id, collect_date = '20191101')
