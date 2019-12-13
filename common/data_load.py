@@ -2,6 +2,7 @@ import pandas as pd
 import settings
 from functools import wraps
 import sklearn as sk
+from joblib import load, dump
 
 
 def pandas_read_sql(f):
@@ -456,6 +457,66 @@ AND POWER >= {threshold}
 
 def sql_select(sql):
     return pd.read_sql(sql, con=settings.conn)
+
+
+def predict_elec(house_no, date):
+    sql = f"""
+SELECT
+* 
+FROM
+AH_USAGE_DAILY_PREDICT
+WHERE 1=1
+AND HOUSE_NO = '{house_no}'
+AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
+AND USE_DATE < '{date}'
+ORDER BY
+USE_DATE"""
+
+    df = pd.read_sql(sql, con=settings.conn)
+
+    elec = [x for x in df.use_energy_daily.values[-7:]]
+
+    model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib')
+
+    y = iter_predict(x=elec, n_iter=31, model=model)
+
+    return y
+
+
+def labeling(device_id, gateway_id, collect_date):
+    start = collect_date + '0000'
+    end = collect_date + '2359'
+
+    sql = f"""
+    SELECT    *
+    FROM      AH_USE_LOG_BYMINUTE
+    WHERE      1=1
+       AND   GATEWAY_ID = '{gateway_id}'
+       AND   DEVICE_ID = '{device_id}'
+       AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
+         AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
+    ORDER BY COLLECT_DATE, COLLECT_TIME
+                """
+
+    df = pd.read_sql(sql, con=settings.conn)
+    print(df.head())
+    print('df:', len(df))
+
+    x, y = split_x_y(df, x_col='energy_diff')
+
+    pre = 20
+    post = 10
+    length = post + pre
+
+    x = [x[i:i + length] for i in range(len(x) - (pre + post))]
+
+    model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
+
+    y = model.predict(x)
+
+    y = [int(x) for x in y]
+
+    return y
 
 
 if __name__ == '__main__':
