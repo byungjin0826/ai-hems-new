@@ -13,12 +13,9 @@ api = Api(app)
 def predict_elec():   # todo: 오류 수정.
     try:
         house_no = request.json['house_no']
-        print(house_no)
         date = request.json['date']
-        print(date)
 
         y = dl.predict_elec(house_no=house_no, date=date)
-        print(type(y))
 
         return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
         # return {'flag_success': True, 'predict_use_energy': y}  # 기존 대문자
@@ -120,4 +117,5 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
+    app.run(host='127.0.0.1', debug=True)

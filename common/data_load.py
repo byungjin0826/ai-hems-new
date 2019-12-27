@@ -12,7 +12,7 @@ def pandas_read_sql(f):
     return decorated
 
 
-def split_x_y(df, x_col = 'energy', y_col = 'appliance_status'):
+def split_x_y(df, x_col='energy', y_col='appliance_status'):
     """
     학습에 사용할 DataFrame 에서 X와 Y를 분리
     :param df: python DataFrame
@@ -477,7 +477,7 @@ USE_DATE"""
     # elec = [x for x in df.use_energy_daily.values[-7:]]
     elec = [x for x in df.USE_ENERGY_DAILY.values[-7:]]
 
-    model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib') # 여기서 오류 발생.
+    model = load(f'./joblib/usage_daily/{house_no}.joblib') # 여기서 오류 발생.
 
     y = iter_predict(x=elec, n_iter=31, model=model)
     return y
@@ -517,11 +517,11 @@ def labeling(device_id, gateway_id, collect_date):
         y = [int(x) for x in y]
         return y
 
-    sql = f"""
-SELECT *
-FROM 
-"""
-    return y
+    def using_power():
+        y = 0
+        return y
+
+    return using_power()
 
 
 def get_dr_info(request_dr_no):

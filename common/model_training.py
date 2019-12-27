@@ -5,6 +5,9 @@ import common.data_load as dl
 import sklearn as sk
 from joblib import dump, load
 
+import sklearn.ensemble
+import sklearn.linear_model
+
 
 def make_model_elec(house_no):
     today = datetime.datetime.now().strftime('%Y%m%d')
@@ -18,9 +21,9 @@ AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVA
 
     df = pd.read_sql(sql, con=settings.conn)
 
-    df.loc[df.use_energy_daily.isnull(), 'use_energy_daily'] = 0
+    df.loc[df.USE_ENERGY_DAILY.isnull(), 'USE_ENERGY_DAILY'] = 0
 
-    x, y = dl.split_x_y(df, x_col='use_energy_daily', y_col='use_energy_daily')
+    x, y = dl.split_x_y(df, x_col='USE_ENERGY_DAILY', y_col='USE_ENERGY_DAILY')
     x, y = dl.sliding_window_transform(x, y, step_size=7, lag=0)
 
     x = x[6:-1]
@@ -33,7 +36,8 @@ AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVA
                                          cv=5,
                                          n_jobs=-1)
     gs.fit(x, y)
-    dump(gs, f'./sample_data/joblib/usage_daily/{house_no}.joblib')
+    dump(gs, f'./joblib/usage_daily/{house_no}.joblib')
+    print("complete")
     return gs.best_score_
 
 
@@ -87,7 +91,7 @@ WHERE
 
     df = df.iloc[:-lag]
     df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
-    dump_path = f'./sample_data/joblib/{device_id}_labeling.joblib'
+    dump_path = f'./joblib/status/{device_id}_labeling.joblib'
 
     dump(gs, dump_path)  # 저장
     return dump_path, gs.best_score_
@@ -95,3 +99,4 @@ WHERE
 
 if __name__ == '__main__':
     print('hello')
+    make_model_elec(house_no='20190325000001')
