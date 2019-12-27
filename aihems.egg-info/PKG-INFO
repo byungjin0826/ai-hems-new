@@ -1,0 +1,19 @@
+Metadata-Version: 1.2
+Name: aihems
+Version: 0.0
+Summary: AIHEMS
+Home-page: https://github.com/byungjin0826/ai-hems-new
+Author: Shin, Byungjin
+Author-email: byungjin0826@cslee.co.kr
+License: UNKNOWN
+Download-URL: https://github.com/byungjin0826/ai-hems-new/archive/master.zip
+Description: UNKNOWN
+Keywords: home energy,home automation
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Requires-Python: >=3
