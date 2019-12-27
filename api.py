@@ -435,18 +435,6 @@ ORDER BY
             return {'flag_success': False, 'error': str(e)}
 
 
-class DR_DECISION(Resource):
-    def post(self):
-        try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('', type = str)
-            parser.add_argument('reque', type = str)
-
-            return(0)
-
-        except Exception as e:
-            return {'flag_success': False, 'error': str(e)}
-
 
 # @app.route('/make_model_status/', methods=['GET', 'POST'])
 class Make_Model_Elec(Resource):

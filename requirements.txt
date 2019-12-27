@@ -1,13 +1,18 @@
+# machine-learning
 pandas
 numpy
+joblib==0.13.2
+sklearn==0.20.3
+cython
+tslearn
+
+# rest api
 flask
+flask_restful
 pymysql
+sqlalchemy
+
+# graph pakcage
 plotnine
 mizani
-flask_restful
-joblib
-sklearn
 seaborn # 이건 필요는 없을듯.
-Cython
-tslearn
-sqlalchemy

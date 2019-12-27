@@ -16,3 +16,4 @@ conn = pymysql.connect(host=host, port=port, user=user,
                        passwd=passwd, db=db, charset=charset)
 
 curs = conn.cursor()
+# todo: close 할 수 있도록 수정.(https://o7planning.org/en/11463/connecting-mysql-database-in-python-using-pymysql)

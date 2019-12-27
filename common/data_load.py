@@ -221,19 +221,6 @@ def select_classification_model(model_name): # todo: 다른 모델들 파라미�
     return model, params
 
 
-def iter_predict(x, n_iter, model):
-    y = []
-    for i in range(n_iter):
-        y_temp = model.predict([x]).item()
-        if y_temp < 0:
-            y_temp = y_temp * -1
-        y.append(y_temp)
-        x_temp = x[1:]
-        x_temp.append(y_temp)
-        x = x_temp
-    return y
-
-
 def usage_log(device_id, gateway_id=None, start_date='20191128', end_date=None,
               start_time='0000', end_time='2359', dayofweek=None, raw_data=False,
               sql_print = False, power = False, threshold = 1):
@@ -354,7 +341,7 @@ def status_all_device(gateway_id):
 
 # 편리하게 찾을 수 있는 기능 구현...
 def device_info(device_name=None, gateway_id=None, gateway_name=None, house_name=None,
-                house_id=None):
+                house_id=None, energy_info=None):
     def sql():
         device_info_sql = f"""
 SELECT *
@@ -401,7 +388,7 @@ WHERE 1=1"""
             device_info_sql += gateway_id_condition
 
         if gateway_name is not None:
-            gateway_name_condition = f"\nAND "
+            gateway_name_condition = f"\nAND GATEWAY_NAME = '{gateway_name}'"
             device_info_sql += gateway_name_condition
 
         if house_name is not None:
@@ -459,12 +446,25 @@ def sql_select(sql):
     return pd.read_sql(sql, con=settings.conn)
 
 
+def iter_predict(x, n_iter, model):
+    y = []
+    for i in range(n_iter):
+        y_temp = model.predict([x]).item()
+        if y_temp < 0:
+            y_temp = y_temp * -1
+        y.append(y_temp)
+        x_temp = x[1:]
+        x_temp.append(y_temp)
+        x = x_temp
+    return y
+
+
 def predict_elec(house_no, date):
     sql = f"""
 SELECT
-* 
+    * 
 FROM
-AH_USAGE_DAILY_PREDICT
+    AH_USAGE_DAILY_PREDICT
 WHERE 1=1
 AND HOUSE_NO = '{house_no}'
 AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{date}', '%Y%m%d'),INTERVAL -7 DAY), '%Y%m%d')
@@ -474,20 +474,21 @@ USE_DATE"""
 
     df = pd.read_sql(sql, con=settings.conn)
 
-    elec = [x for x in df.use_energy_daily.values[-7:]]
+    # elec = [x for x in df.use_energy_daily.values[-7:]]
+    elec = [x for x in df.USE_ENERGY_DAILY.values[-7:]]
 
-    model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib')
+    model = load(f'./sample_data/joblib/usage_daily/{house_no}.joblib') # 여기서 오류 발생.
 
     y = iter_predict(x=elec, n_iter=31, model=model)
-
     return y
 
 
 def labeling(device_id, gateway_id, collect_date):
-    start = collect_date + '0000'
-    end = collect_date + '2359'
+    def using_rf_model():
+        start = collect_date + '0000'
+        end = collect_date + '2359'
 
-    sql = f"""
+        sql = f"""
     SELECT    *
     FROM      AH_USE_LOG_BYMINUTE
     WHERE      1=1
@@ -495,28 +496,52 @@ def labeling(device_id, gateway_id, collect_date):
        AND   DEVICE_ID = '{device_id}'
        AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
          AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
-    ORDER BY COLLECT_DATE, COLLECT_TIME
-                """
+    ORDER BY COLLECT_DATE, COLLECT_TIME"""
+
+        df = pd.read_sql(sql, con=settings.conn, index=False)
+        print(df.head())
+        print('df:', len(df))
+
+        x, y = split_x_y(df, x_col='energy_diff')
+
+        pre = 20
+        post = 10
+        length = post + pre
+
+        x = [x[i:i + length] for i in range(len(x) - (pre + post))]
+
+        model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
+
+        y = model.predict(x)
+
+        y = [int(x) for x in y]
+        return y
+
+    sql = f"""
+SELECT *
+FROM 
+"""
+    return y
+
+
+def get_dr_info(request_dr_no):
+    sql = f"""
+SELECT *
+FROM AH_DR_REQUEST
+WHERE 1=1
+AND REQUEST_DR_NO = '{request_dr_no}'"""
 
     df = pd.read_sql(sql, con=settings.conn)
-    print(df.head())
-    print('df:', len(df))
+    dr_type = df.iloc[0, 1]
 
-    x, y = split_x_y(df, x_col='energy_diff')
+    duration = int((df.iloc[0, 3] - df.iloc[0, 2]).seconds/60)
+    return dr_type, duration
 
-    pre = 20
-    post = 10
-    length = post + pre
 
-    x = [x[i:i + length] for i in range(len(x) - (pre + post))]
-
-    model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
-
-    y = model.predict(x)
-
-    y = [int(x) for x in y]
-
-    return y
+def test(house_no):
+    path = f'./sample_data/joblib/usage_daily/{house_no}.joblib'
+    # model = load(path)  # 여기서 오류 발생.
+    return path
 
 
 if __name__ == '__main__':
@@ -562,5 +587,16 @@ if __name__ == '__main__':
 #
 #     df = sql_select(sql)
 #     df_pivot = df.pivot_table(columns = 'APPLIANCE_STATUS', index = 'DEVICE_ID', values = 'DURATION')
-    label_modify(device_id='00158D0001A42DA51', collect_date_range=('20191101', '20191209'), threshold=2)
+#     label_modify(device_id='00158D0001A42DA51', collect_date_range=('20191101', '20191209'), threshold=2)
+    request_dr_no = '2019111503'
+    sql = f"""
+    SELECT *
+    FROM AH_DR_REQUEST
+    WHERE 1=1
+    AND REQUEST_DR_NO = '{request_dr_no}'"""
+
+    df = pd.read_sql(sql, con=settings.conn)
+
+
+
 

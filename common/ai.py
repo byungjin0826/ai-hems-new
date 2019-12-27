@@ -237,3 +237,4 @@ if __name__ == '__main__':
     # energy_info = device_energy_info(gateway_id=gateway_id)
 
     schedule1 = get_one_day_schedule(device_id = '00158D0001A481ED1', collect_date='20191101')
+
