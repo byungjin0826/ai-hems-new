@@ -14,11 +14,11 @@ def predict_elec():
     try:
         house_no = request.json['house_no']
         date = request.json['date']
-        print(f'Input: {house_no}, date')
+        # print(f'Input: {house_no}, date')
 
         y = dl.predict_elec(house_no=house_no, date=date)
         y = [str(x) for x in y]
-        print(f'output:{y}')
+        # print(f'output:{y}')
 
         return jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
         # return {'flag_success': True, 'predict_use_energy': y}  # 기존 대문자
