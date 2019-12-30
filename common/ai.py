@@ -37,7 +37,8 @@ GROUP BY
     DOW
     , COLLECT_TIME"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
 
     # print(sql)
 
@@ -145,7 +146,8 @@ GROUP BY
     , APPLIANCE_STATUS
 """
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
     df_pivot = df.pivot_table(index='DEVICE_ID', columns='APPLIANCE_STATUS', values='ENERGY_DIFF')
     df_pivot.loc[df_pivot.OFF.isna(), 'OFF'] = df_pivot.loc[df_pivot.OFF.isna(), 'ON']
     device_info = dl.device_info(gateway_id=gateway_id)
@@ -174,7 +176,8 @@ WHERE 1=1
 AND DEVICE_ID = '{device_id}'
 AND COLLECT_DATE = '{collect_date}'"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
 
     ai_schedule = get_one_day_schedule(device_id=device_id, collect_date=collect_date)
     # print(ai_schedule)
