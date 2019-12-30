@@ -50,13 +50,14 @@ def ai_schedule():
         gateway_id = request.json['gateway_id']
         device_id = request.json['device_id']
 
-        df = ai.get_ai_schedule(device_id=device_id, gateway_id=gateway_id)
-        df.columns = ['dayofweek', 'time', 'end', 'duration', 'appliance_status']
-        result = df.loc[:, ['dayofweek', 'time', 'appliance_status']].to_dict('index')
+        weeks = dl.check_weeks(gateway_id=gateway_id, device_id=device_id)
 
-        return jsonify({'flag_success': True
-                , 'device_id': device_id
-                , 'result': result})
+        if weeks >= 4:
+            df = ai.get_ai_schedule(device_id=device_id, gateway_id=gateway_id)
+            df.columns = ['dayofweek', 'time', 'end', 'duration', 'appliance_status']
+            result = df.loc[:, ['dayofweek', 'time', 'appliance_status']].to_dict('index')
+
+        return jsonify({'flag_success': True, 'device_id': device_id, 'result': result})
 
     except Exception as e:
         return jsonify({'flag_success': False, 'error': str(e)})
