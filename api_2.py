@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api
 import common.data_load as dl
 import common.ai as ai
@@ -20,11 +20,11 @@ def predict_elec():   # todo: 오류 수정.
         y = [str(x) for x in y]
         print(f'output:{y}')
 
-        return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
+        return jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
         # return {'flag_success': True, 'predict_use_energy': y}  # 기존 대문자
 
     except Exception as e:
-        return {'flag_success': False, 'error': e}
+        return jsonify({'flag_success': False, 'error': e})
 
 
 @app.route('/label/', methods=['GET', 'POST'])
