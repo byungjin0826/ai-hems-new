@@ -19,7 +19,8 @@ WHERE 1=1
 AND HOUSE_NO = {house_no}
 AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
 
     df.loc[df.USE_ENERGY_DAILY.isnull(), 'USE_ENERGY_DAILY'] = 0
 
@@ -73,7 +74,8 @@ WHERE
         WHERE 1=1
         AND t1.APPLIANCE_STATUS_SUM is not null)"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
 
     x, y = dl.split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
 
