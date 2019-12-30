@@ -543,6 +543,21 @@ def test(house_no):
     return path
 
 
+def check_weeks(gateway_id, device_id):
+    sql = f"""
+SELECT
+    CEIL(DATEDIFF(NOW(), DATE_FORMAT(min(COLLECT_DATE), '%Y%m%d'))/7)
+FROM AH_USE_LOG_BYMINUTE
+WHERE 1=1
+AND GATEWAY_ID='{gateway_id}'
+AND DEVICE_ID ='{device_id}'
+"""
+
+    with settings.open_db_connection() as conn:
+        weeks = pd.read_sql(sql, con=conn).iloc[0,0]
+
+    return weeks
+
 if __name__ == '__main__':
     # device_id = device_info(device_name='TV', house_name='안채').DEVICE_ID[0]
     # log = usage_log(device_id=device_id, start_date='20191101', power=True, threshold=1)
@@ -587,15 +602,15 @@ if __name__ == '__main__':
 #     df = sql_select(sql)
 #     df_pivot = df.pivot_table(columns = 'APPLIANCE_STATUS', index = 'DEVICE_ID', values = 'DURATION')
 #     label_modify(device_id='00158D0001A42DA51', collect_date_range=('20191101', '20191209'), threshold=2)
-    request_dr_no = '2019111503'
-    sql = f"""
-    SELECT *
-    FROM AH_DR_REQUEST
-    WHERE 1=1
-    AND REQUEST_DR_NO = '{request_dr_no}'"""
-
-    df = pd.read_sql(sql, con=settings.conn)
-
+#     request_dr_no = '2019111503'
+#     sql = f"""
+#     SELECT *
+#     FROM AH_DR_REQUEST
+#     WHERE 1=1
+#     AND REQUEST_DR_NO = '{request_dr_no}'"""
+#
+#     df = pd.read_sql(sql, con=settings.conn)
+    weeks=check_weeks(gateway_id='ep18270236', device_id='000D6F000E4B27B81')
 
 
 
