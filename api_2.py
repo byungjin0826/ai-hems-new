@@ -10,7 +10,7 @@ api = Api(app)
 
 
 @app.route('/elec/', methods=['GET', 'POST'])
-def predict_elec():   # todo: 오류 수정.
+def predict_elec():
     try:
         house_no = request.json['house_no']
         date = request.json['date']
