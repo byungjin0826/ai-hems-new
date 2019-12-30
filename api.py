@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 from joblib import load, dump
 import datetime
@@ -46,10 +46,10 @@ class PredictElec(Resource):
 
             y = dl.iter_predict(x=elec, n_iter=31, model=model)
 
-            return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
+            return jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
 
         except Exception as e:
-            return {'flag_success': False, 'error': str(e)}
+            return jsonify({'flag_success': False, 'error': str(e)})
 
 
 # @app.route('/label/', methods=['GET', 'POST'])
