@@ -74,7 +74,7 @@ def cbl_info():
         return jsonify({'flag_success': False, 'error': str(e)})
 
 
-@app.route('/dr_recommendation/', methods=['GET', 'POST'])  # todo: dr 추천 작업 중
+@app.route('/dr_recommendation/', methods=['GET', 'POST'])
 def dr_recommendation():
     try:
         house_no = request.json['house_no']
