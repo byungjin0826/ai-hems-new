@@ -3,8 +3,7 @@ import settings
 import common.data_load as dl
 
 
-def get_one_day_schedule(device_id='000D6F000F74413A1', gateway_id='ep18270236', dayofweek=1,
-                         conn=settings.conn, collect_date=None):
+def get_one_day_schedule(device_id='000D6F000F74413A1', gateway_id='ep18270236', dayofweek=1, collect_date=None):
     date_condition = "        AND COLLECT_DATE >=  DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -28 DAY), '%Y%m%d')) t"
     if collect_date is not None:
         date_condition = f"""        AND COLLECT_DATE >=  DATE_FORMAT(DATE_ADD('{collect_date}', INTERVAL -28 DAY), '%Y%m%d')
