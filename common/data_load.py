@@ -3,13 +3,7 @@ import settings
 from functools import wraps
 import sklearn as sk
 from joblib import load, dump
-
-
-def pandas_read_sql(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        return pd.read_sql(f(*args, **kwargs), con=settings.conn)
-    return decorated
+import settings
 
 
 def split_x_y(df, x_col='energy', y_col='appliance_status'):
@@ -284,7 +278,7 @@ AND DEVICE_ID = '{device_id}'"""
             sql += dayofweek_condition
         return sql
 
-    def transform(df=pd.read_sql(make_sql(), con=settings.conn, index_col='DATETIME')):
+    def transform(df):
         df['APPLIANCE_STATUS_LAG'] = df.APPLIANCE_STATUS.shift(1).fillna(0)
         df['APPLIANCE_STATUS_LAG'] = [int(x) for x in df.APPLIANCE_STATUS_LAG]
         df['APPLIANCE_STATUS'] = df.APPLIANCE_STATUS.fillna(0)
@@ -308,10 +302,13 @@ AND DEVICE_ID = '{device_id}'"""
         print(make_sql())
 
     if raw_data:
-        result = pd.read_sql(make_sql(), con=settings.conn, index_col='DATETIME')
+        with settings.open_db_connection() as conn:
+            result = pd.read_sql(make_sql(), con=conn, index_col='DATETIME')
 
     else:
-        result = transform()
+        with settings.open_db_connection() as conn:
+            df = pd.read_sql(make_sql(), con=conn, index_col='DATETIME')
+        result = transform(df)
 
     # result.to_clipboard()
     # settings.conn.close()
@@ -401,7 +398,8 @@ WHERE 1=1"""
 
         return device_info_sql
 
-    df = pd.read_sql(sql(), con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql(), con=conn)
     # settings.conn.close()
     return df
 
@@ -472,7 +470,8 @@ AND USE_DATE < '{date}'
 ORDER BY
 USE_DATE"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
 
     # elec = [x for x in df.use_energy_daily.values[-7:]]
     elec = [x for x in df.USE_ENERGY_DAILY.values[-7:]]
@@ -498,9 +497,8 @@ def labeling(device_id, gateway_id, collect_date):
          AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
     ORDER BY COLLECT_DATE, COLLECT_TIME"""
 
-        df = pd.read_sql(sql, con=settings.conn, index=False)
-        print(df.head())
-        print('df:', len(df))
+        with settings.open_db_connection() as conn:
+            df = pd.read_sql(sql, con=conn, index=False)
 
         x, y = split_x_y(df, x_col='energy_diff')
 
@@ -521,7 +519,7 @@ def labeling(device_id, gateway_id, collect_date):
         y = 0
         return y
 
-    return using_power()
+    return using_rf_model()
 
 
 def get_dr_info(request_dr_no):
@@ -531,7 +529,8 @@ FROM AH_DR_REQUEST
 WHERE 1=1
 AND REQUEST_DR_NO = '{request_dr_no}'"""
 
-    df = pd.read_sql(sql, con=settings.conn)
+    with settings.open_db_connection() as conn:
+        df = pd.read_sql(sql, con=conn)
     dr_type = df.iloc[0, 1]
 
     duration = int((df.iloc[0, 3] - df.iloc[0, 2]).seconds/60)
