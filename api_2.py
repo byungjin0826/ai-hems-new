@@ -17,6 +17,7 @@ def predict_elec():   # todo: 오류 수정.
         print(f'Input: {house_no}, date')
 
         y = dl.predict_elec(house_no=house_no, date=date)
+        y = [str(x) for x in y]
         print(f'output:{y}')
 
         return {'flag_success': True, 'PREDICT_USE_ENERGY': y}
