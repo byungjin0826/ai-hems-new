@@ -1,0 +1,47 @@
+@startmindmap
+* AI HEMS\n(Artificial Intelligence\n Home Energy System)
+** Main function
+*** Auto Control
+**** AI schedule(reducing standby energy)
+***** Machine learning
+****** AI
+****** LSTM
+***** Rule based
+****** Not using for 4 weeks
+**** DR recommendation
+***** Machine learning
+***** Rule based
+*** Monitoring
+**** Now
+***** Using power data
+**** Monthly energy
+**** Energy by device
+*** Manual Control
+**** Checking status
+**** Smart plug On/Off
+
+** Data gathering
+*** Device
+**** Register
+**** Modify
+*** Gateway
+**** Register
+**** Modify
+
+** Batch system
+
+** Sub function
+*** Search all device list\n by home
+*** Prediction Energy
+**** Machine learning
+***** Linear method
+***** Non-linear method
+*** Check data duration
+*** Status labeling
+**** Using power
+***** How to find threshold
+***** How to maintain threshold
+**** Using machine learning
+*** Device change detection
+*** Device information
+@endmindmap

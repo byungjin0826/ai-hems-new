@@ -1,0 +1,10 @@
+@startuml
+(*)  --> "장치 변경"
+If "input is verbose" then
+--> [Yes] "turn on verbosity"
+--> "run command"
+else
+--> "run command"
+Endif
+-->(*)
+@enduml
