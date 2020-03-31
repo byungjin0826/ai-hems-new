@@ -14,13 +14,14 @@ password = '#cslee1234'
 charset = 'utf8'
 
 
-@contextmanager
-def open_db_connection():
-    conn = pymysql.connect(host=host, port=port, user=user,
-                           passwd=password, db=db, charset=charset)
-    try:
-        yield conn
-    except Exception as e:
-        print(e)
-    finally:
+def db_connector(func):
+    def decorated():
+        conn = pymysql.connect(host=host, port=port, user=user,
+                               passwd=password, db=db, charset=charset)
+        func()
         conn.close()
+    return decorated()
+
+
+if __name__ == '__main':
+    test()

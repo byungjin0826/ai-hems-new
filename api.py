@@ -7,15 +7,16 @@ import pymysql
 import pandas as pd
 import common.data_load as dl
 import common.ai as ai
-import settings
+from settings import *
 
 app = Flask(__name__)
 api = Api(app)
 
 
 # @app.route('/elec/', methods=['GET', 'POST'])
+@db_connector
 class PredictElec(Resource):
-    def post(self):
+    def post(self, conn):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument('house_no', type=str)
@@ -38,7 +39,7 @@ class PredictElec(Resource):
     ORDER BY
     USE_DATE"""
 
-            df = pd.read_sql(sql, con=settings.conn)
+            df = pd.read_sql(sql, con=conn)
 
             elec = [x for x in df.use_energy_daily.values[-7:]]
 
@@ -80,7 +81,7 @@ WHERE      1=1
 ORDER BY COLLECT_DATE, COLLECT_TIME
             """
 
-            df = pd.read_sql(sql, con=settings.conn)
+            df = pd.read_sql(sql, con=conn)
             print(df.head())
             print('df:', len(df))
 
