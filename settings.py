@@ -25,3 +25,7 @@ def open_db_connection():
     finally:
         conn.close()
 
+if __name__ == '__main__':
+    with open_db_connection() as conn:
+        conn.db = 'aihems_service_db'
+        print(conn)

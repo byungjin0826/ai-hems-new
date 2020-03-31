@@ -76,28 +76,29 @@ WHERE
     with settings.open_db_connection() as conn:
         df = pd.read_sql(sql, con=conn)
 
-    x, y = dl.split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
+        x, y = dl.split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
 
-    x, y = dl.sliding_window_transform(x, y, lag=lag, step_size=30)
+        x, y = dl.sliding_window_transform(x, y, lag=lag, step_size=30)
 
-    model, params = dl.select_classification_model('random forest')
+        model, params = dl.select_classification_model('random forest')
 
-    gs = sk.model_selection.GridSearchCV(estimator=model,
-                                         param_grid=params,
-                                         cv=5,
-                                         scoring='accuracy',
-                                         n_jobs=-1)
+        gs = sk.model_selection.GridSearchCV(estimator=model,
+                                             param_grid=params,
+                                             cv=5,
+                                             scoring='accuracy',
+                                             n_jobs=-1)
 
-    gs.fit(x, y)
+        gs.fit(x, y)
 
-    df = df.iloc[:-lag]
-    df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
-    dump_path = f'./joblib/status/{device_id}_labeling.joblib'
+        df = df.iloc[:-lag]
+        df.loc[:, 'appliance_status_predicted'] = gs.predict(x)
+        dump_path = f'./joblib/status/{device_id}_labeling.joblib'
 
-    dump(gs, dump_path)  # 저장
-    return dump_path, gs.best_score_
+        dump(gs, dump_path)  # 저장
+        print(df)
+        return dump_path, gs.best_score_
 
 
 if __name__ == '__main__':
     print('hello')
-    make_model_elec(house_no='20190325000001')
+    make_model_status(device_id='00158D000151B2051')

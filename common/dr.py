@@ -26,7 +26,8 @@ from (	SELECT *
         ORDER BY s desc
         limit 4) t2"""
 
-    cbl = pd.read_sql(sql, con=settings.conn).iloc[0, 0]
+    with settings.open_db_connection() as conn:
+        cbl = pd.read_sql(sql, con=conn).iloc[0, 0]
 
     if cbl <= 500:
         reduction_energy = cbl * 0.3
