@@ -289,8 +289,8 @@ def hello():
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', debug=True)
-    app.run(host='127.0.0.1', debug=True)
+    app.run(host='0.0.0.0', debug=True)
+    # app.run(host='127.0.0.1', debug=True)
     # house_no = '20180810000008'
     # date = '20191106'
     # y = dl.predict_elec(house_no=house_no, date=date)
