@@ -500,20 +500,20 @@ def labeling(device_id, gateway_id, collect_date):
         with settings.open_db_connection() as conn:
             df = pd.read_sql(sql, con=conn, index=False)
 
-        x, y = split_x_y(df, x_col='energy_diff')
+            x, y = split_x_y(df, x_col='energy_diff')
 
-        pre = 20
-        post = 10
-        length = post + pre
+            pre = 20
+            post = 10
+            length = post + pre
 
-        x = [x[i:i + length] for i in range(len(x) - (pre + post))]
+            x = [x[i:i + length] for i in range(len(x) - (pre + post))]
 
-        model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
+            model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
 
-        y = model.predict(x)
+            y = model.predict(x)
 
-        y = [int(x) for x in y]
-        return y
+            y = [int(x) for x in y]
+            return y
 
     def using_power():
         y = 0

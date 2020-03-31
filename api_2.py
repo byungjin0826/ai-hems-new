@@ -6,6 +6,8 @@ import common.data_load as dl
 import common.ai as ai
 import common.dr as dr
 import common.model_training as mt
+import json
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,9 +23,10 @@ def predict_elec():
         y = dl.predict_elec(house_no=house_no, date=date)
         y = [str(x) for x in y]
         # print(f'output:{y}')
-
-        return jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
-        # return {'flag_success': True, 'predict_use_energy': y}  # 기존 대문자
+        response = jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
+        response.status_code = 200
+        # return jsonify('0')
+        return {'flag_success': True, 'predict_use_energy': y}  # 기존 대문자
 
     except Exception as e:
         return jsonify({'flag_success': False, 'error': e})
@@ -121,8 +124,8 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
-    # app.run(host='127.0.0.1', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
+    app.run(host='127.0.0.1', debug=True)
     # house_no = '20180810000008'
     # date = '20191106'
     # y = dl.predict_elec(house_no=house_no, date=date)
