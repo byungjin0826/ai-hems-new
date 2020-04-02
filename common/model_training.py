@@ -6,6 +6,7 @@ import sklearn as sk
 from joblib import dump, load
 import sklearn.ensemble
 import sklearn.linear_model
+import pyperclip
 
 
 def make_model_elec(house_no):
@@ -55,7 +56,7 @@ SELECT
     , case when APPLIANCE_STATUS is null then 0 else APPLIANCE_STATUS end APPLIANCE_STATUS
     , CREATE_DATE
 FROM
-    AH_USE_LOG_BYMINUTE_LABELED_sbj
+    AH_USE_LOG_BYMINUTE
 WHERE
     1 = 1
     AND DEVICE_ID = '{device_id}'
@@ -67,14 +68,18 @@ WHERE
                 COLLECT_DATE
                 , sum(APPLIANCE_STATUS) APPLIANCE_STATUS_SUM
             FROM 
-                AH_USE_LOG_BYMINUTE_LABELED_sbj
+                AH_USE_LOG_BYMINUTE
             GROUP by
                 COLLECT_DATE) t1
         WHERE 1=1
         AND t1.APPLIANCE_STATUS_SUM is not null)"""
 
+    pyperclip.copy(sql)
+
     with settings.open_db_connection() as conn:
         df = pd.read_sql(sql, con=conn)
+
+        print(df.head())
 
         x, y = dl.split_x_y(df, x_col='ENERGY_DIFF', y_col='APPLIANCE_STATUS')
 

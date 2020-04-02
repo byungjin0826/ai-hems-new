@@ -4,9 +4,9 @@ from functools import wraps
 import sklearn as sk
 from joblib import load, dump
 import settings
+import pyperclip
 
-
-def split_x_y(df, x_col='energy', y_col='appliance_status'):
+def split_x_y(df, x_col='ENERGY', y_col='ENERGY_DIFF'):
     """
     학습에 사용할 DataFrame 에서 X와 Y를 분리
     :param df: python DataFrame
@@ -496,11 +496,13 @@ def labeling(device_id, gateway_id, collect_date):
        AND   CONCAT( COLLECT_DATE, COLLECT_TIME) >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{start}', '%Y%m%d%H%i'),INTERVAL -20 MINUTE), '%Y%m%d%H%i')
          AND   CONCAT( COLLECT_DATE, COLLECT_TIME) <= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{end}', '%Y%m%d%H%i'),INTERVAL 10 MINUTE), '%Y%m%d%H%i')
     ORDER BY COLLECT_DATE, COLLECT_TIME"""
+        pyperclip.copy(sql)
 
         with settings.open_db_connection() as conn:
-            df = pd.read_sql(sql, con=conn, index=False)
+            df = pd.read_sql(sql, con=conn)
+            print(df.columns)
 
-            x, y = split_x_y(df, x_col='energy_diff')
+            x, y = split_x_y(df, x_col='ENERGY_DIFF')
 
             pre = 20
             post = 10
@@ -508,7 +510,7 @@ def labeling(device_id, gateway_id, collect_date):
 
             x = [x[i:i + length] for i in range(len(x) - (pre + post))]
 
-            model = load(f'./sample_data/joblib/by_device/{device_id}_labeling.joblib')
+            model = load(f'./joblib/status/{device_id}_labeling.joblib')
 
             y = model.predict(x)
 

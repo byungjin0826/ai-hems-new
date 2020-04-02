@@ -25,9 +25,7 @@ def predict_elec():
         y = dl.predict_elec(house_no=house_no, date=date)
         y = [str(x) for x in y]
         # print(f'output:{y}')
-        response = jsonify({'flag_success': True, 'PREDICT_USE_ENERGY': y})
-        response.status_code = 200
-        # return jsonify('0')
+
         return jsonify({'flag_success': True, 'predict_use_energy': y})  # 기존 대문자
 
     except Exception as e:
@@ -289,8 +287,8 @@ def hello():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
-    # app.run(host='127.0.0.1', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
+    app.run(host='127.0.0.1', debug=True)
     # house_no = '20180810000008'
     # date = '20191106'
     # y = dl.predict_elec(house_no=house_no, date=date)
