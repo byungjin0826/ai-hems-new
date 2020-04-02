@@ -17,29 +17,35 @@ SELECT *
 FROM AH_USAGE_DAILY_PREDICT
 WHERE 1=1
 AND HOUSE_NO = {house_no}
-AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')"""
+-- AND USE_DATE >= DATE_FORMAT( DATE_ADD( STR_TO_DATE( '{today}', '%Y%m%d'),INTERVAL -28 DAY), '%Y%m%d')"""  # 최근 28주만 선택
+
+    pyperclip.copy(sql)
 
     with settings.open_db_connection() as conn:
         df = pd.read_sql(sql, con=conn)
 
-    df.loc[df.USE_ENERGY_DAILY.isnull(), 'USE_ENERGY_DAILY'] = 0
+        df.loc[df.USE_ENERGY_DAILY.isnull(), 'USE_ENERGY_DAILY'] = 0
 
-    x, y = dl.split_x_y(df, x_col='USE_ENERGY_DAILY', y_col='USE_ENERGY_DAILY')
-    x, y = dl.sliding_window_transform(x, y, step_size=7, lag=0)
+        print(df.head())
 
-    x = x[6:-1]
-    y = y[7:]
+        x, y = dl.split_x_y(df, x_col='USE_ENERGY_DAILY', y_col='USE_ENERGY_DAILY')
+        x, y = dl.sliding_window_transform(x, y, step_size=7, lag=0)
 
-    model, param = dl.select_regression_model('linear regression')
+        x = x[6:-1]
+        y = y[7:]
 
-    gs = sk.model_selection.GridSearchCV(estimator=model,
-                                         param_grid=param,
-                                         cv=5,
-                                         n_jobs=-1)
-    gs.fit(x, y)
-    dump(gs, f'./joblib/usage_daily/{house_no}.joblib')
-    print("complete")
-    return gs.best_score_
+        model, param = dl.select_regression_model('linear regression')
+
+        gs = sk.model_selection.GridSearchCV(estimator=model,
+                                             param_grid=param,
+                                             cv=5,
+                                             n_jobs=-1)
+        gs.fit(x, y)
+
+        dump(gs, f'./joblib/usage_daily/{house_no}.joblib')
+
+        print("complete")
+        return gs.best_score_
 
 
 def make_model_status(device_id, lag=10):
